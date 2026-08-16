@@ -415,3 +415,4 @@ La arquitectura no bloquea lo que sigue, y nada de esto exige rediseñar:
 - **Financiación, test drive, comparador, favoritos, blog.** Ninguna decisión
   tomada hasta ahora los impide.
 # playa-auto
+# playa-auto
