@@ -32,6 +32,14 @@ class SiteSmokeTest < Site4RequestTest
     assert_select 'a[href="/v4"]', 1
   end
 
+  test "la portada clásica enlaza al catálogo dentro de /v1" do
+    get_browser "/v1"
+
+    assert_response :success
+    assert_select 'a[href="/v1/vehiculos"]', { minimum: 1 }
+    assert_select 'a[href="/vehiculos"]', 0
+  end
+
   test "el robots.txt de raíz señala el sitemap de /v1" do
     get_browser "/robots.txt"
 

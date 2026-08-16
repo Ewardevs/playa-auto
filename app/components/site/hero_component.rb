@@ -26,7 +26,26 @@ module Site
 
     def button_label = content_record.hero_button_label.presence || t("site.cta.see_vehicles")
 
-    def button_url = content_record.hero_button_url.presence || helpers.site_vehicles_path
+    # El destino del botón se carga en el panel como un path ("/vehiculos"), y
+    # ese path significa "el catálogo" de este sitio — no el de otro. Una URL
+    # absoluta (una campaña, un sitio externo) se respeta tal cual, y un path
+    # que no reconocemos también: no es asunto nuestro reescribirlo.
+    LOCAL_EQUIVALENTS = {
+      "/" => :site_root_path,
+      "/vehiculos" => :site_vehicles_path,
+      "/ofertas" => :site_offers_path,
+      "/nosotros" => :site_about_path,
+      "/preguntas-frecuentes" => :site_faqs_path,
+      "/contacto" => :site_contact_path
+    }.freeze
+
+    def button_url
+      configured = content_record.hero_button_url.presence
+      return helpers.site_vehicles_path if configured.blank?
+
+      helper = LOCAL_EQUIVALENTS[configured.split("?").first.chomp("/").presence || "/"]
+      helper ? helpers.public_send(helper) : configured
+    end
 
     def image = content_record.hero_image
 
