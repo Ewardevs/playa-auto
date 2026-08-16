@@ -117,38 +117,22 @@ say "#{brands.size} marcas, #{models.size} modelos"
 
 puts "\n== Fotografías de ejemplo =="
 
-# Placeholder photos are generated locally with ImageMagick — no network, no
-# binary blobs checked into the repo.
-PHOTO_PALETTE = %w[
-  1f2a37,2f3e52 3a2f2a,55433a 24313a,36505e 2e2a35,463f52
-  1e3330,2f504a 33291f,564733 22283a,3a4260 2b1f24,4a373f
-].freeze
+# Fotografías reales de autos (Wikimedia Commons, licencias libres), convertidas
+# a WebP liviano (~1600px, q78, sin metadatos) y commiteadas bajo db/seed_images/.
+# Cada vehículo toma 2-4 fotos del pool de su categoría: la foto exacta de cada
+# modelo no es viable en una seed, pero sí una foto real del tipo de auto.
+SEED_IMAGE_DIR = Rails.root.join("db", "seed_images")
+SEED_IMAGE_POOL = {
+  "Autos" => %w[autos-1 autos-2 autos-3 autos-4 autos-5],
+  "SUVs" => %w[suv-1 suv-2 suv-3 suv-4 suv-5],
+  "Camionetas" => %w[camionetas-1 camionetas-2 camionetas-3 camionetas-4 camionetas-5],
+  "Utilitarios" => %w[utilitarios-1 utilitarios-2 utilitarios-3 utilitarios-4]
+}.freeze
 
-def build_photo(label, index)
-  from, to = PHOTO_PALETTE[index % PHOTO_PALETTE.size].split(",")
-  path = Rails.root.join("tmp", "seed_photo_#{index}.jpg")
-
-  return path if path.exist?
-
-  system(
-    "magick", "-size", "1200x800",
-    "gradient:##{from}-##{to}",
-    "-gravity", "center",
-    # No explicit -font: font availability varies by machine and a missing
-    # family makes ImageMagick fail the whole command.
-    "-pointsize", "56", "-fill", "#ffffffcc",
-    "-annotate", "+0-30", label,
-    "-pointsize", "22", "-fill", "#ffffff66",
-    "-annotate", "+0+40", "PLAYA GUARANÍ",
-    path.to_s,
-    exception: false
-  )
-
-  path.exist? ? path : nil
+photos_available = SEED_IMAGE_POOL.values.flatten.any? do |name|
+  SEED_IMAGE_DIR.join("#{name}.webp").exist?
 end
-
-photos_available = build_photo("Playa Guaraní", 0).present?
-say photos_available ? "generadas con ImageMagick" : "ImageMagick no disponible: se cargan vehículos sin fotos"
+say photos_available ? "pool WebP en db/seed_images/" : "pool de fotos ausente: se cargan vehículos sin fotos"
 
 puts "\n== Vehículos =="
 
@@ -221,16 +205,30 @@ vehicles = Vehicle.kept.to_a
 say "#{created_vehicles.size} vehículos nuevos (#{vehicles.size} en total)"
 
 if photos_available
+  # Elimina las fotografías anteriores (blob + archivo + variantes) y las vuelve
+  # a cargar del pool, de modo que cada corrida quede con fotos nuevas y sin
+  # duplicados.
+  say "eliminando fotografías anteriores"
+  vehicles.each do |vehicle|
+    vehicle.images.each do |image|
+      image.file.purge if image.file.attached?
+      image.destroy
+    end
+  end
+
   attached = 0
 
-  vehicles.select { |v| v.images.empty? }.each_with_index do |vehicle, index|
+  vehicles.each_with_index do |vehicle, index|
+    pool = SEED_IMAGE_POOL.fetch(vehicle.category.name, [])
+    next if pool.empty?
+
     (2 + (index % 3)).times do |photo_index|
-      path = build_photo("#{vehicle.brand.name} #{vehicle.vehicle_model.name}", index + photo_index)
-      next if path.blank?
+      path = SEED_IMAGE_DIR.join("#{pool[(index + photo_index) % pool.size]}.webp")
+      next unless path.exist?
 
       image = vehicle.images.new(alt_text: "#{vehicle.display_name} — foto #{photo_index + 1}")
-      image.file.attach(io: File.open(path), filename: "#{vehicle.slug}-#{photo_index}.jpg",
-                        content_type: "image/jpeg")
+      image.file.attach(io: File.open(path), filename: "#{vehicle.slug}-#{photo_index}.webp",
+                        content_type: "image/webp")
       image.save!
     end
 
