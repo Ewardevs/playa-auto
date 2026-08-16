@@ -1,0 +1,24 @@
+# Referencia del unit instalado en /etc/systemd/system/playa.service
+# (lo genera deploy/setup.sh)
+[Unit]
+Description=playa-autos (Rails 8 / Puma) - demo automotora
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=simple
+User=ewardevs
+Group=ewardevs
+WorkingDirectory=/var/www/playa
+EnvironmentFile=/var/www/playa/shared/playa.env
+Environment="PATH=/home/ewardevs/.rbenv/shims:/home/ewardevs/.rbenv/bin:/usr/local/bin:/usr/bin:/bin"
+ExecStart=/home/ewardevs/.rbenv/shims/bundle exec puma -C config/puma.rb -b tcp://127.0.0.1:3002
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=playa
+
+[Install]
+WantedBy=multi-user.target
