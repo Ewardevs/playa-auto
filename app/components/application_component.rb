@@ -4,7 +4,13 @@
 # decide how things look. Business rules belong in models, services and
 # policies, never here.
 class ApplicationComponent < ViewComponent::Base
-  delegate :current_user, :policy, :current_setting, to: :helpers
+  # `current_setting` is available on both sides; `site_content` only on the
+  # public site, and only its components ask for it.
+  delegate :current_user, :policy, :current_setting, :site_content, to: :helpers
+
+  # Formatting is shared with the views, so components read prices, mileages and
+  # dates through the same helpers rather than reimplementing them.
+  delegate :money, :mileage, :short_date, :long_datetime, :blank_dash, :phone_link, to: :helpers
 
   private
 

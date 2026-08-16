@@ -1,0 +1,119 @@
+<% content_for :structured_data do %>
+  <%= render Site3::StructuredDataComponent.new %>
+<% end %>
+
+<%= render Site3::HeroComponent.new(
+      vehicle: @featured.first,
+      categories: @categories,
+      category_stock: @category_stock,
+      stock_count: @stock_count,
+      brand_count: @brand_count,
+      offer_count: @offer_count) %>
+
+<%# Recién ingresados %>
+<section class="mx-auto max-w-[80rem] px-3 sm:px-5 pt-20 lg:pt-28">
+  <%= render Site3::SectionHeadingComponent.new(
+        label: t("site3.home.featured_label"),
+        title: t("site3.home.featured_title"),
+        lead: t("site3.home.featured_lead")) do |heading| %>
+    <% heading.with_action do %>
+      <%= link_to site3_vehicles_path,
+            class: "inline-flex items-center gap-2 h-11 px-5 rounded-full bg-s3-surface
+                    text-sm font-medium text-s3-ink s3-card transition-colors
+                    hover:bg-s3-accent hover:text-white" do %>
+        <span><%= t("site3.cta.see_all") %></span>
+        <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if @featured.any? %>
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" data-controller="site3-reveal">
+      <% @featured.each_with_index do |vehicle, index| %>
+        <div data-site3-reveal-target="item">
+          <%= render Site3::VehicleCardComponent.new(
+                vehicle: vehicle,
+                loading: index < 3 ? "eager" : "lazy",
+                priority: false) %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <%= render Site3::EmptyStateComponent.new(title: t("site3.vehicles.empty_title"),
+                                              description: t("site3.vehicles.empty_lead")) do |empty| %>
+      <% empty.with_action do %>
+        <%= link_to t("site3.nav.contact"), site3_contact_path,
+              class: "inline-flex items-center h-11 px-6 rounded-full bg-s3-accent text-white
+                      text-sm font-medium" %>
+      <% end %>
+    <% end %>
+  <% end %>
+</section>
+
+<%# Ofertas %>
+<% if @offers.any? %>
+  <section class="mx-auto max-w-[80rem] px-3 sm:px-5 pt-20 lg:pt-28">
+    <%= render Site3::SectionHeadingComponent.new(
+          label: t("site3.home.offers_label"),
+          title: t("site3.home.offers_title"),
+          lead: t("site3.home.offers_lead")) do |heading| %>
+      <% heading.with_action do %>
+        <%= link_to site3_offers_path,
+              class: "inline-flex items-center gap-2 h-11 px-5 rounded-full bg-s3-mint text-white
+                      text-sm font-medium transition-opacity hover:opacity-90" do %>
+          <span><%= t("site3.cta.see_all") %></span>
+          <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" data-controller="site3-reveal">
+      <% @offers.each do |vehicle| %>
+        <div data-site3-reveal-target="item">
+          <%= render Site3::VehicleCardComponent.new(vehicle: vehicle) %>
+        </div>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+
+<%# Diferenciales %>
+<% if @differentials.any? %>
+  <section class="mx-auto max-w-[80rem] px-3 sm:px-5 pt-20 lg:pt-28">
+    <%= render Site3::SectionHeadingComponent.new(
+          label: t("site3.home.why_label"),
+          title: t("site3.home.why_title"),
+          align: :center) %>
+
+    <div data-controller="site3-reveal">
+      <div data-site3-reveal-target="item">
+        <%= render Site3::DifferentialsComponent.new(differentials: @differentials) %>
+      </div>
+    </div>
+  </section>
+<% end %>
+
+<%# Cierre %>
+<section class="mx-auto max-w-[80rem] px-3 sm:px-5 pt-20 lg:pt-28">
+  <div class="rounded-s3-lg bg-s3-accent text-white px-7 sm:px-12 lg:px-16 py-14 lg:py-20
+              flex flex-wrap items-end justify-between gap-8">
+    <div class="max-w-xl">
+      <h2 class="font-s3-display text-4xl sm:text-5xl lg:text-[3.5rem] leading-[1.0]
+                 tracking-[-0.025em] text-balance">
+        <%= t("site3.home.closing_title") %>
+      </h2>
+      <p class="mt-4 text-[1.0625rem] leading-relaxed text-white/70">
+        <%= t("site3.home.closing_lead") %>
+      </p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2.5">
+      <%= link_to t("site3.nav.contact"), site3_contact_path,
+            class: "inline-flex items-center h-13 px-7 rounded-full bg-white text-s3-accent
+                    text-sm font-semibold transition-transform hover:-translate-y-0.5" %>
+      <%= link_to t("site3.cta.explore"), site3_vehicles_path,
+            class: "inline-flex items-center h-13 px-7 rounded-full bg-white/15 text-white
+                    text-sm font-semibold transition-colors hover:bg-white/25" %>
+    </div>
+  </div>
+</section>

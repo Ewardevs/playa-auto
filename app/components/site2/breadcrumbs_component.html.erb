@@ -1,0 +1,17 @@
+<nav aria-label="<%= t("site2.nav.breadcrumbs") %>">
+  <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.6875rem] uppercase tracking-[0.12em]">
+    <% trail.each_with_index do |(label, path), index| %>
+      <li class="flex items-center gap-2">
+        <% if index.positive? %>
+          <span class="text-s2-ash-2" aria-hidden="true">/</span>
+        <% end %>
+
+        <% if last?(index) || path.blank? %>
+          <span class="text-s2-ash truncate max-w-[16rem]" aria-current="page"><%= label %></span>
+        <% else %>
+          <%= link_to label, path, class: "text-s2-ash-2 transition-colors hover:text-s2-chalk" %>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+</nav>

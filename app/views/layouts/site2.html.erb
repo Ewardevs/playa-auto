@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>" class="bg-s2-void">
+  <head>
+    <meta charset="utf-8">
+    <title><%= seo.title %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <% if seo.description.present? %>
+      <meta name="description" content="<%= seo.description %>">
+    <% end %>
+    <meta name="robots" content="<%= seo.robots %>">
+    <% if seo.canonical.present? %>
+      <link rel="canonical" href="<%= seo.canonical %>">
+    <% end %>
+
+    <meta property="og:type" content="<%= seo.og_type %>">
+    <meta property="og:site_name" content="<%= seo.site_name %>">
+    <meta property="og:title" content="<%= seo.raw_title %>">
+    <% if seo.description.present? %>
+      <meta property="og:description" content="<%= seo.description %>">
+    <% end %>
+    <% if seo.canonical.present? %>
+      <meta property="og:url" content="<%= seo.canonical %>">
+    <% end %>
+    <% if seo.image_url.present? %>
+      <meta property="og:image" content="<%= seo.image_url %>">
+      <meta name="twitter:card" content="summary_large_image">
+    <% else %>
+      <meta name="twitter:card" content="summary">
+    <% end %>
+    <meta name="twitter:title" content="<%= seo.raw_title %>">
+    <% if seo.description.present? %>
+      <meta name="twitter:description" content="<%= seo.description %>">
+    <% end %>
+
+    <meta name="theme-color" content="#08090b">
+    <meta name="color-scheme" content="dark">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Inter+Tight:wght@400;500;600&display=swap">
+
+    <%= favicon_link_tag current_setting.favicon.attached? ? url_for(current_setting.favicon) : "/icon.png" %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+
+    <%= yield :head %>
+    <%= render Site::AnalyticsComponent.new %>
+  </head>
+
+  <body class="min-h-dvh bg-s2-void text-s2-chalk font-s2 antialiased selection:bg-s2-signal selection:text-s2-signal-ink">
+    <a href="#contenido"
+       class="sr-only focus:not-sr-only focus:fixed focus:z-[60] focus:top-3 focus:left-3
+              focus:px-4 focus:py-2 focus:bg-s2-signal focus:text-s2-signal-ink focus:text-sm focus:font-semibold">
+      <%= t("site2.nav.skip_to_content") %>
+    </a>
+
+    <% if preview? %>
+      <%# Franja de cortesía: Site2 todavía no es el sitio público. Desaparece
+          sola cuando config.x.site2.preview pasa a false. %>
+      <p class="bg-s2-panel-2 border-b border-s2-line text-center text-[0.6875rem] tracking-[0.18em]
+                uppercase text-s2-ash-2 py-1.5">
+        <%= t("site2.nav.preview_notice") %>
+      </p>
+    <% end %>
+
+    <%= render Site2::HeaderComponent.new(current_path: request.path) %>
+
+    <main id="contenido">
+      <%= render Site2::FlashComponent.new(flash) %>
+      <%= yield %>
+    </main>
+
+    <%= render Site2::FooterComponent.new %>
+    <%= render Site2::WhatsappFloatComponent.new(vehicle: @vehicle) %>
+    <%= yield :structured_data %>
+  </body>
+</html>

@@ -1,0 +1,79 @@
+<% content_for :title, t("admin.differentials.title") %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.differentials.title"),
+      description: t("admin.differentials.description")) do |header| %>
+  <% if policy(Differential).create? %>
+    <% header.with_actions do %>
+      <%= render UI::ButtonComponent.new(
+            label: t("admin.differentials.new"), href: new_admin_differential_path,
+            variant: :primary, icon: :plus) %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= render Admin::DataTableComponent.new(rows: @differentials) do |table| %>
+  <% table.column(label: Differential.human_attribute_name(:position), align: :right, width: "4rem") do |d| %>
+    <span class="text-faint num"><%= d.position %></span>
+  <% end %>
+
+  <% table.column(label: Differential.human_attribute_name(:title)) do |d| %>
+    <div class="flex items-center gap-3">
+      <span class="grid place-items-center size-8 rounded-md bg-surface-3 text-muted shrink-0">
+        <%= render UI::IconComponent.new(d.icon, class: "size-4") %>
+      </span>
+      <div class="min-w-0">
+        <% if policy(d).update? %>
+          <%= link_to d.title, edit_admin_differential_path(d),
+                class: "font-medium text-ink hover:text-accent transition-colors" %>
+        <% else %>
+          <span class="font-medium text-ink"><%= d.title %></span>
+        <% end %>
+        <% if d.description.present? %>
+          <p class="text-xs text-muted truncate max-w-md"><%= d.description %></p>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <% table.column(label: Differential.human_attribute_name(:active)) do |d| %>
+    <%= render UI::StateBadgeComponent.new(d.active?) %>
+  <% end %>
+
+  <% table.column(label: t("admin.vehicles.columns.actions"), align: :right, width: "4rem") do |d| %>
+    <%= render UI::DropdownComponent.new do |menu| %>
+      <% if policy(d).update? %>
+        <% menu.with_item(label: t("admin.actions.edit"), href: edit_admin_differential_path(d), icon: :pencil) %>
+      <% end %>
+      <% if policy(d).toggle? %>
+        <% menu.with_item(label: d.active? ? t("admin.actions.deactivate") : t("admin.actions.activate"),
+                          href: toggle_admin_differential_path(d), icon: :power, method: :patch) %>
+      <% end %>
+      <% if policy(d).destroy? %>
+        <% menu.with_item(divider: true) %>
+        <% menu.with_item(label: t("admin.actions.delete"), href: admin_differential_path(d),
+                          icon: :trash, method: :delete, tone: :danger,
+                          confirm: t("admin.differentials.confirm_delete")) %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% table.with_empty_state do %>
+    <%= render UI::EmptyStateComponent.new(
+          title: t("admin.differentials.empty_title"),
+          description: t("admin.differentials.empty_description"),
+          icon: :star) do |empty| %>
+      <% if policy(Differential).create? %>
+        <% empty.with_action do %>
+          <%= render UI::ButtonComponent.new(
+                label: t("admin.differentials.new"), href: new_admin_differential_path,
+                variant: :primary, icon: :plus) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% table.with_footer do %>
+    <%= render UI::PaginationComponent.new(@pagy) %>
+  <% end %>
+<% end %>

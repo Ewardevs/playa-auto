@@ -10,7 +10,8 @@ class SettingPolicy < ApplicationPolicy
     %i[
       company_name tagline phone whatsapp email address opening_hours
       google_maps_url instagram_url facebook_url tiktok_url
-      currency locale logo favicon
+      currency locale logo favicon show_sold_vehicles
+      google_analytics_id google_tag_manager_id meta_pixel_id
     ]
   end
 end

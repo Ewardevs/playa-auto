@@ -1,0 +1,16 @@
+<div class="flex flex-wrap items-center gap-2">
+  <span class="s2-label mr-1"><%= t("site2.filters.active_title") %></span>
+
+  <% chips.each do |chip| %>
+    <%= link_to chip.path,
+          aria: { label: t("site2.filters.remove", label: "#{chip.label}: #{chip.value}") },
+          class: "group inline-flex items-center gap-2 h-8 pl-3 pr-2 bg-s2-panel border border-s2-line
+                  rounded-s2 text-xs text-s2-chalk transition-colors hover:border-s2-signal" do %>
+      <span class="text-s2-ash-2"><%= chip.label %></span>
+      <span class="font-medium"><%= chip.value %></span>
+      <span class="text-s2-ash-2 transition-colors group-hover:text-s2-signal" aria-hidden="true">
+        <%= render UI::IconComponent.new(:x, class: "size-3.5") %>
+      </span>
+    <% end %>
+  <% end %>
+</div>

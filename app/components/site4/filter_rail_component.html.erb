@@ -1,0 +1,170 @@
+<%= form_with url: site4_vehicles_path, method: :get, class: "s4-filters",
+              data: { controller: "site4-filters" } do |form| %>
+
+  <%# Barra móvil: solo el botón que abre la hoja %>
+  <div class="lg:hidden flex items-center gap-2 mb-4">
+    <button type="button"
+            data-action="site4-filters#open"
+            data-site4-filters-target="openButton"
+            aria-controls="site4-filters-sheet"
+            aria-expanded="false"
+            class="inline-flex items-center gap-2 h-11 pl-5 pr-5 rounded-[0.875rem]
+                   bg-s4-ink text-white text-sm font-semibold">
+      <%= render UI::IconComponent.new(:filter, class: "size-4") %>
+      <span><%= t("site4.filters.label") %></span>
+      <% if filtered? %>
+        <span class="grid place-items-center min-w-5 h-5 px-1 rounded-full bg-s4-accent
+                     text-white text-xs font-bold tabular-nums">
+          <%= active_filters.size %>
+        </span>
+      <% end %>
+    </button>
+
+    <% if filtered? %>
+      <%= link_to t("site4.filters.clear_all"), site4_vehicles_path,
+            class: "text-sm font-medium text-s4-ink-3 transition-colors hover:text-s4-ink" %>
+    <% end %>
+  </div>
+
+  <%# Fondo de la hoja %>
+  <div class="s4-filters-backdrop" data-site4-filters-target="backdrop"
+       data-action="click->site4-filters#close"></div>
+
+  <%# Hoja (móvil) / panel (escritorio) %>
+  <section id="site4-filters-sheet" class="s4-filters-sheet"
+           data-site4-filters-target="sheet"
+           aria-label="<%= t("site4.filters.label") %>">
+    <span class="lg:hidden mx-auto mt-2.5 block size-10 rounded-full bg-s4-canvas" aria-hidden="true"></span>
+
+    <div class="px-4 sm:px-6 pt-4 pb-6 sm:pb-8">
+
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <p class="s4-kicker"><%= t("site4.filters.label") %></p>
+
+        <div class="flex items-center gap-3">
+          <%= label_tag :orden, t("site4.filters.sort"), class: "sr-only" %>
+          <%= select_tag :orden, options_for_select(sort_options, sort_key),
+                class: "h-10 pl-4 pr-9 rounded-[0.875rem] bg-s4-surface-2 border
+                        border-[color:rgba(17,19,21,0.08)] text-sm text-s4-ink
+                        focus:outline-none focus:ring-2 focus:ring-s4-accent/30 transition-shadow",
+                data: { action: "change->site4-filters#submit" } %>
+
+          <% if filtered? %>
+            <%= link_to t("site4.filters.clear_all"), site4_vehicles_path,
+                  class: "hidden lg:inline-flex text-sm font-medium text-s4-ink-3
+                          transition-colors hover:text-s4-ink" %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+
+        <div>
+          <%= label_tag :marca, t("site4.filters.brand"), class: label_class %>
+          <%= select_tag :marca, options_for_select(brand_options, selected_brand_slug),
+                include_blank: t("site4.filters.any"), class: field_class,
+                data: { action: "change->site4-filters#submit" } %>
+        </div>
+
+        <div>
+          <%= label_tag :categoria, t("site4.filters.category"), class: label_class %>
+          <%= select_tag :categoria, options_for_select(category_options, selected_category_slug),
+                include_blank: t("site4.filters.any"), class: field_class,
+                data: { action: "change->site4-filters#submit" } %>
+        </div>
+
+        <% if models.any? %>
+          <div>
+            <%= label_tag :modelo, t("site4.filters.model"), class: label_class %>
+            <%= select_tag :modelo, options_for_select(model_options, selected_model_slug),
+                  include_blank: t("site4.filters.any"), class: field_class,
+                  data: { action: "change->site4-filters#submit" } %>
+          </div>
+        <% end %>
+
+        <div>
+          <%= label_tag :combustible, t("site4.filters.fuel"), class: label_class %>
+          <%= select_tag :combustible, options_for_select(fuel_options, selected_fuel),
+                include_blank: t("site4.filters.any"), class: field_class,
+                data: { action: "change->site4-filters#submit" } %>
+        </div>
+
+        <div>
+          <%= label_tag :transmision, t("site4.filters.transmission"), class: label_class %>
+          <%= select_tag :transmision, options_for_select(transmission_options, selected_transmission),
+                include_blank: t("site4.filters.any"), class: field_class,
+                data: { action: "change->site4-filters#submit" } %>
+        </div>
+
+        <div>
+          <%= label_tag :estado, t("site4.filters.status"), class: label_class %>
+          <%= select_tag :estado, options_for_select(status_options, selected_status),
+                include_blank: t("site4.filters.any"), class: field_class,
+                data: { action: "change->site4-filters#submit" } %>
+        </div>
+
+        <div>
+          <span class="<%= label_class %>"><%= t("site4.filters.price") %></span>
+          <div class="grid grid-cols-2 gap-2">
+            <%= number_field_tag :precio_min, params[:precio_min],
+                  placeholder: t("site4.filters.price_min"), class: field_class %>
+            <%= number_field_tag :precio_max, params[:precio_max],
+                  placeholder: t("site4.filters.price_max"), class: field_class %>
+          </div>
+        </div>
+
+        <div>
+          <span class="<%= label_class %>"><%= t("site4.filters.year") %></span>
+          <div class="grid grid-cols-2 gap-2">
+            <%= number_field_tag :anio_min, params[:anio_min],
+                  placeholder: t("site4.filters.year_min"), class: field_class %>
+            <%= number_field_tag :anio_max, params[:anio_max],
+                  placeholder: t("site4.filters.year_max"), class: field_class %>
+          </div>
+        </div>
+
+        <div>
+          <%= label_tag :km_max, t("site4.filters.mileage"), class: label_class %>
+          <%= number_field_tag :km_max, params[:km_max],
+                placeholder: t("site4.filters.mileage_placeholder"), class: field_class %>
+        </div>
+      </div>
+
+      <% if filtered? %>
+        <div class="mt-6">
+          <p class="s4-label mb-2"><%= t("site4.filters.active_title") %></p>
+          <ul class="flex flex-wrap gap-1.5">
+            <% active_filters.each do |label, path| %>
+              <li>
+                <%= link_to path,
+                      class: "group inline-flex items-center gap-1.5 h-9 pl-3.5 pr-2 rounded-full
+                              bg-s4-accent-soft text-s4-accent text-[0.8125rem] font-medium
+                              transition-colors hover:bg-s4-accent hover:text-white" do %>
+                  <span><%= label %></span>
+                  <span class="grid place-items-center size-5 rounded-full bg-s4-accent text-white
+                               transition-colors group-hover:bg-white group-hover:text-s4-accent"
+                        aria-hidden="true">
+                    <%= render UI::IconComponent.new(:x, class: "size-3") %>
+                  </span>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="mt-7 lg:hidden flex items-center gap-3">
+        <button type="submit" data-site4-filters-target="apply"
+                class="flex-1 inline-flex items-center justify-center gap-2 h-12 rounded-[0.875rem]
+                       bg-s4-accent text-white text-sm font-semibold transition-colors hover:bg-s4-accent-2">
+          <%= t("site4.filters.apply") %>
+        </button>
+        <button type="button" data-action="site4-filters#close"
+                class="h-12 px-5 rounded-[0.875rem] bg-s4-canvas text-s4-ink text-sm font-medium
+                       transition-colors hover:bg-s4-surface-2">
+          <%= t("site4.nav.close_menu") %>
+        </button>
+      </div>
+    </div>
+  </section>
+<% end %>

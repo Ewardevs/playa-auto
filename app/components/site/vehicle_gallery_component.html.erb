@@ -1,0 +1,57 @@
+<div data-controller="gallery" class="select-none">
+  <%# Marco principal %>
+  <div class="relative aspect-4/3 sm:aspect-16/10 bg-paper-2 rounded-site overflow-hidden border border-sand">
+    <% images.each_with_index do |image, index| %>
+      <%= image_tag image.file.variant(:large),
+            alt: alt_for(image, index),
+            loading: index.zero? ? "eager" : "lazy",
+            fetchpriority: index.zero? ? "high" : "auto",
+            decoding: "async",
+            hidden: index.positive?,
+            data: { gallery_target: "frame", index: index },
+            class: "absolute inset-0 size-full object-cover" %>
+    <% end %>
+
+    <% if multiple? %>
+      <button type="button" data-action="gallery#previous"
+              class="absolute left-3 top-1/2 -translate-y-1/2 grid place-items-center size-10 rounded-full
+                     bg-white/85 text-graphite backdrop-blur-sm hover:bg-white transition-colors"
+              aria-label="<%= t("site.gallery.previous") %>">
+        <%= render UI::IconComponent.new(:chevron_left, class: "size-5") %>
+      </button>
+
+      <button type="button" data-action="gallery#next"
+              class="absolute right-3 top-1/2 -translate-y-1/2 grid place-items-center size-10 rounded-full
+                     bg-white/85 text-graphite backdrop-blur-sm hover:bg-white transition-colors"
+              aria-label="<%= t("site.gallery.next") %>">
+        <%= render UI::IconComponent.new(:chevron_right, class: "size-5") %>
+      </button>
+
+      <div class="absolute bottom-3 right-3 px-2.5 h-7 grid place-items-center rounded-full
+                  bg-night/70 text-white text-xs font-mono backdrop-blur-sm">
+        <span data-gallery-target="counter">1</span>/<%= images.size %>
+      </div>
+    <% end %>
+  </div>
+
+  <%# Miniaturas %>
+  <% if multiple? %>
+    <ul class="flex gap-2 mt-3 overflow-x-auto scroll-slim pb-1" role="tablist"
+        aria-label="<%= t("site.gallery.thumbnails") %>">
+      <% images.each_with_index do |image, index| %>
+        <li class="shrink-0">
+          <button type="button" role="tab"
+                  data-action="gallery#select" data-index="<%= index %>"
+                  data-gallery-target="thumb"
+                  aria-selected="<%= index.zero? %>"
+                  aria-label="<%= alt_for(image, index) %>"
+                  class="block w-20 h-15 sm:w-24 sm:h-18 rounded-md overflow-hidden border-2 transition-colors
+                         <%= index.zero? ? "border-brand" : "border-transparent hover:border-sand" %>">
+            <%= image_tag image.file.variant(:thumb), alt: "", loading: "lazy", decoding: "async",
+                  class: "size-full object-cover" %>
+          </button>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

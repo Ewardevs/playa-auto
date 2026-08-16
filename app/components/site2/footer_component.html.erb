@@ -1,0 +1,92 @@
+<footer class="mt-24 border-t border-s2-line bg-s2-panel">
+  <div class="mx-auto max-w-[86rem] px-4 sm:px-6 pt-14 pb-10">
+    <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+
+      <div class="lg:col-span-1">
+        <p class="font-s2-display text-lg font-semibold tracking-[-0.02em] text-s2-chalk">
+          <%= setting.company_name %>
+        </p>
+        <% if setting.tagline.present? %>
+          <p class="mt-2 text-sm text-s2-ash leading-relaxed max-w-xs"><%= setting.tagline %></p>
+        <% end %>
+
+        <% if socials.any? %>
+          <ul class="flex items-center gap-2 mt-5">
+            <% socials.each do |network, url| %>
+              <li>
+                <%= link_to url, target: "_blank", rel: "noopener",
+                      class: "inline-flex items-center h-8 px-3 border border-s2-line rounded-s2
+                              text-[0.6875rem] uppercase tracking-[0.1em] text-s2-ash
+                              transition-colors hover:text-s2-chalk hover:border-s2-ash-2" do %>
+                  <%= social_label(network) %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+
+      <nav aria-labelledby="site2-footer-nav">
+        <h2 id="site2-footer-nav" class="s2-label mb-4"><%= t("site2.footer.navigation") %></h2>
+        <ul class="space-y-2.5">
+          <% links.each do |link| %>
+            <li>
+              <%= link_to link.label, link.path,
+                    class: "text-sm text-s2-ash transition-colors hover:text-s2-chalk" %>
+            </li>
+          <% end %>
+        </ul>
+      </nav>
+
+      <div>
+        <h2 class="s2-label mb-4"><%= t("site2.footer.contact") %></h2>
+        <ul class="space-y-2.5 text-sm text-s2-ash">
+          <% if setting.phone.present? %>
+            <li><%= phone_link setting.phone, class: "transition-colors hover:text-s2-chalk" %></li>
+          <% end %>
+          <% if setting.email.present? %>
+            <li>
+              <%= mail_to setting.email, class: "transition-colors hover:text-s2-chalk break-all" %>
+            </li>
+          <% end %>
+          <% if setting.address.present? %>
+            <li class="leading-relaxed"><%= setting.address %></li>
+          <% end %>
+          <% if setting.google_maps_url.present? %>
+            <li>
+              <%= link_to t("site2.contact.open_in_maps"), setting.google_maps_url,
+                    target: "_blank", rel: "noopener",
+                    class: "inline-flex items-center gap-1.5 text-s2-chalk transition-colors hover:text-s2-signal" %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="s2-label mb-4"><%= t("site2.footer.hours") %></h2>
+        <% if hours.any? %>
+          <ul class="space-y-2.5 text-sm text-s2-ash">
+            <% hours.each do |line| %>
+              <li><%= line %></li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-sm text-s2-ash"><%= t("site2.footer.hours_missing") %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <p class="mt-14 pt-6 border-t border-s2-line text-xs text-s2-ash-2">
+      © <%= year %> <%= setting.company_name %>. <%= t("site2.footer.rights") %>
+    </p>
+  </div>
+
+  <%# Cierre: el nombre a tamaño de cartel, recortado por el borde inferior. %>
+  <p aria-hidden="true"
+     class="overflow-hidden select-none px-4 sm:px-6 -mb-3 sm:-mb-5 lg:-mb-8">
+    <span class="block font-s2-display font-bold text-s2-chalk/5 leading-[0.8] tracking-[-0.05em]
+                 text-[18vw] whitespace-nowrap">
+      <%= setting.company_name %>
+    </span>
+  </p>
+</footer>

@@ -1,0 +1,36 @@
+<div class="mx-auto max-w-7xl px-4 sm:px-6 py-8 lg:py-12">
+  <%= render Site::BreadcrumbsComponent.new(crumbs: breadcrumbs) %>
+
+  <header class="mt-4 mb-8">
+    <p class="site-kicker"><%= t("site.offers.kicker") %></p>
+    <h1 class="font-site-display text-3xl lg:text-4xl font-semibold text-graphite tracking-tight mt-2.5">
+      <%= t("site.offers.title") %>
+    </h1>
+    <p class="text-stone mt-2"><%= t("site.offers.description") %></p>
+  </header>
+
+  <% if @vehicles.any? %>
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <% @vehicles.each_with_index do |vehicle, index| %>
+        <%= render Site::VehicleCardComponent.new(vehicle, eager: index < 3) %>
+      <% end %>
+    </div>
+
+    <%= render UI::PaginationComponent.new(@pagy, theme: :site) %>
+  <% else %>
+    <%= render Site::EmptyStateComponent.new(
+          title: t("site.offers.empty_title"),
+          description: t("site.offers.empty_description"),
+          icon: :percent) do |empty| %>
+      <% empty.with_action do %>
+        <%= render UI::ButtonComponent.new(
+              label: t("site.cta.see_vehicles"), href: site_vehicles_path,
+              variant: :brand, size: :lg, icon: :car) %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
+
+<% content_for :structured_data do %>
+  <%= render Site::StructuredDataComponent.new(breadcrumbs: breadcrumbs) %>
+<% end %>

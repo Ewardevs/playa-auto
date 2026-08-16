@@ -1,0 +1,19 @@
+<ul class="grid gap-2.5 <%= columns_class %>">
+  <% differentials.each do |differential| %>
+    <li class="s4-card s4-card-hover p-7">
+      <span class="grid place-items-center size-11 rounded-[0.875rem] bg-s4-accent-soft text-s4-accent mb-5">
+        <%= render UI::IconComponent.new(differential.icon.to_sym, class: "size-5") %>
+      </span>
+
+      <h3 class="text-[1.0625rem] font-bold tracking-[-0.015em] text-s4-ink">
+        <%= differential.title %>
+      </h3>
+
+      <% if differential.description.present? %>
+        <p class="mt-2 text-[0.9375rem] leading-relaxed text-s4-ink-2">
+          <%= differential.description %>
+        </p>
+      <% end %>
+    </li>
+  <% end %>
+</ul>

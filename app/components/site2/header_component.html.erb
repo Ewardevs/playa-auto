@@ -1,0 +1,98 @@
+<header data-controller="site2-header"
+        class="sticky top-0 z-50 bg-s2-void border-b border-s2-line">
+
+  <%# Hilo de progreso de lectura: lo único que se mueve en la barra. %>
+  <div class="absolute inset-x-0 bottom-0 h-px bg-s2-signal origin-left scale-x-0"
+       data-site2-header-target="progress" aria-hidden="true"></div>
+
+  <div class="mx-auto max-w-[86rem] px-4 sm:px-6">
+    <div class="flex items-center gap-8 h-16 lg:h-18 transition-[height] duration-300"
+         data-site2-header-target="bar">
+
+      <%# Marca %>
+      <%= link_to site2_root_path, class: "flex items-center gap-2.5 shrink-0 group",
+                  aria: { label: current_setting.company_name } do %>
+        <% if logo.attached? %>
+          <%= image_tag logo.variant(:thumb), alt: current_setting.company_name,
+                class: "h-7 w-auto object-contain" %>
+        <% else %>
+          <span class="font-s2-display text-base font-bold tracking-[-0.02em] text-s2-chalk">
+            <%= current_setting.company_name %>
+          </span>
+          <span class="size-1.5 bg-s2-signal transition-transform duration-300 group-hover:scale-150"
+                aria-hidden="true"></span>
+        <% end %>
+      <% end %>
+
+      <%# Navegación de escritorio: versalitas, con un filete de señal en la activa. %>
+      <nav class="hidden lg:flex items-center gap-7 mx-auto" aria-label="<%= t("site2.nav.primary") %>">
+        <% links.each do |link| %>
+          <%= link_to link.label, link.path,
+                aria: { current: ("page" if active?(link)) },
+                class: "relative py-1 text-[0.6875rem] font-medium uppercase tracking-[0.16em] transition-colors
+                        #{active?(link) ? "text-s2-chalk" : "text-s2-ash hover:text-s2-chalk"}
+                        #{"after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:bg-s2-signal" if active?(link)}" %>
+        <% end %>
+      </nav>
+
+      <div class="flex items-center gap-2 ml-auto lg:ml-0">
+        <% if whatsapp_url.present? %>
+          <%= link_to whatsapp_url, target: "_blank", rel: "noopener",
+                class: "hidden sm:inline-flex items-center gap-2 h-9 px-4 bg-s2-signal text-s2-signal-ink
+                        text-xs font-semibold uppercase tracking-[0.1em] rounded-s2
+                        transition-colors hover:bg-s2-signal-2" do %>
+            <%= render UI::IconComponent.new(:phone, class: "size-3.5") %>
+            <span><%= t("site2.cta.whatsapp_short") %></span>
+          <% end %>
+        <% end %>
+
+        <button type="button" data-action="site2-header#toggle"
+                data-site2-header-target="burger"
+                class="lg:hidden grid place-items-center size-10 -mr-2 text-s2-chalk"
+                aria-expanded="false" aria-controls="site2-menu"
+                aria-label="<%= t("site2.nav.open_menu") %>">
+          <span data-site2-header-target="burgerOpen">
+            <%= render UI::IconComponent.new(:menu, class: "size-5") %>
+          </span>
+          <span data-site2-header-target="burgerClose" hidden>
+            <%= render UI::IconComponent.new(:x, class: "size-5") %>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <%#
+    Menú móvil: una capa a pantalla completa, no un cajón lateral ni un
+    acordeón. Va dentro del <header> para que Stimulus lo alcance; el header es
+    `sticky` y opaco, y `sticky` —a diferencia de un filtro o un transform— no
+    crea bloque contenedor, así que este `fixed` se ancla al viewport.
+  %>
+  <div id="site2-menu" data-site2-header-target="menu" hidden
+       class="lg:hidden fixed inset-0 z-40 bg-s2-void flex flex-col">
+    <nav class="flex-1 flex flex-col justify-center px-6" aria-label="<%= t("site2.nav.primary") %>">
+      <ul>
+        <% links.each_with_index do |link, index| %>
+          <li class="border-b border-s2-line">
+            <%= link_to link.path,
+                  aria: { current: ("page" if active?(link)) },
+                  class: "flex items-baseline gap-4 py-5 font-s2-display text-3xl font-semibold tracking-[-0.02em]
+                          #{active?(link) ? "text-s2-signal" : "text-s2-chalk"}" do %>
+              <span class="s2-index w-6 shrink-0"><%= format("%02d", index + 1) %></span>
+              <span><%= link.label %></span>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+
+      <% if whatsapp_url.present? %>
+        <%= link_to whatsapp_url, target: "_blank", rel: "noopener",
+              class: "mt-10 flex items-center justify-center gap-2 h-13 bg-s2-signal text-s2-signal-ink
+                      font-semibold uppercase tracking-[0.12em] text-sm rounded-s2" do %>
+          <%= render UI::IconComponent.new(:phone, class: "size-4") %>
+          <span><%= t("site2.cta.whatsapp") %></span>
+        <% end %>
+      <% end %>
+    </nav>
+  </div>
+</header>

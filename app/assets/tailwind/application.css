@@ -135,6 +135,42 @@
   --radius-panel: 0.625rem;
 }
 
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Sitio público — tokens propios
+ *
+ * El panel es un tablero de instrumentos; la web es un showroom. Papel cálido
+ * para el contenido, bandas grafito para el hero y el pie, y un verde profundo
+ * de herencia automotriz como único color de marca. La fotografía manda: la
+ * interfaz es una moldura fina alrededor de las fotos.
+ *
+ * Estos tokens son fijos (la web no cambia de tema), así que no pasan por la
+ * indirección de variables que usa el admin.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+@theme {
+  --color-paper: #faf9f7;
+  --color-paper-2: #f3f1ed;
+  --color-sand: #e5e1d9;
+  --color-night: #101114;
+  --color-night-2: #1b1d21;
+  --color-night-3: #2a2d33;
+  --color-graphite: #1a1c1f;
+  --color-stone: #6d6a64;
+  --color-stone-2: #93908a;
+
+  --color-brand: #14523c;
+  --color-brand-strong: #0e3d2c;
+  --color-brand-soft: #e7efea;
+  --color-gold: #a8710f;
+  --color-gold-soft: #f6efe1;
+
+  --font-site: "Public Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-site-display: "Familjen Grotesk", "Public Sans", ui-sans-serif, sans-serif;
+
+  --radius-site: 0.5rem;
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
@@ -199,6 +235,44 @@
   .lamp-info { --lamp: var(--c-info); }
   .lamp-off  { --lamp: var(--c-off); }
 
+  /*
+   * La firma del sitio: la "chapa de datos".
+   *
+   * Año · km · caja · combustible en monoespaciada, separados por filetes,
+   * como la placa remachada de un vehículo. Se repite idéntica en las cards,
+   * en la ficha y en los resultados de búsqueda, así el comprador compara
+   * siempre en el mismo lugar y con el mismo formato.
+   */
+  .spec-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-stone);
+  }
+  .spec-strip > * + *::before {
+    content: "";
+    display: inline-block;
+    inline-size: 1px;
+    block-size: 0.75em;
+    margin-inline: 0.625rem;
+    vertical-align: -0.075em;
+    background: currentColor;
+    opacity: 0.3;
+  }
+
+  /* Título de sección del sitio: fino, con un filete corto arriba. */
+  .site-kicker {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-brand);
+  }
+
   /* Small-caps label used across the cluster, table heads and eyebrows. */
   .eyebrow {
     font-family: var(--font-mono);
@@ -222,4 +296,519 @@
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Site2 — "vitrina nocturna"
+ *
+ * El sitio anterior es un showroom de día: papel cálido, fotos enmarcadas, un
+ * verde de herencia. Este es el mismo salón de noche, con las luces apagadas y
+ * los vehículos iluminados: fondo casi negro, la fotografía sangrando hasta el
+ * borde y un solo color —naranja de señalización— que aparece únicamente donde
+ * hay que actuar o donde hay una oferta.
+ *
+ * Tipografía: Bricolage Grotesque para los títulos y las cifras (display ancho,
+ * de corte contemporáneo) e Inter Tight para la interfaz. Sin monoespaciada: la
+ * "chapa de datos" del sitio anterior queda del otro lado.
+ *
+ * Prefijo `s2-` en todos los tokens y clases, para que ni el admin ni Site1
+ * puedan verse afectados por nada de lo que hay acá abajo.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+@theme {
+  --color-s2-void: #08090b;
+  --color-s2-panel: #101318;
+  --color-s2-panel-2: #171b21;
+  --color-s2-line: #232830;
+  --color-s2-line-2: #333a45;
+
+  --color-s2-chalk: #f5f6f4;
+  --color-s2-ash: #9299a4;
+  --color-s2-ash-2: #626a76;
+
+  --color-s2-signal: #ff4a1c;
+  --color-s2-signal-2: #ff7d55;
+  --color-s2-signal-ink: #150401;
+
+  --color-s2-mint: #4fe39b;
+  --color-s2-amber: #ffc247;
+
+  --font-s2: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+  --font-s2-display: "Bricolage Grotesque", "Inter Tight", ui-sans-serif, sans-serif;
+
+  /* Casi recto: la esquina redondeada es una decisión, no un valor por defecto. */
+  --radius-s2: 0.1875rem;
+}
+
+@layer components {
+  /*
+   * La firma de Site2: el "dato".
+   *
+   * Cifra grande en display, etiqueta diminuta en versalitas encima. Se repite
+   * en las cards, en la ficha y en las estadísticas de Nosotros — es la unidad
+   * con la que el comprador lee todo el sitio.
+   */
+  .s2-stat {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.1875rem;
+    min-inline-size: 0;
+  }
+  .s2-stat-value {
+    font-family: var(--font-s2-display);
+    font-size: 1.25rem;
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-s2-chalk);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .s2-stat-label {
+    font-size: 0.625rem;
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-s2-ash-2);
+  }
+
+  /* Rótulo de sección: numeral de índice + versalitas. */
+  .s2-index {
+    font-family: var(--font-s2-display);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-s2-signal);
+  }
+  .s2-label {
+    font-size: 0.6875rem;
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-s2-ash);
+  }
+
+  /* Precio anterior: tachado en diagonal, como se corrige un cartel a mano. */
+  .s2-struck {
+    position: relative;
+    display: inline-block;
+  }
+  .s2-struck::after {
+    content: "";
+    position: absolute;
+    inset-inline: -0.15em;
+    inset-block-start: 50%;
+    block-size: 1px;
+    background: var(--color-s2-signal);
+    transform: rotate(-7deg);
+  }
+
+  /*
+   * Carrusel de la ficha: una foto por pantalla, con anclaje de scroll. Sin
+   * barra visible, porque la posición la comunica el indicador segmentado.
+   */
+  .s2-snap {
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .s2-snap::-webkit-scrollbar { display: none; }
+  .s2-snap > * { scroll-snap-align: center; scroll-snap-stop: always; }
+
+  /*
+   * Aparición al entrar en pantalla.
+   *
+   * El estado oculto lo arma el propio controlador Stimulus (`is-armed`): sin
+   * JavaScript la clase nunca se agrega y el contenido se ve siempre. Nada de
+   * este sitio depende de que el JS cargue para poder leerse.
+   */
+  .s2-reveal.is-armed {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  .s2-reveal.is-in {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .s2-reveal.is-armed { opacity: 1; transform: none; }
+}
+
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Site3 — "producto"
+ *
+ * Ni el showroom de día del primero ni la vitrina nocturna del segundo: esto
+ * está construido como se construye hoy una aplicación, no un folleto. Lienzo
+ * claro y frío, superficies blancas que flotan sobre él, radios grandes,
+ * profundidad por sombra en capas en vez de por líneas, y un índigo eléctrico
+ * como único color de acción. El verde menta queda reservado para una sola
+ * cosa: el ahorro.
+ *
+ * Tipografía: Space Grotesk para los titulares —un grotesque geométrico con
+ * carácter propio, alineado con el índigo de la marca— y Manrope para toda la
+ * interfaz. Nada de serif de display: este sitio se lee como producto, no
+ * como folleto.
+ *
+ * Sin versalitas espaciadas: los otros dos sitios etiquetan todo en mayúsculas,
+ * acá las etiquetas van en caja baja dentro de píldoras.
+ *
+ * Prefijo `s3-` en todo, para que nada pueda alcanzar al panel, a Site1 ni a
+ * Site2.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+@theme {
+  --color-s3-canvas: #f4f5f8;
+  --color-s3-surface: #ffffff;
+  --color-s3-surface-2: #fafbfc;
+  --color-s3-hairline: #e9eaef;
+
+  --color-s3-ink: #0d0f15;
+  --color-s3-ink-2: #4a4f5c;
+  --color-s3-ink-3: #878d9c;
+
+  --color-s3-accent: #5b3df5;
+  --color-s3-accent-2: #7860f8;
+  --color-s3-accent-soft: #eeebfe;
+
+  --color-s3-mint: #00a878;
+  --color-s3-mint-soft: #ddf7ee;
+  --color-s3-amber: #d97706;
+  --color-s3-amber-soft: #fdf0d9;
+
+  --font-s3: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-s3-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-s3: 1.25rem;
+  --radius-s3-sm: 0.875rem;
+  --radius-s3-lg: 1.75rem;
+}
+
+@layer components {
+  /*
+   * La firma de Site3: la superficie que flota.
+   *
+   * Nada se separa con un borde de un pixel — se separa con altura. La sombra
+   * es de dos capas (contacto + difusión) porque una sola siempre se ve
+   * pegoteada, y crece al pasar el mouse.
+   */
+  .s3-card {
+    background: var(--color-s3-surface);
+    border-radius: var(--radius-s3);
+    box-shadow:
+      0 1px 2px rgba(13, 15, 21, 0.04),
+      0 8px 24px -14px rgba(13, 15, 21, 0.14);
+    transition:
+      box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .s3-card-hover:hover {
+    box-shadow:
+      0 2px 4px rgba(13, 15, 21, 0.05),
+      0 24px 48px -20px rgba(13, 15, 21, 0.24);
+    transform: translateY(-4px);
+  }
+
+  /* Capa flotante: la barra isla y los desplegables de filtro. */
+  .s3-float {
+    background: color-mix(in srgb, var(--color-s3-surface) 88%, transparent);
+    backdrop-filter: blur(16px) saturate(1.6);
+    box-shadow:
+      0 1px 2px rgba(13, 15, 21, 0.05),
+      0 14px 36px -14px rgba(13, 15, 21, 0.22);
+  }
+
+  /*
+   * Píldora de dato. En caja baja y a media altura: las fichas técnicas de este
+   * sitio se leen como etiquetas de producto, no como una placa remachada.
+   */
+  .s3-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    height: 1.75rem;
+    padding-inline: 0.625rem;
+    border-radius: 999px;
+    background: var(--color-s3-canvas);
+    color: var(--color-s3-ink-2);
+    font-size: 0.8125rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  /* Etiqueta chica: caja baja, sin espaciado de versalitas. */
+  .s3-label {
+    font-size: 0.8125rem;
+    color: var(--color-s3-ink-3);
+  }
+
+  .s3-price {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+  }
+
+  /*
+   * Aparición al entrar en pantalla. El estado oculto lo arma el controlador
+   * (`is-armed`): sin JavaScript la clase nunca se agrega y todo se ve.
+   */
+  .s3-reveal.is-armed {
+    opacity: 0;
+    transform: translateY(18px) scale(0.99);
+  }
+  .s3-reveal.is-in {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Carril sin barra visible, para las píldoras de acceso rápido. */
+  .s3-rail {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .s3-rail::-webkit-scrollbar { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .s3-reveal.is-armed { opacity: 1; transform: none; }
+  .s3-card-hover:hover { transform: none; }
+}
+
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Site4 — "showroom editorial"
+ *
+ * Ni el showroom de papel de Site1, ni la vitrina nocturna de Site2, ni la
+ * aplicación de producto de Site3: esto se lee como la doble página de una
+ * revista de automóviles. Lienzo neutro y frío, superficies blancas con esquinas
+ * muy redondeadas, una sola tipografía (Onest) usada con pesos extremos, y un
+ * único acento —un vino tinto de herencia— que aparece solo donde hay que
+ * actuar o donde hay un dato destacado.
+ *
+ * Los rótulos de sección son micro-etiquetas editoriales (punto + caja baja),
+ * los datos flotan sobre la fotografía en chips translúcidos y la barra de
+ * navegación es un muelle adaptable que se vuelve sólido al bajar. Todo con
+ * prefijo `s4-`: ni el admin ni los otros tres sitios pueden verse afectados.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+@theme {
+  --color-s4-canvas: #f5f6f7;
+  --color-s4-surface: #ffffff;
+  --color-s4-surface-2: #f8f9fa;
+
+  --color-s4-ink: #111315;
+  --color-s4-ink-2: #62676c;
+  --color-s4-ink-3: #a2a7ad;
+
+  --color-s4-accent: #8a2434;
+  --color-s4-accent-2: #6e1b27;
+  --color-s4-accent-soft: #f7eef0;
+  --color-s4-accent-ink: #ffffff;
+
+  --color-s4-amber: #b45309;
+  --color-s4-amber-soft: #fdf1e6;
+
+  --font-s4: "Onest", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-s4-sm: 0.875rem;  /* inputs y botones chicos (14px) */
+  --radius-s4-md: 1rem;      /* botones (16px) */
+  --radius-s4: 1.375rem;     /* cards (22px) */
+  --radius-s4-lg: 1.875rem;  /* contenedores grandes (30px) */
+  --radius-s4-hero: 2.25rem; /* hero y piezas de portada (36px) */
+}
+
+@layer components {
+  /*
+   * La firma de Site4: la superficie blanda.
+   *
+   * Sombra en tres capas y esquinas muy redondeadas: la profundidad no viene de
+   * líneas ni de contrastes sino del aire. La elevación crece al pasar el mouse
+   * y con ella sube la superficie.
+   */
+  .s4-card {
+    background: var(--color-s4-surface);
+    border-radius: var(--radius-s4);
+    box-shadow:
+      0 1px 2px rgba(17, 19, 21, 0.04),
+      0 4px 12px -6px rgba(17, 19, 21, 0.08),
+      0 12px 32px -18px rgba(17, 19, 21, 0.14);
+  }
+  .s4-card-hover {
+    transition:
+      box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .s4-card-hover:hover {
+    box-shadow:
+      0 2px 4px rgba(17, 19, 21, 0.05),
+      0 10px 20px -8px rgba(17, 19, 21, 0.12),
+      0 32px 64px -24px rgba(17, 19, 21, 0.22);
+    transform: translateY(-4px);
+  }
+
+  /* Capa flotante: el muelle del header y el borde inferior de la hoja de
+     filtros. Translúcida y con blur, como un vidrio esmerilado. */
+  .s4-float {
+    background: color-mix(in srgb, var(--color-s4-surface) 86%, transparent);
+    backdrop-filter: blur(18px) saturate(1.4);
+    box-shadow:
+      0 1px 2px rgba(17, 19, 21, 0.05),
+      0 16px 40px -20px rgba(17, 19, 21, 0.22);
+  }
+
+  /*
+   * Micro-etiqueta editorial: un punto de acento y la etiqueta en caja baja,
+   * sin versalitas espaciadas (eso es de los otros sitios) y sin numeral.
+   */
+  .s4-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--color-s4-accent);
+  }
+  .s4-kicker::before {
+    content: "";
+    inline-size: 0.375rem;
+    block-size: 0.375rem;
+    border-radius: 999px;
+    background: currentColor;
+  }
+
+  .s4-label {
+    font-size: 0.8125rem;
+    color: var(--color-s4-ink-2);
+  }
+
+  .s4-price {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+  }
+
+  /* Chip de dato que flota sobre la fotografía: vidrio esmerilado oscuro. */
+  .s4-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    height: 2rem;
+    padding-inline: 0.75rem;
+    border-radius: 999px;
+    background: rgba(17, 19, 21, 0.62);
+    backdrop-filter: blur(8px) saturate(1.2);
+    color: #ffffff;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /*
+   * Aparición al entrar en pantalla. El estado oculto lo arma el controlador
+   * (`is-armed`): sin JavaScript la clase nunca se agrega y todo se ve.
+   */
+  .s4-reveal.is-armed {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .s4-reveal.is-in {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* El muelle del header: transparente arriba, sólido al bajar. */
+  .s4-dock {
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color 0.35s ease,
+      border-color 0.35s ease,
+      box-shadow 0.35s ease;
+  }
+  .s4-dock.is-solid {
+    background: color-mix(in srgb, var(--color-s4-surface) 88%, transparent);
+    backdrop-filter: blur(18px) saturate(1.4);
+    border-bottom-color: rgba(17, 19, 21, 0.08);
+    box-shadow: 0 8px 24px -18px rgba(17, 19, 21, 0.18);
+  }
+
+  /*
+   * Hoja inferior de filtros (móvil).
+   *
+   * Sin JavaScript el panel se muestra en flujo, arriba de los resultados; el
+   * controlador (`is-armed`) lo fija como una hoja que sube desde abajo. La
+   * regla de escritorio devuelve siempre al flujo.
+   */
+  .s4-filters-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: rgba(17, 19, 21, 0.45);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  .s4-filters-sheet {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 50;
+    max-height: 84dvh;
+    overflow-y: auto;
+    background: var(--color-s4-surface);
+    border-radius: var(--radius-s4-hero) var(--radius-s4-hero) 0 0;
+    box-shadow: 0 -20px 48px -24px rgba(17, 19, 21, 0.3);
+    transform: translateY(100%);
+    visibility: hidden;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                visibility 0.35s ease;
+  }
+  .s4-filters.is-armed.is-open .s4-filters-backdrop {
+    opacity: 1;
+    visibility: visible;
+  }
+  .s4-filters.is-armed.is-open .s4-filters-sheet {
+    transform: none;
+    visibility: visible;
+  }
+  @media (min-width: 1024px) {
+    .s4-filters-backdrop { display: none; }
+    .s4-filters-sheet {
+      position: static;
+      inset: auto;
+      z-index: auto;
+      max-height: none;
+      overflow: visible;
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+      transform: none;
+      visibility: visible;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .s4-reveal.is-armed { opacity: 1; transform: none; }
+  .s4-card-hover:hover { transform: none; }
+  .s4-dock,
+  .s4-filters-backdrop,
+  .s4-filters-sheet { transition-duration: 0.001ms; }
 }

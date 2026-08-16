@@ -1,0 +1,23 @@
+<header class="mb-8 lg:mb-10 <%= wrapper_class %>">
+  <div class="<%= centered? ? "max-w-2xl" : "max-w-2xl" %>">
+    <% if label.present? %>
+      <span class="inline-flex items-center h-7 px-3 rounded-full bg-s3-accent-soft
+                   text-s3-accent text-[0.8125rem] font-medium mb-4">
+        <%= label %>
+      </span>
+    <% end %>
+
+    <h2 class="font-s3-display text-4xl sm:text-5xl lg:text-[3.25rem] leading-[1.02]
+               tracking-[-0.02em] text-s3-ink text-balance">
+      <%= title %>
+    </h2>
+
+    <% if lead.present? %>
+      <p class="mt-3.5 text-[1.0625rem] leading-relaxed text-s3-ink-2"><%= lead %></p>
+    <% end %>
+  </div>
+
+  <% if action? %>
+    <div class="shrink-0 <%= "mt-7" if centered? %>"><%= action %></div>
+  <% end %>
+</header>

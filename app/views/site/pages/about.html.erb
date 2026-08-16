@@ -1,0 +1,78 @@
+<%# Todo el texto viene de Contenido en el admin. %>
+<section class="bg-night">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 py-16 lg:py-24">
+    <%= render Site::BreadcrumbsComponent.new(crumbs: breadcrumbs, on_night: true) %>
+
+    <div class="lg:grid lg:grid-cols-2 lg:gap-14 lg:items-center mt-8">
+      <div>
+        <h1 class="font-site-display text-3xl sm:text-4xl lg:text-5xl font-semibold text-white leading-[1.08] tracking-tight">
+          <%= site_content.about_title.presence || t("site.about.title_fallback") %>
+        </h1>
+
+        <% if site_content.about_description.present? %>
+          <div class="text-white/70 leading-relaxed mt-6 whitespace-pre-line max-w-xl">
+            <%= site_content.about_description %>
+          </div>
+        <% end %>
+
+        <dl class="flex flex-wrap gap-10 mt-10">
+          <div>
+            <dt class="site-kicker text-white/50!"><%= t("site.about.stats_vehicles") %></dt>
+            <dd class="font-site-display text-3xl font-semibold text-white tabular-nums mt-1.5">
+              <%= @vehicle_count %>
+            </dd>
+          </div>
+          <div>
+            <dt class="site-kicker text-white/50!"><%= t("site.about.stats_brands") %></dt>
+            <dd class="font-site-display text-3xl font-semibold text-white tabular-nums mt-1.5">
+              <%= @brand_count %>
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <% if site_content.about_image.attached? %>
+        <div class="mt-10 lg:mt-0">
+          <%= image_tag site_content.about_image.variant(:preview),
+                alt: site_content.about_title.presence || current_setting.company_name,
+                loading: "lazy", decoding: "async",
+                class: "w-full aspect-4/3 object-cover rounded-site" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<% if @differentials.any? %>
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 py-20">
+    <%= render Site::SectionHeadingComponent.new(
+          kicker: t("site.about.values_kicker"),
+          title: t("site.about.values_title")) %>
+
+    <%= render Site::DifferentialsComponent.new(differentials: @differentials) %>
+  </section>
+<% end %>
+
+<section class="mx-auto max-w-7xl px-4 sm:px-6 pb-4">
+  <div class="rounded-site border border-sand bg-white px-6 py-12 lg:px-12 text-center">
+    <h2 class="font-site-display text-2xl sm:text-3xl font-semibold text-graphite tracking-tight">
+      <%= t("site.about.contact_title") %>
+    </h2>
+    <p class="text-stone mt-3 max-w-md mx-auto"><%= t("site.about.contact_description") %></p>
+
+    <% if current_setting.address.present? %>
+      <p class="text-sm font-medium text-graphite mt-5"><%= current_setting.address %></p>
+    <% end %>
+
+    <div class="flex flex-wrap items-center justify-center gap-3 mt-7">
+      <%= render Site::WhatsappButtonComponent.new(size: :xl) %>
+      <%= render UI::ButtonComponent.new(
+            label: t("site.nav.contact"), href: site_contact_path,
+            variant: :brand_outline, size: :xl, icon: :mail) %>
+    </div>
+  </div>
+</section>
+
+<% content_for :structured_data do %>
+  <%= render Site::StructuredDataComponent.new(breadcrumbs: breadcrumbs) %>
+<% end %>

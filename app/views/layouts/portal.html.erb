@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>" class="bg-s4-canvas">
+  <head>
+    <meta charset="utf-8">
+    <title>Playa Autos — Ediciones</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <meta name="description" content="Elegí la edición de Playa Autos que querés ver: Clásica, Nocturna, Violeta o Showroom.">
+    <meta name="robots" content="noindex">
+
+    <meta name="theme-color" content="#f5f6f7">
+    <meta name="color-scheme" content="light">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap">
+
+    <%= favicon_link_tag "/icon.png" %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+
+    <%= yield :head %>
+  </head>
+
+  <body id="site-portal" class="min-h-dvh bg-s4-canvas text-s4-ink font-s4 antialiased">
+    <%= yield %>
+  </body>
+</html>

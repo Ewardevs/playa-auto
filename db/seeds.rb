@@ -26,7 +26,8 @@ setting.update!(
   google_maps_url: "https://maps.google.com/?q=-25.3006,-57.5759",
   instagram_url: "https://instagram.com/playaguarani",
   facebook_url: "https://facebook.com/playaguarani",
-  currency: "USD"
+  currency: "USD",
+  show_sold_vehicles: false
 )
 say "#{setting.company_name} lista"
 
@@ -52,10 +53,11 @@ users = {
   admin:       { name: "Lucía Benítez",  email: "gerencia@playaguarani.com.py", role: :admin },
   seller:      { name: "Mario Ojeda",    email: "ventas@playaguarani.com.py",  role: :seller },
   seller_two:  { name: "Rocío Cabrera",  email: "rocio@playaguarani.com.py",   role: :seller },
-  editor:      { name: "Nadia Fretes",   email: "contenido@playaguarani.com.py", role: :editor }
+  editor:      { name: "Nadia Fretes",   email: "contenido@playaguarani.com.py", role: :editor },
+  demo_super_admin: { name: "Admin Demo", email: "admin@admin.com", role: :super_admin, password: "admin123!" }
 }.transform_values do |attributes|
   User.find_or_initialize_by(email: attributes[:email]).tap do |user|
-    user.assign_attributes(attributes.merge(password: DEV_PASSWORD, active: true))
+    user.assign_attributes(attributes.merge(password: attributes[:password] || DEV_PASSWORD, active: true))
     user.save!
   end
 end
@@ -323,6 +325,25 @@ FAQS.each_with_index do |(question, answer), index|
   end
 end
 say "#{Faq.count} preguntas"
+
+puts "\n== Diferenciales =="
+
+DIFFERENTIALS = [
+  [ "Vehículos seleccionados", "Cada unidad pasa por una revisión de 60 puntos en nuestro taller antes de salir a la venta.", "check_circle" ],
+  [ "Documentación transparente", "Verificamos títulos y deudas. Te mostramos todo antes de que firmes.", "file_text" ],
+  [ "Financiación en el acto", "Trabajamos con bancos y financieras. Hasta 48 cuotas con entrega desde el 30%.", "percent" ],
+  [ "Garantía escrita", "3 meses o 5.000 km de garantía de motor y caja en todas las unidades.", "shield" ],
+  [ "Recibimos tu usado", "Lo tasamos en el momento y lo tomamos como parte de pago.", "car" ],
+  [ "Atención personalizada", "Un vendedor te acompaña de la primera consulta hasta la transferencia.", "users" ]
+].freeze
+
+DIFFERENTIALS.each_with_index do |(title, description, icon), index|
+  Differential.find_or_initialize_by(title: title).tap do |differential|
+    differential.assign_attributes(description: description, icon: icon, position: index, active: true)
+    differential.save!
+  end
+end
+say "#{Differential.count} diferenciales"
 
 # Counter caches can drift when records are created in bulk; recompute them so
 # the dashboard and the catalogue agree.

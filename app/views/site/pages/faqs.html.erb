@@ -1,0 +1,38 @@
+<div class="mx-auto max-w-3xl px-4 sm:px-6 py-8 lg:py-12">
+  <%= render Site::BreadcrumbsComponent.new(crumbs: breadcrumbs) %>
+
+  <header class="mt-4 mb-10">
+    <h1 class="font-site-display text-3xl lg:text-4xl font-semibold text-graphite tracking-tight">
+      <%= t("site.faqs.title") %>
+    </h1>
+    <p class="text-stone mt-2"><%= t("site.faqs.description") %></p>
+  </header>
+
+  <% if @faqs.any? %>
+    <%= render Site::FaqAccordionComponent.new(faqs: @faqs) %>
+  <% else %>
+    <%= render Site::EmptyStateComponent.new(
+          title: t("site.faqs.empty_title"),
+          description: t("site.faqs.empty_description"),
+          icon: :info) do |empty| %>
+      <% empty.with_action do %>
+        <%= render Site::WhatsappButtonComponent.new(size: :lg) %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <div class="rounded-site bg-paper-2 px-6 py-10 text-center mt-12">
+    <h2 class="font-site-display text-xl font-semibold text-graphite">
+      <%= t("site.faqs.still_title") %>
+    </h2>
+    <p class="text-sm text-stone mt-2"><%= t("site.faqs.still_description") %></p>
+
+    <div class="flex justify-center mt-6">
+      <%= render Site::WhatsappButtonComponent.new(size: :lg) %>
+    </div>
+  </div>
+</div>
+
+<% content_for :structured_data do %>
+  <%= render Site::StructuredDataComponent.new(faqs: @faqs, breadcrumbs: breadcrumbs) %>
+<% end %>

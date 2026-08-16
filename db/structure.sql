@@ -236,6 +236,41 @@ ALTER SEQUENCE public.categories_id_seq OWNED BY public.categories.id;
 
 
 --
+-- Name: differentials; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.differentials (
+    id bigint NOT NULL,
+    title character varying NOT NULL,
+    description character varying,
+    icon character varying DEFAULT 'check_circle'::character varying NOT NULL,
+    "position" integer DEFAULT 0 NOT NULL,
+    active boolean DEFAULT true NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: differentials_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.differentials_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: differentials_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.differentials_id_seq OWNED BY public.differentials.id;
+
+
+--
 -- Name: faqs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -375,7 +410,11 @@ CREATE TABLE public.settings (
     currency_symbol character varying DEFAULT '$'::character varying NOT NULL,
     locale character varying DEFAULT 'es'::character varying NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    show_sold_vehicles boolean DEFAULT false NOT NULL,
+    google_analytics_id character varying,
+    google_tag_manager_id character varying,
+    meta_pixel_id character varying
 );
 
 
@@ -593,7 +632,8 @@ CREATE TABLE public.vehicles (
     seo_description text,
     discarded_at timestamp(6) without time zone,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    whatsapp_clicks_count integer DEFAULT 0 NOT NULL
 );
 
 
@@ -656,6 +696,13 @@ ALTER TABLE ONLY public.brands ALTER COLUMN id SET DEFAULT nextval('public.brand
 --
 
 ALTER TABLE ONLY public.categories ALTER COLUMN id SET DEFAULT nextval('public.categories_id_seq'::regclass);
+
+
+--
+-- Name: differentials id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.differentials ALTER COLUMN id SET DEFAULT nextval('public.differentials_id_seq'::regclass);
 
 
 --
@@ -775,6 +822,14 @@ ALTER TABLE ONLY public.brands
 
 ALTER TABLE ONLY public.categories
     ADD CONSTRAINT categories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: differentials differentials_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.differentials
+    ADD CONSTRAINT differentials_pkey PRIMARY KEY (id);
 
 
 --
@@ -953,6 +1008,13 @@ CREATE UNIQUE INDEX index_categories_on_name ON public.categories USING btree (n
 --
 
 CREATE UNIQUE INDEX index_categories_on_slug ON public.categories USING btree (slug);
+
+
+--
+-- Name: index_differentials_on_active_and_position; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_differentials_on_active_and_position ON public.differentials USING btree (active, "position");
 
 
 --
@@ -1324,6 +1386,7 @@ ALTER TABLE ONLY public.vehicle_models
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260816040000'),
 ('20260815225411'),
 ('20260815225410'),
 ('20260815225409'),

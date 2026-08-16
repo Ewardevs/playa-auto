@@ -1,0 +1,17 @@
+<ul class="grid grid-cols-1 <%= columns_class %> gap-6">
+  <% differentials.each do |differential| %>
+    <li>
+      <span class="grid place-items-center size-11 rounded-site <%= icon_classes %>">
+        <%= render UI::IconComponent.new(differential.icon, class: "size-5") %>
+      </span>
+
+      <h3 class="font-site-display text-[0.9375rem] font-semibold mt-4 <%= title_classes %>">
+        <%= differential.title %>
+      </h3>
+
+      <% if differential.description.present? %>
+        <p class="text-sm mt-1.5 leading-relaxed <%= body_classes %>"><%= differential.description %></p>
+      <% end %>
+    </li>
+  <% end %>
+</ul>

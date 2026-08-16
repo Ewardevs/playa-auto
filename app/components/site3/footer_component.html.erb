@@ -1,0 +1,84 @@
+<footer class="mt-20 lg:mt-28 px-3 sm:px-5 pb-3 sm:pb-5">
+  <div class="mx-auto max-w-[80rem] rounded-s3-lg bg-s3-ink text-white px-7 sm:px-10 lg:px-14 py-12 lg:py-16">
+
+    <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+      <div>
+        <p class="font-s3-display text-2xl tracking-[-0.02em]"><%= setting.company_name %></p>
+
+        <% if setting.tagline.present? %>
+          <p class="mt-3 text-[0.9375rem] leading-relaxed text-white/55 max-w-xs">
+            <%= setting.tagline %>
+          </p>
+        <% end %>
+
+        <% if socials.any? %>
+          <ul class="flex flex-wrap items-center gap-1.5 mt-6">
+            <% socials.each do |network, url| %>
+              <li>
+                <%= link_to social_label(network), url, target: "_blank", rel: "noopener",
+                      class: "inline-flex items-center h-8 px-3.5 rounded-full bg-white/10
+                              text-[0.8125rem] text-white/80 transition-colors
+                              hover:bg-white/20 hover:text-white" %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+
+      <nav aria-labelledby="site3-footer-nav">
+        <h2 id="site3-footer-nav" class="text-[0.8125rem] text-white/45 mb-4">
+          <%= t("site3.footer.navigation") %>
+        </h2>
+        <ul class="space-y-2.5">
+          <% links.each do |link| %>
+            <li>
+              <%= link_to link.label, link.path,
+                    class: "text-[0.9375rem] text-white/80 transition-colors hover:text-white" %>
+            </li>
+          <% end %>
+        </ul>
+      </nav>
+
+      <div>
+        <h2 class="text-[0.8125rem] text-white/45 mb-4"><%= t("site3.footer.contact") %></h2>
+        <ul class="space-y-2.5 text-[0.9375rem] text-white/80">
+          <% if setting.phone.present? %>
+            <li><%= phone_link setting.phone, class: "transition-colors hover:text-white" %></li>
+          <% end %>
+          <% if setting.email.present? %>
+            <li><%= mail_to setting.email, class: "transition-colors hover:text-white break-all" %></li>
+          <% end %>
+          <% if setting.address.present? %>
+            <li class="leading-relaxed text-white/60"><%= setting.address %></li>
+          <% end %>
+          <% if setting.google_maps_url.present? %>
+            <li>
+              <%= link_to setting.google_maps_url, target: "_blank", rel: "noopener",
+                    class: "inline-flex items-center gap-1.5 transition-colors hover:text-white" do %>
+                <span><%= t("site3.contact.open_in_maps") %></span>
+                <%= render UI::IconComponent.new(:external, class: "size-3.5") %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="text-[0.8125rem] text-white/45 mb-4"><%= t("site3.footer.hours") %></h2>
+        <% if hours.any? %>
+          <ul class="space-y-2.5 text-[0.9375rem] text-white/80">
+            <% hours.each do |line| %>
+              <li><%= line %></li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-[0.9375rem] text-white/60"><%= t("site3.footer.hours_missing") %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <p class="mt-12 pt-7 border-t border-white/10 text-[0.8125rem] text-white/40">
+      © <%= year %> <%= setting.company_name %>. <%= t("site3.footer.rights") %>
+    </p>
+  </div>
+</footer>

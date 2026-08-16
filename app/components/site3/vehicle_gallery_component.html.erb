@@ -1,0 +1,29 @@
+<figure>
+  <% if shown.any? %>
+    <div class="<%= grid_class %> gap-2">
+      <% shown.each_with_index do |image, index| %>
+        <div class="relative overflow-hidden rounded-s3-sm bg-s3-canvas
+                    <%= index.zero? ? main_class : secondary_class %>">
+          <%= image_tag image.file.variant(index.zero? ? :large : :card),
+                alt: alt_for(index),
+                loading: index.zero? ? "eager" : "lazy",
+                fetchpriority: index.zero? ? "high" : "auto",
+                decoding: "async",
+                class: "absolute inset-0 size-full object-cover" %>
+
+          <% if index == shown.size - 1 && remaining.positive? %>
+            <span class="absolute bottom-2.5 right-2.5 inline-flex items-center h-7 px-3 rounded-full
+                         bg-s3-ink/75 backdrop-blur-sm text-white text-[0.8125rem] font-medium">
+              <%= t("site3.vehicles.more_photos", count: remaining) %>
+            </span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="aspect-16/9 rounded-s3-sm bg-s3-canvas grid place-items-center text-s3-ink-3">
+      <%= render UI::IconComponent.new(:car, class: "size-12") %>
+      <span class="sr-only"><%= t("site3.vehicles.no_photo") %></span>
+    </div>
+  <% end %>
+</figure>

@@ -1,0 +1,8 @@
+<dl class="grid <%= columns_class %> gap-px bg-s2-line border border-s2-line rounded-s2 overflow-hidden">
+  <% rows.each do |label, value| %>
+    <div class="s2-stat bg-s2-panel px-4 py-4 sm:px-5 sm:py-5">
+      <dd class="s2-stat-value"><%= value %></dd>
+      <dt class="s2-stat-label"><%= label %></dt>
+    </div>
+  <% end %>
+</dl>

@@ -1,0 +1,124 @@
+<% content_for :structured_data do %>
+  <%= render Site4::StructuredDataComponent.new(breadcrumbs: breadcrumbs) %>
+<% end %>
+
+<div class="mx-auto max-w-[88rem] px-3 sm:px-5 pb-8">
+  <%= render Site4::BreadcrumbsComponent.new(items: breadcrumbs) %>
+
+  <%# Mosaico de presentación %>
+  <section class="mt-6 grid gap-2.5 lg:grid-cols-12">
+    <div class="s4-card lg:col-span-7 p-8 sm:p-12 flex flex-col justify-center">
+      <span class="s4-kicker self-start mb-5"><%= t("site4.about.kicker") %></span>
+
+      <h1 class="text-5xl sm:text-6xl leading-[0.98] tracking-[-0.035em] font-extrabold
+                 text-s4-ink text-balance">
+        <%= site_content.about_title.presence || t("site4.about.title_fallback") %>
+      </h1>
+
+      <% if site_content.about_description.present? %>
+        <div class="mt-6 text-[1.0625rem] leading-relaxed text-s4-ink-2 whitespace-pre-line max-w-xl">
+          <%= site_content.about_description %>
+        </div>
+      <% end %>
+    </div>
+
+    <% if site_content.about_image.attached? %>
+      <div class="lg:col-span-5 rounded-s4-lg overflow-hidden bg-s4-canvas min-h-[18rem]">
+        <%= image_tag site_content.about_image.variant(:preview), alt: "",
+              loading: "lazy", decoding: "async", class: "size-full object-cover" %>
+      </div>
+    <% end %>
+  </section>
+
+  <%# En números %>
+  <section class="grid gap-2.5 grid-cols-3 mt-2.5">
+    <div class="s4-card px-5 py-8 sm:px-8 sm:py-10">
+      <p class="s4-price text-4xl sm:text-5xl font-extrabold text-s4-ink">
+        <%= number_with_delimiter(@vehicle_count, delimiter: ".") %>
+      </p>
+      <p class="s4-label mt-1.5"><%= t("site4.about.stats_vehicles") %></p>
+    </div>
+    <div class="s4-card px-5 py-8 sm:px-8 sm:py-10">
+      <p class="s4-price text-4xl sm:text-5xl font-extrabold text-s4-ink">
+        <%= number_with_delimiter(@brand_count, delimiter: ".") %>
+      </p>
+      <p class="s4-label mt-1.5"><%= t("site4.about.stats_brands") %></p>
+    </div>
+    <div class="s4-card px-5 py-8 sm:px-8 sm:py-10">
+      <p class="s4-price text-4xl sm:text-5xl font-extrabold text-s4-ink">
+        <%= number_with_delimiter(@category_count, delimiter: ".") %>
+      </p>
+      <p class="s4-label mt-1.5"><%= t("site4.about.stats_categories") %></p>
+    </div>
+  </section>
+
+  <%# Cómo trabajamos %>
+  <% if @differentials.any? %>
+    <section class="pt-16 sm:pt-20 lg:pt-24">
+      <%= render Site4::SectionHeadingComponent.new(
+            label: t("site4.about.values_kicker"),
+            title: t("site4.about.values_title"),
+            lead: t("site4.about.values_lead"),
+            align: :center) %>
+
+      <div data-controller="site4-reveal">
+        <div data-site4-reveal-target="item">
+          <%= render Site4::DifferentialsComponent.new(differentials: @differentials) %>
+        </div>
+      </div>
+    </section>
+  <% end %>
+
+  <%# Visitanos %>
+  <section class="pt-16 sm:pt-20 lg:pt-24">
+    <div class="s4-card px-7 sm:px-12 py-12 lg:py-16 grid lg:grid-cols-2 gap-10">
+      <div>
+        <span class="s4-kicker mb-4"><%= t("site4.about.visit_kicker") %></span>
+
+        <h2 class="text-4xl leading-tight tracking-[-0.02em] font-bold text-s4-ink">
+          <%= t("site4.about.visit_title") %>
+        </h2>
+        <p class="mt-3 text-[1.0625rem] text-s4-ink-2"><%= t("site4.about.visit_lead") %></p>
+
+        <div class="flex flex-wrap items-center gap-2.5 mt-8">
+          <%= link_to t("site4.nav.contact"), site4_contact_path,
+                class: "inline-flex items-center h-12 px-6 rounded-[0.875rem] bg-s4-accent text-white
+                        text-sm font-semibold transition-colors hover:bg-s4-accent-2" %>
+          <%= link_to t("site4.cta.explore"), site4_vehicles_path,
+                class: "inline-flex items-center h-12 px-6 rounded-[0.875rem] bg-s4-canvas text-s4-ink
+                        text-sm font-semibold transition-colors hover:bg-s4-surface-2" %>
+        </div>
+      </div>
+
+      <dl class="space-y-5 lg:pl-10">
+        <% if current_setting.address.present? %>
+          <div>
+            <dt class="s4-label mb-1"><%= t("site4.contact.address_title") %></dt>
+            <dd class="text-[1.0625rem] text-s4-ink leading-relaxed"><%= current_setting.address %></dd>
+          </div>
+        <% end %>
+
+        <% if current_setting.opening_hours_lines.any? %>
+          <div>
+            <dt class="s4-label mb-1"><%= t("site4.contact.hours_title") %></dt>
+            <dd class="text-[0.9375rem] text-s4-ink-2 space-y-0.5">
+              <% current_setting.opening_hours_lines.each do |line| %>
+                <p><%= line %></p>
+              <% end %>
+            </dd>
+          </div>
+        <% end %>
+
+        <% if current_setting.phone.present? %>
+          <div>
+            <dt class="s4-label mb-1"><%= t("site4.contact.phone_title") %></dt>
+            <dd class="text-[1.0625rem]">
+              <%= phone_link current_setting.phone,
+                    class: "text-s4-ink transition-colors hover:text-s4-accent" %>
+            </dd>
+          </div>
+        <% end %>
+      </dl>
+    </div>
+  </section>
+</div>

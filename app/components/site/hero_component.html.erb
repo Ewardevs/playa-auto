@@ -1,0 +1,52 @@
+<section class="relative bg-night">
+  <%# Fotografía de fondo %>
+  <div class="absolute inset-0 overflow-hidden">
+    <% if image.attached? %>
+      <%= image_tag image.variant(:preview),
+            alt: "",
+            fetchpriority: "high",
+            decoding: "async",
+            class: "size-full object-cover" %>
+    <% end %>
+    <%# Degradado: mantiene legible el texto sobre cualquier foto. %>
+    <div class="absolute inset-0 bg-gradient-to-t from-night via-night/75 to-night/35"></div>
+  </div>
+
+  <div class="relative mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="pt-32 pb-12 lg:pt-44 lg:pb-16 max-w-2xl">
+      <% if vehicle_count.positive? %>
+        <p class="site-kicker text-white/60!">
+          <%= t("site.home.hero_kicker", count: vehicle_count) %>
+        </p>
+      <% end %>
+
+      <h1 class="font-site-display text-4xl sm:text-5xl lg:text-[3.5rem] font-semibold text-white leading-[1.05] tracking-tight mt-4">
+        <%= title %>
+      </h1>
+
+      <% if subtitle.present? %>
+        <p class="text-lg text-white/75 mt-5 leading-relaxed max-w-xl"><%= subtitle %></p>
+      <% end %>
+
+      <% if body.present? %>
+        <p class="text-sm text-white/60 mt-3 leading-relaxed max-w-xl"><%= body %></p>
+      <% end %>
+
+      <div class="flex flex-wrap items-center gap-3 mt-8">
+        <%= render UI::ButtonComponent.new(
+              label: button_label, href: button_url, variant: :brand, size: :xl, icon: :car) %>
+
+        <% if whatsapp_url.present? %>
+          <%= render UI::ButtonComponent.new(
+                label: t("site.cta.whatsapp"), href: whatsapp_url, variant: :on_night, size: :xl,
+                icon: :phone, target: "_blank", rel: "noopener") %>
+        <% end %>
+      </div>
+    </div>
+
+    <%# Consola de búsqueda, encastrada en el borde inferior del hero. %>
+    <% if search? %>
+      <div class="relative -mb-10 lg:-mb-12"><%= search %></div>
+    <% end %>
+  </div>
+</section>

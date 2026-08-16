@@ -1,0 +1,22 @@
+<%= form_with model: [:admin, differential], class: "space-y-4" do |f| %>
+  <%= render UI::FormErrorsComponent.new(differential) %>
+
+  <%= render UI::FormSectionComponent.new(title: t("admin.differentials.title"), icon: :star) do %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :title, required: true,
+          placeholder: "Vehículos seleccionados") %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :icon, type: :select, required: true,
+          choices: Differential::ICONS.map { |i| [t("admin.differentials.icons.#{i}", default: i.humanize), i] }) %>
+
+    <div class="sm:col-span-2">
+      <%= render UI::FieldComponent.new(form: f, attribute: :description, type: :textarea, rows: 2,
+            hint: t("admin.differentials.description_hint")) %>
+    </div>
+
+    <%= render UI::FieldComponent.new(form: f, attribute: :position, type: :number) %>
+    <div class="flex items-end pb-1">
+      <%= render UI::SwitchComponent.new(form: f, attribute: :active) %>
+    </div>
+  <% end %>
+
+  <%= render "admin/shared/form_actions", cancel_path: admin_differentials_path, persisted: differential.persisted? %>
+<% end %>

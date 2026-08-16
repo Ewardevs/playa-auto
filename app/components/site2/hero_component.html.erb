@@ -1,0 +1,94 @@
+<section class="border-b border-s2-line">
+  <div class="mx-auto max-w-[86rem] px-4 sm:px-6">
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-14 pt-14 pb-16 lg:pt-24 lg:pb-24 items-center">
+
+      <%# Columna tipográfica %>
+      <div class="lg:col-span-6">
+        <h1 class="font-s2-display text-[2.75rem] sm:text-6xl lg:text-[4.5rem] font-bold
+                   leading-[0.95] tracking-[-0.045em] text-s2-chalk text-balance">
+          <%= title %>
+        </h1>
+
+        <% if subtitle.present? %>
+          <p class="mt-6 text-lg leading-relaxed text-s2-ash max-w-xl"><%= subtitle %></p>
+        <% end %>
+
+        <% if body.present? %>
+          <p class="mt-3 text-sm leading-relaxed text-s2-ash-2 max-w-xl"><%= body %></p>
+        <% end %>
+
+        <div class="flex flex-wrap items-center gap-3 mt-9">
+          <%= link_to button_url,
+                class: "inline-flex items-center gap-2 h-13 px-7 bg-s2-signal text-s2-signal-ink
+                        text-sm font-semibold uppercase tracking-[0.1em] rounded-s2
+                        transition-colors hover:bg-s2-signal-2" do %>
+            <span><%= button_label %></span>
+            <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+          <% end %>
+
+          <% if whatsapp_url.present? %>
+            <%= link_to whatsapp_url, target: "_blank", rel: "noopener",
+                  class: "inline-flex items-center gap-2 h-13 px-6 border border-s2-line text-s2-chalk
+                          text-sm font-semibold uppercase tracking-[0.1em] rounded-s2
+                          transition-colors hover:border-s2-ash-2" do %>
+              <%= render UI::IconComponent.new(:phone, class: "size-4") %>
+              <span><%= t("site2.cta.whatsapp_short") %></span>
+            <% end %>
+          <% end %>
+        </div>
+
+        <%# Las cifras de la playa, con la misma unidad de lectura que las cards. %>
+        <dl class="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-s2-line max-w-lg">
+          <% stats.each do |label, value| %>
+            <div class="s2-stat">
+              <dd class="s2-stat-value text-3xl!"><%= value %></dd>
+              <dt class="s2-stat-label"><%= label %></dt>
+            </div>
+          <% end %>
+        </dl>
+      </div>
+
+      <%# Dos unidades reales, una detrás de la otra. %>
+      <% if lead_vehicle.present? %>
+        <div class="lg:col-span-6 relative">
+          <% if second_vehicle.present? && poster_for(second_vehicle) %>
+            <%= link_to site2_vehicle_path(second_vehicle),
+                  class: "hidden sm:block absolute -top-8 right-0 w-[38%] aspect-4/5 rounded-s2
+                          overflow-hidden border border-s2-line opacity-60 transition-opacity
+                          duration-500 hover:opacity-100",
+                  aria: { label: second_vehicle.display_name } do %>
+              <%= image_tag poster_for(second_vehicle), alt: "", loading: "lazy", decoding: "async",
+                    class: "size-full object-cover" %>
+            <% end %>
+          <% end %>
+
+          <%= link_to site2_vehicle_path(lead_vehicle),
+                class: "group block relative w-full sm:w-[74%] aspect-4/5 rounded-s2 overflow-hidden
+                        bg-s2-panel" do %>
+            <% if poster_for(lead_vehicle) %>
+              <%= image_tag poster_for(lead_vehicle),
+                    alt: t("site2.vehicles.photo_alt", vehicle: lead_vehicle.display_name),
+                    fetchpriority: "high", decoding: "async",
+                    class: "absolute inset-0 size-full object-cover transition-transform
+                            duration-700 group-hover:scale-105" %>
+            <% end %>
+
+            <div class="absolute inset-0 bg-gradient-to-t from-s2-void via-s2-void/40 to-transparent"
+                 aria-hidden="true"></div>
+
+            <div class="absolute inset-x-0 bottom-0 p-5">
+              <p class="s2-label mb-2"><%= t("site2.home.featured_label") %></p>
+              <p class="font-s2-display text-xl font-semibold tracking-[-0.02em] text-s2-chalk">
+                <%= lead_vehicle.display_name %>
+              </p>
+              <p class="mt-1 font-s2-display text-2xl font-semibold tabular-nums tracking-[-0.03em]
+                        <%= lead_vehicle.discounted? ? "text-s2-signal" : "text-s2-chalk" %>">
+                <%= money(lead_vehicle.current_price) %>
+              </p>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

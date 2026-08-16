@@ -1,0 +1,118 @@
+<% content_for :transparent_header, true %>
+
+<%# ── Hero con buscador encastrado ───────────────────────────────────────── %>
+<%= render Site::HeroComponent.new(vehicle_count: @vehicle_count) do |hero| %>
+  <% hero.with_search do %>
+    <%= render Site::SearchFormComponent.new(
+          brands: @brands, categories: @categories, params: params) %>
+  <% end %>
+<% end %>
+
+<div class="mx-auto max-w-7xl px-4 sm:px-6">
+
+  <%# ── Destacados ──────────────────────────────────────────────────────── %>
+  <section class="pt-24 lg:pt-28">
+    <%= render Site::SectionHeadingComponent.new(
+          kicker: t("site.home.featured_kicker"),
+          title: t("site.home.featured_title"),
+          description: t("site.home.featured_description"),
+          link_label: t("site.cta.see_all"),
+          link_path: site_vehicles_path) %>
+
+    <% if @featured.any? %>
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <% @featured.each_with_index do |vehicle, index| %>
+          <%= render Site::VehicleCardComponent.new(vehicle, eager: index < 3) %>
+        <% end %>
+      </div>
+    <% else %>
+      <%= render Site::EmptyStateComponent.new(
+            title: t("site.vehicles.empty_catalog_title"),
+            description: t("site.vehicles.empty_catalog_description"),
+            icon: :car) %>
+    <% end %>
+  </section>
+
+  <%# ── Ofertas ─────────────────────────────────────────────────────────── %>
+  <% if @offers.any? %>
+    <section class="pt-20">
+      <%= render Site::SectionHeadingComponent.new(
+            kicker: t("site.home.offers_kicker"),
+            title: t("site.home.offers_title"),
+            description: t("site.home.offers_description"),
+            link_label: t("site.cta.see_all"),
+            link_path: site_offers_path) %>
+
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <% @offers.each do |vehicle| %>
+          <%= render Site::VehicleCardComponent.new(vehicle) %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>
+
+<%# ── Diferenciales, sobre banda oscura ──────────────────────────────────── %>
+<% if @differentials.any? %>
+  <section class="bg-night mt-24 py-20 lg:py-24">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6">
+      <%= render Site::SectionHeadingComponent.new(
+            kicker: t("site.home.why_kicker"),
+            title: t("site.home.why_title"),
+            on_night: true) %>
+
+      <%= render Site::DifferentialsComponent.new(differentials: @differentials, on_night: true) %>
+    </div>
+  </section>
+<% end %>
+
+<div class="mx-auto max-w-7xl px-4 sm:px-6">
+
+  <%# ── Marcas ──────────────────────────────────────────────────────────── %>
+  <% if @brands.any? %>
+    <section class="pt-20">
+      <%= render Site::SectionHeadingComponent.new(
+            kicker: t("site.home.brands_kicker"),
+            title: t("site.home.brands_title")) %>
+
+      <ul class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+        <% @brands.each do |brand| %>
+          <li>
+            <%= link_to site_vehicles_path(marca: brand.slug),
+                  class: "flex flex-col items-center justify-center gap-2 h-24 rounded-site border border-sand bg-white
+                          hover:border-brand hover:shadow-[0_8px_24px_-14px_rgba(20,82,60,0.5)] transition-[border-color,box-shadow]" do %>
+              <% if brand.logo.attached? %>
+                <%= image_tag brand.logo.variant(:thumb), alt: brand.name, loading: "lazy",
+                      class: "max-h-8 w-auto object-contain" %>
+              <% else %>
+                <span class="font-site-display text-sm font-semibold text-graphite"><%= brand.name %></span>
+              <% end %>
+              <span class="text-[0.6875rem] text-stone font-mono"><%= brand.vehicles_count %></span>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <%# ── Cierre ──────────────────────────────────────────────────────────── %>
+  <section class="pt-20">
+    <div class="rounded-site border border-sand bg-white px-6 py-12 lg:px-12 lg:py-14 text-center">
+      <h2 class="font-site-display text-2xl sm:text-3xl font-semibold text-graphite tracking-tight">
+        <%= t("site.home.cta_title") %>
+      </h2>
+      <p class="text-stone mt-3 max-w-md mx-auto"><%= t("site.home.cta_description") %></p>
+
+      <div class="flex flex-wrap items-center justify-center gap-3 mt-7">
+        <%= render Site::WhatsappButtonComponent.new(size: :xl) %>
+        <%= render UI::ButtonComponent.new(
+              label: t("site.nav.contact"), href: site_contact_path,
+              variant: :brand_outline, size: :xl, icon: :mail) %>
+      </div>
+    </div>
+  </section>
+</div>
+
+<% content_for :structured_data do %>
+  <%= render Site::StructuredDataComponent.new %>
+<% end %>

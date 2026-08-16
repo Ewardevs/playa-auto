@@ -1,0 +1,115 @@
+<section class="mx-auto max-w-[80rem] px-3 sm:px-5">
+  <div class="grid gap-3 lg:grid-cols-12">
+
+    <%# Pieza 1 — titular y buscador %>
+    <div class="s3-card lg:col-span-7 p-7 sm:p-10 lg:p-12 flex flex-col justify-center">
+      <h1 class="font-s3-display text-[2.75rem] sm:text-6xl lg:text-[4.25rem] leading-[0.98]
+                 tracking-[-0.025em] text-s3-ink text-balance">
+        <%= title %>
+      </h1>
+
+      <% if subtitle.present? %>
+        <p class="mt-5 text-[1.0625rem] sm:text-lg leading-relaxed text-s3-ink-2 max-w-lg">
+          <%= subtitle %>
+        </p>
+      <% end %>
+
+      <%# Cápsula de búsqueda: un solo campo. Refinar es cosa del catálogo. %>
+      <%= form_with url: site3_vehicles_path, method: :get, class: "mt-8" do |form| %>
+        <div class="flex items-center gap-2 h-14 pl-5 pr-2 rounded-full bg-s3-canvas
+                    focus-within:ring-2 focus-within:ring-s3-accent/30 transition-shadow">
+          <span class="text-s3-ink-3 shrink-0" aria-hidden="true">
+            <%= render UI::IconComponent.new(:search, class: "size-4.5") %>
+          </span>
+
+          <%= form.label :q, t("site3.home.hero_search_label"), class: "sr-only" %>
+          <%= form.search_field :q, autocomplete: "off",
+                placeholder: t("site3.home.hero_search_placeholder"),
+                class: "flex-1 min-w-0 bg-transparent border-0 text-[0.9375rem] text-s3-ink
+                        placeholder:text-s3-ink-3 focus:outline-none" %>
+
+          <button type="submit"
+                  class="shrink-0 grid place-items-center size-10 rounded-full bg-s3-accent text-white
+                         transition-colors hover:bg-s3-accent-2"
+                  aria-label="<%= t("site3.search.submit") %>">
+            <%= render UI::IconComponent.new(:chevron_right, class: "size-4.5") %>
+          </button>
+        </div>
+      <% end %>
+
+      <%# El botón que la playa configura desde el panel. Va junto al buscador
+          porque son las dos maneras de empezar: buscar algo puntual, o entrar a
+          mirar. %>
+      <div class="mt-4">
+        <%= link_to button_url,
+              class: "inline-flex items-center gap-2 h-11 px-5 rounded-full bg-s3-canvas
+                      text-s3-ink text-sm font-medium transition-colors
+                      hover:bg-s3-accent-soft hover:text-s3-accent" do %>
+          <span><%= button_label %></span>
+          <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+        <% end %>
+      </div>
+
+      <% if shortcuts.any? %>
+        <div class="flex flex-wrap items-center gap-1.5 mt-5">
+          <span class="s3-label mr-1"><%= t("site3.home.quick_label") %></span>
+          <% shortcuts.each do |category, count| %>
+            <%= link_to site3_vehicles_path(categoria: category.slug),
+                  class: "s3-pill transition-colors hover:bg-s3-accent-soft hover:text-s3-accent" do %>
+              <span><%= category.name %></span>
+              <span class="text-s3-ink-3 tabular-nums"><%= count %></span>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <%# Pieza 2 — una unidad real, a lo alto %>
+    <% if vehicle.present? %>
+      <%= link_to site3_vehicle_path(vehicle),
+            class: "group relative lg:col-span-5 lg:row-span-2 rounded-s3 overflow-hidden
+                    bg-s3-ink min-h-[20rem] lg:min-h-0" do %>
+        <% if poster %>
+          <%= image_tag poster,
+                alt: t("site3.vehicles.photo_alt", vehicle: vehicle.display_name),
+                fetchpriority: "high", decoding: "async",
+                class: "absolute inset-0 size-full object-cover transition-transform
+                        duration-[1.2s] ease-out group-hover:scale-105" %>
+        <% end %>
+
+        <div class="absolute inset-0 bg-gradient-to-t from-s3-ink via-s3-ink/25 to-transparent"
+             aria-hidden="true"></div>
+
+        <div class="absolute inset-x-0 bottom-0 p-6 lg:p-8">
+          <span class="inline-flex items-center h-7 px-3 rounded-full bg-white/15 backdrop-blur-sm
+                       text-white text-[0.8125rem] font-medium mb-3">
+            <%= t("site3.home.featured_label") %>
+          </span>
+
+          <p class="font-s3-display text-2xl lg:text-3xl leading-tight tracking-[-0.02em] text-white">
+            <%= vehicle.display_name %>
+          </p>
+
+          <div class="flex items-center justify-between gap-4 mt-3">
+            <p class="s3-price text-xl font-semibold text-white"><%= money(vehicle.current_price) %></p>
+
+            <span class="grid place-items-center size-10 rounded-full bg-white text-s3-ink
+                         transition-transform duration-300 group-hover:scale-110" aria-hidden="true">
+              <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+            </span>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+
+    <%# Pieza 3 — las cifras de la playa %>
+    <div class="lg:col-span-7 grid grid-cols-3 gap-3">
+      <% stats.each do |label, value| %>
+        <div class="s3-card px-4 py-6 sm:px-7 sm:py-8 flex flex-col justify-center">
+          <p class="s3-price text-3xl sm:text-4xl font-semibold text-s3-ink"><%= number(value) %></p>
+          <p class="s3-label mt-1"><%= label %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

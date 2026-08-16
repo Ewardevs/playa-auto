@@ -1,0 +1,101 @@
+<div class="grid gap-2.5 lg:grid-cols-12"
+     data-controller="site4-gallery"
+     data-site4-gallery-count-value="<%= images.size %>">
+
+  <%# Foto principal %>
+  <div class="lg:col-span-10 relative aspect-4/3 rounded-s4-lg overflow-hidden bg-s4-canvas">
+    <% if image? %>
+      <%= image_tag poster, alt: poster_alt, fetchpriority: "high", decoding: "async",
+            data: { site4_gallery_target: "main" },
+            class: "absolute inset-0 size-full object-cover" %>
+    <% else %>
+      <span class="absolute inset-0 grid place-items-center text-s4-ink-3">
+        <%= render UI::IconComponent.new(:car, class: "size-10") %>
+        <span class="sr-only"><%= t("site4.vehicles.no_photo") %></span>
+      </span>
+    <% end %>
+
+    <% if image? && images.size > 1 %>
+      <button type="button"
+              data-site4-gallery-target="open"
+              data-action="click->site4-gallery#open"
+              hidden
+              class="absolute bottom-3 right-3 inline-flex items-center gap-2 h-10 pl-4 pr-4
+                     rounded-full bg-s4-ink/70 backdrop-blur-md text-white text-[0.8125rem]
+                     font-medium transition-colors hover:bg-s4-ink">
+        <%= render UI::IconComponent.new(:image, class: "size-3.5") %>
+        <span><%= t("site4.gallery.all_photos") %></span>
+      </button>
+
+      <span class="s4-chip absolute top-3 right-3" data-site4-gallery-target="count"
+            aria-hidden="true">1 / <%= images.size %></span>
+    <% end %>
+  </div>
+
+  <%# Carril de miniaturas: vertical en escritorio, horizontal en móvil %>
+  <% if image? %>
+    <div class="lg:col-span-2 flex lg:flex-col gap-2.5 overflow-x-auto lg:overflow-y-auto
+                lg:max-h-[min(100%,0px)] scroll-slim lg:scroll-slim">
+      <% images.each_with_index do |image, index| %>
+        <button type="button"
+                data-site4-gallery-target="thumb"
+                data-index="<%= index %>"
+                data-action="site4-gallery#select"
+                aria-label="<%= indexed_alt(image, index) %>"
+                aria-current="<%= index.zero? ? "true" : "false" %>"
+                class="relative shrink-0 size-16 sm:size-20 rounded-[0.875rem] overflow-hidden
+                       bg-s4-canvas ring-2 ring-transparent transition-all
+                       <%= index.zero? ? "ring-s4-accent" : "hover:ring-s4-accent/40" %>">
+          <%= image_tag thumb_variant(image), alt: "", loading: "lazy", decoding: "async",
+                class: "size-full object-cover" %>
+        </button>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# Visor a pantalla completa %>
+  <% if image? %>
+    <div data-site4-gallery-target="viewer" hidden
+         class="fixed inset-0 z-[80] bg-s4-ink text-white" role="dialog" aria-modal="true"
+         aria-label="<%= t("site4.vehicles.title") %>">
+
+      <div class="flex items-center justify-between gap-4 px-4 sm:px-6 h-16">
+        <p class="text-sm text-white/70 tabular-nums" data-site4-gallery-target="counter">
+          1 / <%= images.size %>
+        </p>
+        <button type="button" data-action="site4-gallery#close"
+                class="grid place-items-center size-10 rounded-full bg-white/10 text-white
+                       transition-colors hover:bg-white/20"
+                aria-label="<%= t("site4.gallery.viewer_close") %>">
+          <%= render UI::IconComponent.new(:x, class: "size-4.5") %>
+        </button>
+      </div>
+
+      <div class="flex items-center justify-center gap-2 sm:gap-4 px-4 sm:px-6 h-[calc(100%-4rem)]">
+        <button type="button" data-action="site4-gallery#previous"
+                class="grid place-items-center size-11 rounded-full bg-white/10 text-white
+                       transition-colors hover:bg-white/20 shrink-0"
+                aria-label="<%= t("site4.gallery.previous") %>">
+          <%= render UI::IconComponent.new(:chevron_left, class: "size-5") %>
+        </button>
+
+        <div class="relative aspect-4/3 w-full max-w-4xl">
+          <% images.each_with_index do |image, index| %>
+            <%= image_tag slide_variant(image), alt: indexed_alt(image, index),
+                  loading: "lazy", decoding: "async",
+                  data: { site4_gallery_target: "slide", index: index },
+                  class: "absolute inset-0 size-full object-contain
+                          #{index.zero? ? "" : "hidden"}" %>
+          <% end %>
+        </div>
+
+        <button type="button" data-action="site4-gallery#next"
+                class="grid place-items-center size-11 rounded-full bg-white/10 text-white
+                       transition-colors hover:bg-white/20 shrink-0"
+                aria-label="<%= t("site4.gallery.next") %>">
+          <%= render UI::IconComponent.new(:chevron_right, class: "size-5") %>
+        </button>
+      </div>
+    </div>
+  <% end %>
+</div>

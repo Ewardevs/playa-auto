@@ -1,0 +1,96 @@
+<%= form_with url: site_vehicles_path, method: :get, class: "flex flex-col h-full" do |f| %>
+  <%= hidden_field_tag :orden, preserved_sort if preserved_sort.present? %>
+
+  <div class="flex-1 overflow-y-auto lg:overflow-visible px-5 lg:px-0">
+    <div class="<%= group_classes %>">
+      <%= f.label :q, t("site.filters.search"), class: label_classes %>
+      <div class="relative">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-2 pointer-events-none">
+          <%= render UI::IconComponent.new(:search, class: "size-4") %>
+        </span>
+        <%= f.search_field :q, value: params[:q], placeholder: t("site.filters.search_placeholder"),
+              class: "#{field_classes} pl-9" %>
+      </div>
+    </div>
+
+    <div class="<%= group_classes %>">
+      <%= f.label :marca, Brand.model_name.human, class: label_classes %>
+      <%= f.select :marca, brand_options, { include_blank: t("site.search.any") },
+            class: field_classes, data: { action: "change->filters#submitOnDesktop" } %>
+
+      <% if model_options.any? %>
+        <div class="mt-3">
+          <%= f.label :modelo, VehicleModel.model_name.human, class: label_classes %>
+          <%= f.select :modelo, model_options, { include_blank: t("site.search.any") },
+                class: field_classes %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="<%= group_classes %>">
+      <%= f.label :categoria, Category.model_name.human, class: label_classes %>
+      <%= f.select :categoria, category_options, { include_blank: t("site.search.any") },
+            class: field_classes %>
+    </div>
+
+    <div class="<%= group_classes %>">
+      <span class="<%= label_classes %>"><%= t("site.filters.price") %></span>
+      <div class="grid grid-cols-2 gap-2">
+        <%= f.number_field :precio_min, value: params[:precio_min], min: 0, step: 500,
+              placeholder: t("site.search.min"), class: field_classes,
+              aria: { label: t("site.search.price_from") } %>
+        <%= f.number_field :precio_max, value: params[:precio_max], min: 0, step: 500,
+              placeholder: t("site.search.max"), class: field_classes,
+              aria: { label: t("site.search.price_to") } %>
+      </div>
+    </div>
+
+    <div class="<%= group_classes %>">
+      <span class="<%= label_classes %>"><%= t("site.filters.year") %></span>
+      <div class="grid grid-cols-2 gap-2">
+        <%= f.number_field :anio_min, value: params[:anio_min], min: Vehicle::MIN_YEAR, max: Date.current.year + 2,
+              placeholder: t("site.search.min"), class: field_classes,
+              aria: { label: t("site.filters.year_from") } %>
+        <%= f.number_field :anio_max, value: params[:anio_max], min: Vehicle::MIN_YEAR, max: Date.current.year + 2,
+              placeholder: t("site.search.max"), class: field_classes,
+              aria: { label: t("site.filters.year_to") } %>
+      </div>
+    </div>
+
+    <div class="<%= group_classes %>">
+      <%= f.label :km_max, t("site.filters.max_mileage"), class: label_classes %>
+      <%= f.number_field :km_max, value: params[:km_max], min: 0, step: 5000,
+            placeholder: t("site.filters.max_mileage_placeholder"), class: field_classes %>
+    </div>
+
+    <div class="<%= group_classes %>">
+      <%= f.label :combustible, Vehicle.human_attribute_name(:fuel_type), class: label_classes %>
+      <%= f.select :combustible, fuel_options, { include_blank: t("site.search.any") },
+            class: field_classes %>
+
+      <div class="mt-3">
+        <%= f.label :transmision, Vehicle.human_attribute_name(:transmission), class: label_classes %>
+        <%= f.select :transmision, transmission_options, { include_blank: t("site.search.any") },
+              class: field_classes %>
+      </div>
+    </div>
+
+    <div class="<%= group_classes %>">
+      <%= f.label :estado, Vehicle.human_attribute_name(:status), class: label_classes %>
+      <%= f.select :estado, status_options, { include_blank: t("site.search.any") },
+            class: field_classes %>
+    </div>
+  </div>
+
+  <%# Acciones: fijas al pie en el cajón móvil, en flujo normal en escritorio. %>
+  <div class="flex items-center gap-2 p-5 lg:p-0 lg:pt-5 border-t border-sand lg:border-0 bg-white lg:bg-transparent">
+    <%= render UI::ButtonComponent.new(
+          label: t("site.filters.apply"), type: "submit", variant: :brand, size: :lg, full: true) %>
+
+    <% if filtered? %>
+      <%= render UI::ButtonComponent.new(
+            label: t("site.filters.clear"), href: site_vehicles_path,
+            variant: :site_quiet, size: :lg, icon: :x) %>
+    <% end %>
+  </div>
+<% end %>

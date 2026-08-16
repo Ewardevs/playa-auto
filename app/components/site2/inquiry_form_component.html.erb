@@ -1,0 +1,79 @@
+<%= form_with model: inquiry, url: site2_inquiries_path, method: :post, scope: :inquiry,
+              data: { controller: "inquiry-form" }, html: { novalidate: false } do |form| %>
+
+  <% if errors? %>
+    <div class="mb-6 border-l-2 border-s2-signal bg-s2-panel px-4 py-3.5" role="alert">
+      <p class="text-sm font-semibold text-s2-chalk"><%= t("site2.inquiries.error_title") %></p>
+      <ul class="mt-1.5 space-y-1 text-sm text-s2-ash">
+        <% error_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%# Campo trampa: ningún humano lo ve, ningún humano lo completa. %>
+  <div class="hidden" aria-hidden="true">
+    <label for="site2_inquiry_website"><%= t("site2.inquiries.honeypot_label") %></label>
+    <input type="text" name="website" id="site2_inquiry_website" tabindex="-1" autocomplete="off">
+  </div>
+
+  <input type="hidden" name="form_opened_at" data-inquiry-form-target="openedAt">
+
+  <% if vehicle.present? %>
+    <%= hidden_field_tag "inquiry[vehicle_slug]", vehicle.slug %>
+  <% end %>
+
+  <div class="grid gap-6 sm:grid-cols-2">
+    <div>
+      <%= form.label :name, t("site2.inquiries.name"), class: label_class %>
+      <%= form.text_field :name, required: true, autocomplete: "name",
+            placeholder: t("site2.inquiries.name_placeholder"), class: field_class %>
+    </div>
+
+    <div>
+      <%= form.label :phone, t("site2.inquiries.phone"), class: label_class %>
+      <%= form.telephone_field :phone, required: true, autocomplete: "tel",
+            placeholder: t("site2.inquiries.phone_placeholder"), class: field_class %>
+    </div>
+
+    <div class="<%= "sm:col-span-2" unless selectable_vehicles? %>">
+      <%= form.label :email, t("site2.inquiries.email"), class: label_class %>
+      <%= form.email_field :email, autocomplete: "email",
+            placeholder: t("site2.inquiries.email_placeholder"), class: field_class %>
+      <p class="mt-1.5 text-xs text-s2-ash-2"><%= t("site2.inquiries.email_hint") %></p>
+    </div>
+
+    <% if selectable_vehicles? %>
+      <div>
+        <%= label_tag "inquiry_vehicle_slug", t("site2.nav.vehicles"), class: label_class %>
+        <%= select_tag "inquiry[vehicle_slug]",
+              options_for_select(vehicle_options, selected_vehicle_slug),
+              include_blank: t("site2.inquiries.no_vehicle", default: t("site2.search.any")),
+              class: "#{field_class} appearance-none" %>
+      </div>
+    <% end %>
+
+    <div class="sm:col-span-2">
+      <%= form.label :message, t("site2.inquiries.message"), class: label_class %>
+      <%= form.text_area :message, rows: 4, placeholder: message_placeholder,
+            class: "w-full bg-transparent border-0 border-b border-s2-line text-s2-chalk py-2
+                    placeholder:text-s2-ash-2 text-[0.9375rem] focus:outline-none
+                    focus:border-s2-signal transition-colors resize-y" %>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-x-6 gap-y-3 mt-8">
+    <button type="submit" data-inquiry-form-target="submit"
+            class="inline-flex items-center gap-2 h-12 px-7 bg-s2-signal text-s2-signal-ink
+                   text-xs font-semibold uppercase tracking-[0.12em] rounded-s2
+                   transition-colors hover:bg-s2-signal-2">
+      <%= t("site2.inquiries.submit") %>
+      <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+    </button>
+
+    <p class="text-xs text-s2-ash-2 max-w-xs leading-relaxed">
+      <%= t("site2.inquiries.privacy_note") %>
+    </p>
+  </div>
+<% end %>

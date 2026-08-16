@@ -1,0 +1,246 @@
+# Textos de interfaz de Site4. Igual que en los tres sitios anteriores: acá
+# solo vive el copy del software. Todo lo que la empresa puede cambiar —nombre,
+# teléfono, textos institucionales, FAQ, diferenciales— está en la base de datos
+# y se administra desde /admin.
+es:
+  site4:
+    nav:
+      home: Inicio
+      vehicles: Catálogo
+      offers: Ofertas
+      about: Nosotros
+      faqs: Preguntas
+      contact: Contacto
+      primary: Navegación principal
+      breadcrumbs: Ruta de navegación
+      open_menu: Abrir menú
+      close_menu: Cerrar menú
+      skip_to_content: Ir al contenido
+      preview_notice: Versión en evaluación
+
+    cta:
+      explore: Ver catálogo
+      see_all: Ver todo
+      whatsapp: Escribinos por WhatsApp
+      whatsapp_short: WhatsApp
+      consult: Consultar
+      view_detail: Ver ficha
+      call: Llamar
+      back_to_catalog: Volver al catálogo
+
+    home:
+      kicker: Playa de vehículos usados
+      hero_title_fallback: Un auto elegido para vos
+      hero_title_highlight: elegido
+      hero_search_label: Buscar un vehículo
+      hero_search_placeholder: "Probá con «Hilux», «SUV» o «automático»"
+      hero_search_hint: Modelos, marcas, segmentos, colores…
+      stat_stock: En stock
+      stat_brands: Marcas
+      stat_offers: En oferta
+      featured_kicker: Recién ingresados
+      featured_title: Elegidos uno por uno
+      featured_lead: Cada unidad entra al catálogo después de una revisión de punta a punta.
+      offers_kicker: Precio promocional
+      offers_title: Oportunidades con fecha
+      offers_lead: Descuentos que terminan, no promesas que quedan.
+      why_kicker: Cómo trabajamos
+      why_title: Comprar usado sin sorpresas
+      why_lead: Las cuatro cosas que podés esperar de la playa.
+      visit_kicker: Visitanos
+      visit_title: Vení a ver las unidades
+      visit_lead: Te esperamos en la playa, o coordinamos una visita por WhatsApp.
+      closing_title: ¿No encontraste el tuyo?
+      closing_lead: Contanos qué buscás y te avisamos apenas entre a la playa.
+      featured_photo_alt: "Unidad destacada: %{vehicle}"
+
+    search:
+      submit: Buscar
+      any: Cualquiera
+      clear: Limpiar
+
+    filters:
+      label: Filtros
+      open: Abrir filtros
+      apply: Aplicar
+      brand: Marca
+      model: Modelo
+      category: Segmento
+      price: Precio
+      price_min: Desde
+      price_max: Hasta
+      year: Año
+      year_min: Desde
+      year_max: Hasta
+      mileage: Kilometraje
+      mileage_max: Hasta
+      mileage_placeholder: "80.000"
+      fuel: Combustible
+      transmission: Caja
+      status: Estado
+      text: Búsqueda
+      sort: Ordenar
+      clear_all: Limpiar filtros
+      remove: "Quitar %{label}"
+      active_title: Filtrando por
+      results:
+        one: 1 vehículo
+        other: "%{count} vehículos"
+      no_results_short: Sin resultados
+
+    sort:
+      label: Ordenar
+      recientes: Más recientes
+      precio-asc: Menor precio
+      precio-desc: Mayor precio
+      anio-desc: Más nuevos
+      km-asc: Menos kilómetros
+
+    vehicles:
+      title: Catálogo
+      kicker: Inventario disponible
+      lead: Todo el stock publicado, actualizado al día.
+      photo_alt: "Fotografía de %{vehicle}"
+      photo_alt_indexed: "%{vehicle} — fotografía %{index} de %{total}"
+      no_photo: Sin fotografía
+      more_photos:
+        one: +1 foto
+        other: "+%{count} fotos"
+      offer_badge: "Ahorrás %{amount}"
+      offer_percent: "%{percent}% menos"
+      offer_until: "Hasta el %{date}"
+      code: "Código %{code}"
+      spec_year: Año
+      spec_mileage: Kilometraje
+      spec_transmission: Caja
+      spec_fuel: Combustible
+      spec_color: Color
+      spec_engine: Motor
+      spec_category: Segmento
+      spec_brand: Marca
+      spec_model: Modelo
+      specs_title: Ficha técnica
+      description_title: Sobre esta unidad
+      no_description: Consultanos por más detalles de esta unidad.
+      equipment_title: Equipamiento
+      inquiry_title: Pedir información
+      inquiry_lead: Dejanos tus datos y te respondemos a la brevedad.
+      related_title: Parecidos a este
+      reserved_notice: Esta unidad está reservada. Consultanos por otras parecidas.
+      sold_notice: Esta unidad ya fue vendida. Mirá el resto del catálogo.
+      empty_filtered_title: Ningún vehículo coincide
+      empty_filtered_lead: Probá quitando alguno de los filtros que aplicaste.
+      empty_title: Todavía no hay vehículos publicados
+      empty_lead: Estamos preparando el catálogo. Escribinos y te avisamos apenas publiquemos.
+      seo:
+        title: Catálogo de vehículos usados
+        brand_title: "Vehículos %{brand} usados"
+        category_title: "%{category} usados en venta"
+        description:
+          one: "1 vehículo usado seleccionado y revisado en %{company}."
+          other: "%{count} vehículos usados seleccionados y revisados en %{company}."
+        show_title: "%{vehicle} — %{price}"
+        show_description: "%{vehicle} con %{mileage}, %{fuel}, caja %{transmission}. Disponible en %{company}."
+
+    offers:
+      title: Ofertas
+      kicker: Precio promocional
+      lead: Unidades con precio promocional vigente.
+      count:
+        one: 1 unidad en promoción
+        other: "%{count} unidades en promoción"
+      empty_title: No hay promociones vigentes
+      empty_lead: En este momento no tenemos ofertas activas. Mirá todo el catálogo.
+      seo:
+        title: Ofertas en vehículos usados
+        description:
+          one: "1 vehículo con precio promocional en %{company}."
+          other: "%{count} vehículos con precio promocional en %{company}."
+
+    about:
+      title_fallback: Quiénes somos
+      kicker: La playa
+      stats_kicker: En números
+      stats_vehicles: Vehículos publicados
+      stats_brands: Marcas
+      stats_categories: Segmentos
+      values_kicker: Cómo trabajamos
+      values_title: Lo que podés esperar
+      values_lead: Las promesas que hacemos están en la playa, no en el software.
+      visit_kicker: Visitanos
+      visit_title: Vení a ver las unidades
+      visit_lead: Te esperamos en la playa, o coordinamos por WhatsApp.
+      seo:
+        description: "Conocé %{company}: cómo seleccionamos y preparamos cada unidad."
+
+    faqs:
+      title: Preguntas frecuentes
+      kicker: Antes de comprar
+      lead: Lo que más nos consultan antes de llevarse un auto.
+      empty_title: Todavía no cargamos preguntas
+      empty_lead: Escribinos y respondemos cualquier duda que tengas.
+      still_title: ¿Te quedó otra duda?
+      still_lead: Escribinos por WhatsApp y te respondemos al momento.
+      seo:
+        description: "Resolvemos las dudas más comunes sobre comprar un vehículo usado en %{company}."
+
+    contact:
+      title: Hablemos
+      kicker: Contacto
+      lead: Estamos para ayudarte a encontrar tu próxima unidad.
+      form_title: Escribinos
+      info_title: Dónde encontrarnos
+      hours_title: Horarios
+      phone_title: Teléfono
+      email_title: Correo
+      address_title: Dirección
+      open_in_maps: Abrir en Google Maps
+      seo:
+        description: "Contacto con %{company} — %{address}"
+
+    inquiries:
+      created: Recibimos tu consulta. Te contactamos a la brevedad.
+      invalid: Revisá los datos del formulario, por favor.
+      rate_limited: Recibimos varias consultas desde este dispositivo. Probá de nuevo en unos minutos.
+      error_title: No pudimos enviar tu consulta
+      submit: Enviar consulta
+      name: Nombre
+      name_placeholder: Tu nombre
+      phone: Teléfono
+      phone_placeholder: "0981 123 456"
+      email: Correo
+      email_placeholder: "tucorreo@ejemplo.com"
+      email_hint: Opcional. Si preferís, te escribimos por WhatsApp.
+      message: Mensaje
+      message_placeholder: "Contanos qué querés saber%{vehicle}"
+      about_vehicle: " sobre esta unidad"
+      no_vehicle: Consulta general
+      vehicle_label: Vehículo
+      honeypot_label: Dejá este campo vacío
+      privacy_note: Usamos tus datos solo para responder esta consulta.
+
+    gallery:
+      all_photos: Ver todas las fotos
+      viewer_open: Ampliar
+      viewer_close: Cerrar
+      previous: Anterior
+      next: Siguiente
+      counter: "%{index} / %{total}"
+
+    pagination:
+      label: Páginas del catálogo
+      previous: Página anterior
+      next: Página siguiente
+      summary: "%{from}–%{to} de %{count}"
+
+    footer:
+      navigation: Navegación
+      contact: Contacto
+      hours: Horarios
+      hours_missing: Consultanos por WhatsApp.
+      rights: Todos los derechos reservados.
+
+    social:
+      instagram: Instagram
+      facebook: Facebook
+      tiktok: TikTok

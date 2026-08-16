@@ -1,0 +1,51 @@
+<div class="bg-white border border-sand rounded-site shadow-[0_16px_40px_-20px_rgba(16,17,20,0.35)] p-5 lg:p-6">
+  <h2 class="font-site-display text-lg font-semibold text-graphite">
+    <%= t("site.search.title") %>
+  </h2>
+
+  <%= form_with url: site_vehicles_path, method: :get, class: "mt-4" do |f| %>
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-12">
+
+      <div class="lg:col-span-4">
+        <%= f.label :q, t("site.search.text_label"), class: label_classes %>
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-2 pointer-events-none">
+            <%= render UI::IconComponent.new(:search, class: "size-4") %>
+          </span>
+          <%= f.search_field :q, value: params[:q], placeholder: t("site.search.text_placeholder"),
+                class: "#{field_classes} pl-9" %>
+        </div>
+      </div>
+
+      <div class="lg:col-span-2">
+        <%= f.label :marca, Brand.model_name.human, class: label_classes %>
+        <%= f.select :marca, brand_options, { include_blank: t("site.search.any") },
+              class: field_classes %>
+      </div>
+
+      <div class="lg:col-span-2">
+        <%= f.label :categoria, Category.model_name.human, class: label_classes %>
+        <%= f.select :categoria, category_options, { include_blank: t("site.search.any") },
+              class: field_classes %>
+      </div>
+
+      <div class="lg:col-span-2">
+        <%= f.label :precio_min, t("site.search.price_from"), class: label_classes %>
+        <%= f.number_field :precio_min, value: params[:precio_min], min: 0, step: 500,
+              placeholder: t("site.search.min"), class: field_classes %>
+      </div>
+
+      <div class="lg:col-span-2">
+        <%= f.label :precio_max, t("site.search.price_to"), class: label_classes %>
+        <%= f.number_field :precio_max, value: params[:precio_max], min: 0, step: 500,
+              placeholder: t("site.search.max"), class: field_classes %>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <%= render UI::ButtonComponent.new(
+            label: t("site.search.submit"), type: "submit",
+            variant: :brand, size: :xl, icon: :search, full: true) %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,19 @@
+<div class="mx-auto max-w-[80rem] px-3 sm:px-5 mb-6" role="status" aria-live="polite">
+  <% messages.each do |tone, message| %>
+    <div data-controller="dismiss" data-dismiss-delay-value="8000"
+         class="s3-card flex items-center gap-4 px-5 py-4">
+      <span class="grid place-items-center size-9 rounded-full shrink-0 <%= tone[:chip] %>">
+        <%= render UI::IconComponent.new(tone[:icon], class: "size-4") %>
+      </span>
+
+      <p class="flex-1 text-[0.9375rem] text-s3-ink"><%= message %></p>
+
+      <button type="button" data-action="dismiss#close"
+              class="shrink-0 grid place-items-center size-8 rounded-full text-s3-ink-3
+                     transition-colors hover:bg-s3-canvas hover:text-s3-ink"
+              aria-label="<%= t("site3.nav.close_menu") %>">
+        <%= render UI::IconComponent.new(:x, class: "size-4") %>
+      </button>
+    </div>
+  <% end %>
+</div>

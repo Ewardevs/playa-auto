@@ -1,0 +1,20 @@
+<nav aria-label="<%= t("site.nav.breadcrumbs") %>" class="min-w-0">
+  <ol class="flex flex-wrap items-center gap-1.5 text-xs">
+    <li class="shrink-0">
+      <%= link_to t("site.nav.home"), site_root_path, class: link_classes %>
+    </li>
+
+    <% crumbs.each_with_index do |(label, path), index| %>
+      <li aria-hidden="true" class="<%= separator_classes %> shrink-0">
+        <%= render UI::IconComponent.new(:chevron_right, class: "size-3") %>
+      </li>
+      <li class="min-w-0 truncate">
+        <% if path.present? && index < crumbs.size - 1 %>
+          <%= link_to label, path, class: link_classes %>
+        <% else %>
+          <span class="<%= current_classes %> font-medium" aria-current="page"><%= label %></span>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+</nav>

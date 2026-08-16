@@ -77,6 +77,20 @@
           choices: Setting::CURRENCIES.map { |code, symbol| ["#{code} (#{symbol})", code] }) %>
     <%= render UI::FieldComponent.new(form: f, attribute: :currency_symbol, disabled: true,
           hint: t("admin.settings.symbol_hint", default: "Se ajusta según la moneda elegida.")) %>
+
+    <div class="sm:col-span-2">
+      <%= render UI::SwitchComponent.new(form: f, attribute: :show_sold_vehicles,
+            hint: t("admin.settings.show_sold_hint")) %>
+    </div>
+  <% end %>
+
+  <%= render UI::FormSectionComponent.new(
+        title: t("admin.settings.sections.analytics"),
+        description: t("admin.settings.sections.analytics_hint"),
+        icon: :trending, columns: 3) do %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :google_analytics_id, placeholder: "G-XXXXXXXXXX") %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :google_tag_manager_id, placeholder: "GTM-XXXXXX") %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :meta_pixel_id, placeholder: "123456789012345") %>
   <% end %>
 
   <%= render "admin/shared/form_actions",

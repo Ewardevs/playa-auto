@@ -1,0 +1,115 @@
+<section class="mx-auto max-w-[88rem] px-3 sm:px-5">
+  <div class="rounded-s4-hero bg-gradient-to-br from-s4-surface via-s4-surface to-s4-surface-2
+              border border-[color:rgba(17,19,21,0.08)] overflow-hidden">
+
+    <div class="px-6 sm:px-10 lg:px-14 py-10 sm:py-14 lg:py-16 grid lg:grid-cols-12 gap-10 lg:gap-12">
+
+      <%# Pieza 1 — titular y buscador %>
+      <div class="lg:col-span-7 flex flex-col justify-center">
+        <span class="s4-kicker mb-5"><%= t("site4.home.kicker") %></span>
+
+        <h1 class="text-[2.75rem] sm:text-6xl lg:text-[4.5rem] leading-[0.98] tracking-[-0.035em]
+                   font-extrabold text-s4-ink text-balance">
+          <%= title %>
+        </h1>
+
+        <% if subtitle.present? %>
+          <p class="mt-6 text-[1.0625rem] sm:text-lg leading-relaxed text-s4-ink-2 max-w-xl">
+            <%= subtitle %>
+          </p>
+        <% end %>
+
+        <%# Cápsula de búsqueda: un solo campo. Refinar es cosa del catálogo. %>
+        <%= form_with url: site4_vehicles_path, method: :get, class: "mt-8" do |form| %>
+          <div class="flex items-center gap-2 h-14 pl-5 pr-2 rounded-[0.875rem] bg-s4-canvas
+                      border border-[color:rgba(17,19,21,0.08)]
+                      focus-within:ring-2 focus-within:ring-s4-accent/30 transition-shadow">
+            <span class="text-s4-ink-3 shrink-0" aria-hidden="true">
+              <%= render UI::IconComponent.new(:search, class: "size-4.5") %>
+            </span>
+
+            <%= form.label :q, t("site4.home.hero_search_label"), class: "sr-only" %>
+            <%= form.search_field :q, autocomplete: "off",
+                  placeholder: t("site4.home.hero_search_placeholder"),
+                  class: "flex-1 min-w-0 bg-transparent border-0 text-[0.9375rem] text-s4-ink
+                          placeholder:text-s4-ink-3 focus:outline-none" %>
+
+            <button type="submit"
+                    class="shrink-0 grid place-items-center size-10 rounded-[0.875rem] bg-s4-accent text-white
+                           transition-colors hover:bg-s4-accent-2"
+                    aria-label="<%= t("site4.search.submit") %>">
+              <%= render UI::IconComponent.new(:chevron_right, class: "size-4.5") %>
+            </button>
+          </div>
+        <% end %>
+
+        <div class="mt-4 flex flex-wrap items-center gap-2.5">
+          <%= link_to button_url,
+                class: "inline-flex items-center gap-2 h-11 px-5 rounded-[0.875rem] bg-s4-ink
+                        text-white text-sm font-semibold transition-colors hover:bg-s4-accent" do %>
+            <span><%= button_label %></span>
+            <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+          <% end %>
+        </div>
+
+        <% if shortcuts.any? %>
+          <div class="flex flex-wrap items-center gap-1.5 mt-6">
+            <span class="s4-label mr-1"><%= t("site4.home.quick_label") %></span>
+            <% shortcuts.each do |category, count| %>
+              <%= link_to site4_vehicles_path(categoria: category.slug),
+                    class: "inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full bg-s4-canvas
+                            text-s4-ink-2 text-[0.8125rem] font-medium transition-colors
+                            hover:bg-s4-accent-soft hover:text-s4-accent" do %>
+                <span><%= category.name %></span>
+                <span class="text-s4-ink-3 tabular-nums"><%= count %></span>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <%# Pieza 2 — una unidad real, con sus datos %>
+      <% if vehicle.present? %>
+        <%= link_to site4_vehicle_path(vehicle),
+              class: "group relative lg:col-span-5 rounded-s4-lg overflow-hidden bg-s4-ink
+                      min-h-[20rem] lg:min-h-0" do %>
+          <% if poster %>
+            <%= image_tag poster, alt: poster_alt, fetchpriority: "high", decoding: "async",
+                  class: "absolute inset-0 size-full object-cover transition-transform
+                          duration-[1.2s] ease-out group-hover:scale-105" %>
+          <% end %>
+
+          <div class="absolute inset-0 bg-gradient-to-t from-s4-ink via-s4-ink/20 to-transparent"
+               aria-hidden="true"></div>
+
+          <div class="absolute inset-x-0 bottom-0 p-6 lg:p-8">
+            <span class="s4-chip mb-3"><%= t("site4.home.featured_label") %></span>
+
+            <p class="text-2xl lg:text-3xl leading-tight tracking-[-0.02em] font-bold text-white">
+              <%= vehicle.display_name %>
+            </p>
+
+            <div class="flex items-center justify-between gap-4 mt-3">
+              <p class="s4-price text-xl font-bold text-white"><%= money(vehicle.current_price) %></p>
+
+              <span class="grid place-items-center size-10 rounded-full bg-white text-s4-ink
+                           transition-transform duration-300 group-hover:scale-110" aria-hidden="true">
+                <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+              </span>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <%# Pieza 3 — las cifras de la playa %>
+    <div class="grid grid-cols-3 gap-2.5 px-6 sm:px-10 lg:px-14 pb-6 sm:pb-10 lg:pb-14">
+      <% stats.each do |label, value| %>
+        <div class="s4-card px-4 py-6 sm:px-7 sm:py-8 flex flex-col justify-center">
+          <p class="s4-price text-3xl sm:text-4xl font-extrabold text-s4-ink"><%= value %></p>
+          <p class="s4-label mt-1"><%= label %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

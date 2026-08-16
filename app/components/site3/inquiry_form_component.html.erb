@@ -1,0 +1,78 @@
+<%= form_with model: inquiry, url: site3_inquiries_path, method: :post, scope: :inquiry,
+              data: { controller: "inquiry-form" } do |form| %>
+
+  <% if errors? %>
+    <div class="mb-6 rounded-s3-sm bg-s3-amber-soft px-5 py-4" role="alert">
+      <p class="text-sm font-semibold text-s3-ink"><%= t("site3.inquiries.error_title") %></p>
+      <ul class="mt-1.5 space-y-1 text-sm text-s3-ink-2">
+        <% error_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%# Campo trampa: ningún humano lo ve, ningún humano lo completa. %>
+  <div class="hidden" aria-hidden="true">
+    <label for="site3_inquiry_website"><%= t("site3.inquiries.honeypot_label") %></label>
+    <input type="text" name="website" id="site3_inquiry_website" tabindex="-1" autocomplete="off">
+  </div>
+
+  <input type="hidden" name="form_opened_at" data-inquiry-form-target="openedAt">
+
+  <% if vehicle.present? %>
+    <%= hidden_field_tag "inquiry[vehicle_slug]", vehicle.slug %>
+  <% end %>
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div>
+      <%= form.label :name, t("site3.inquiries.name"), class: label_class %>
+      <%= form.text_field :name, required: true, autocomplete: "name",
+            placeholder: t("site3.inquiries.name_placeholder"), class: field_class %>
+    </div>
+
+    <div>
+      <%= form.label :phone, t("site3.inquiries.phone"), class: label_class %>
+      <%= form.telephone_field :phone, required: true, autocomplete: "tel",
+            placeholder: t("site3.inquiries.phone_placeholder"), class: field_class %>
+    </div>
+
+    <div class="<%= "sm:col-span-2" unless selectable_vehicles? %>">
+      <%= form.label :email, t("site3.inquiries.email"), class: label_class %>
+      <%= form.email_field :email, autocomplete: "email",
+            placeholder: t("site3.inquiries.email_placeholder"), class: field_class %>
+      <p class="mt-2 text-[0.8125rem] text-s3-ink-3"><%= t("site3.inquiries.email_hint") %></p>
+    </div>
+
+    <% if selectable_vehicles? %>
+      <div>
+        <%= label_tag "inquiry_vehicle_slug", t("site3.inquiries.vehicle_label"), class: label_class %>
+        <%= select_tag "inquiry[vehicle_slug]",
+              options_for_select(vehicle_options, selected_vehicle_slug),
+              include_blank: t("site3.inquiries.no_vehicle"),
+              class: field_class %>
+      </div>
+    <% end %>
+
+    <div class="sm:col-span-2">
+      <%= form.label :message, t("site3.inquiries.message"), class: label_class %>
+      <%= form.text_area :message, rows: 4, placeholder: message_placeholder,
+            class: "w-full px-4 py-3.5 rounded-s3-sm bg-s3-canvas border-0 text-[0.9375rem]
+                    text-s3-ink placeholder:text-s3-ink-3 focus:outline-none
+                    focus:ring-2 focus:ring-s3-accent/30 transition-shadow resize-y" %>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-x-6 gap-y-3 mt-7">
+    <button type="submit" data-inquiry-form-target="submit"
+            class="inline-flex items-center gap-2 h-12 px-7 rounded-full bg-s3-accent text-white
+                   text-sm font-medium transition-colors hover:bg-s3-accent-2">
+      <%= t("site3.inquiries.submit") %>
+      <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+    </button>
+
+    <p class="text-[0.8125rem] text-s3-ink-3 max-w-xs leading-relaxed">
+      <%= t("site3.inquiries.privacy_note") %>
+    </p>
+  </div>
+<% end %>

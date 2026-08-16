@@ -1,0 +1,38 @@
+<% if vehicle? %>
+  <%# Barra inferior de la ficha, solo en móvil. %>
+  <div class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-s2-void border-t border-s2-line">
+    <div class="flex items-center gap-3 px-4 py-3">
+      <div class="min-w-0">
+        <p class="s2-stat-label"><%= t("site2.vehicles.code", code: vehicle.code) %></p>
+        <p class="font-s2-display text-lg font-semibold tabular-nums tracking-[-0.02em]
+                  <%= vehicle.discounted? ? "text-s2-signal" : "text-s2-chalk" %>">
+          <%= money(vehicle.current_price) %>
+        </p>
+      </div>
+
+      <%= link_to link, target: "_blank", rel: "noopener",
+            data: { controller: "whatsapp-track",
+                    whatsapp_track_url_value: track_url,
+                    action: "click->whatsapp-track#record" },
+            class: "ml-auto shrink-0 inline-flex items-center gap-2 h-11 px-5 bg-s2-signal
+                    text-s2-signal-ink text-xs font-semibold uppercase tracking-[0.1em] rounded-s2" do %>
+        <%= render UI::IconComponent.new(:phone, class: "size-4") %>
+        <span><%= t("site2.cta.whatsapp_short") %></span>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Reserva el alto de la barra para que no tape el final de la página. %>
+  <div class="lg:hidden h-[4.75rem]" aria-hidden="true"></div>
+<% end %>
+
+<%= link_to link, target: "_blank", rel: "noopener",
+      data: vehicle? ? { controller: "whatsapp-track",
+                         whatsapp_track_url_value: track_url,
+                         action: "click->whatsapp-track#record" } : {},
+      aria: { label: t("site2.cta.whatsapp") },
+      class: "#{vehicle? ? "hidden lg:grid" : "grid"} fixed bottom-5 right-5 z-40 place-items-center size-13
+              rounded-full bg-s2-signal text-s2-signal-ink shadow-lg shadow-black/40
+              transition-transform duration-300 hover:scale-110" do %>
+  <%= render UI::IconComponent.new(:phone, class: "size-5") %>
+<% end %>

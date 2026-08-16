@@ -1,0 +1,236 @@
+<%= form_with url: site3_vehicles_path, method: :get,
+              data: { controller: "site3-filters" } do |form| %>
+
+  <div class="flex flex-wrap items-center gap-2">
+
+    <%# Cápsula de búsqueda %>
+    <div class="s3-card flex items-center gap-2 h-11 pl-4 pr-1.5 rounded-full
+                flex-1 min-w-[15rem] basis-full sm:basis-auto">
+      <span class="text-s3-ink-3 shrink-0" aria-hidden="true">
+        <%= render UI::IconComponent.new(:search, class: "size-4") %>
+      </span>
+      <%= form.label :q, t("site3.filters.text"), class: "sr-only" %>
+      <%= form.search_field :q, value: value_for(:q), autocomplete: "off",
+            placeholder: t("site3.home.hero_search_placeholder"),
+            class: "flex-1 min-w-0 bg-transparent border-0 text-sm text-s3-ink
+                    placeholder:text-s3-ink-3 focus:outline-none" %>
+      <button type="submit"
+              class="shrink-0 grid place-items-center size-8 rounded-full bg-s3-accent text-white
+                     transition-colors hover:bg-s3-accent-2"
+              aria-label="<%= t("site3.search.submit") %>">
+        <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+      </button>
+    </div>
+
+    <%# Marca %>
+    <div class="relative shrink-0 flex items-stretch">
+      <details data-site3-filters-target="popover" class="relative">
+        <summary class="<%= pill_class_for(search.selected_brand.present?) %>">
+          <span><%= brand_pill %></span>
+          <%= render UI::IconComponent.new(:chevron_down, class: "size-3.5") %>
+        </summary>
+        <div class="<%= popover_class %>">
+          <%= form.label :marca, t("site3.filters.brand"), class: label_class %>
+          <%= form.select :marca, brand_options,
+                { include_blank: t("site3.search.any"), selected: value_for(:marca) },
+                data: { action: "change->site3-filters#submit" }, class: field_class %>
+        </div>
+      </details>
+      <%= remove_link(:marca, label: t("site3.filters.brand")) %>
+    </div>
+
+    <%# Modelo %>
+    <div class="relative shrink-0 flex items-stretch">
+      <details data-site3-filters-target="popover" class="relative">
+        <summary class="<%= pill_class_for(value_for(:modelo).present?) %>">
+          <span><%= model_pill %></span>
+          <%= render UI::IconComponent.new(:chevron_down, class: "size-3.5") %>
+        </summary>
+        <div class="<%= popover_class %>">
+          <%= form.label :modelo, t("site3.filters.model"), class: label_class %>
+          <%= form.select :modelo, model_options,
+                { include_blank: t("site3.search.any"), selected: value_for(:modelo) },
+                disabled: !models_available?,
+                data: { action: "change->site3-filters#submit" },
+                class: "#{field_class} disabled:opacity-40" %>
+        </div>
+      </details>
+      <%= remove_link(:modelo, label: t("site3.filters.model")) %>
+    </div>
+
+    <%# Segmento %>
+    <div class="relative shrink-0 flex items-stretch">
+      <details data-site3-filters-target="popover" class="relative">
+        <summary class="<%= pill_class_for(search.selected_category.present?) %>">
+          <span><%= category_pill %></span>
+          <%= render UI::IconComponent.new(:chevron_down, class: "size-3.5") %>
+        </summary>
+        <div class="<%= popover_class %>">
+          <%= form.label :categoria, t("site3.filters.category"), class: label_class %>
+          <%= form.select :categoria, category_options,
+                { include_blank: t("site3.search.any"), selected: value_for(:categoria) },
+                data: { action: "change->site3-filters#submit" }, class: field_class %>
+        </div>
+      </details>
+      <%= remove_link(:categoria, label: t("site3.filters.category")) %>
+    </div>
+
+    <%# Precio %>
+    <div class="relative shrink-0 flex items-stretch">
+      <details data-site3-filters-target="popover" class="relative">
+        <summary class="<%= pill_class_for(any?(:precio_min, :precio_max)) %>">
+          <span><%= price_pill %></span>
+          <%= render UI::IconComponent.new(:chevron_down, class: "size-3.5") %>
+        </summary>
+        <div class="<%= popover_class %>">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <%= form.label :precio_min, t("site3.filters.price_min"), class: label_class %>
+              <%= form.number_field :precio_min, value: value_for(:precio_min), min: 0, step: 100,
+                    class: "#{field_class} tabular-nums" %>
+            </div>
+            <div>
+              <%= form.label :precio_max, t("site3.filters.price_max"), class: label_class %>
+              <%= form.number_field :precio_max, value: value_for(:precio_max), min: 0, step: 100,
+                    class: "#{field_class} tabular-nums" %>
+            </div>
+          </div>
+          <button type="submit"
+                  class="w-full h-10 mt-4 rounded-full bg-s3-accent text-white text-sm font-medium
+                         transition-colors hover:bg-s3-accent-2">
+            <%= t("site3.filters.apply") %>
+          </button>
+        </div>
+      </details>
+      <%= remove_link(:precio_min, :precio_max, label: t("site3.filters.price")) %>
+    </div>
+
+    <%# Año %>
+    <div class="relative shrink-0 flex items-stretch">
+      <details data-site3-filters-target="popover" class="relative">
+        <summary class="<%= pill_class_for(any?(:anio_min, :anio_max)) %>">
+          <span><%= year_pill %></span>
+          <%= render UI::IconComponent.new(:chevron_down, class: "size-3.5") %>
+        </summary>
+        <div class="<%= popover_class %>">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <%= form.label :anio_min, t("site3.filters.year_min"), class: label_class %>
+              <%= form.number_field :anio_min, value: value_for(:anio_min),
+                    min: Vehicle::MIN_YEAR, max: Date.current.year + 2,
+                    class: "#{field_class} tabular-nums" %>
+            </div>
+            <div>
+              <%= form.label :anio_max, t("site3.filters.year_max"), class: label_class %>
+              <%= form.number_field :anio_max, value: value_for(:anio_max),
+                    min: Vehicle::MIN_YEAR, max: Date.current.year + 2,
+                    class: "#{field_class} tabular-nums" %>
+            </div>
+          </div>
+          <button type="submit"
+                  class="w-full h-10 mt-4 rounded-full bg-s3-accent text-white text-sm font-medium
+                         transition-colors hover:bg-s3-accent-2">
+            <%= t("site3.filters.apply") %>
+          </button>
+        </div>
+      </details>
+      <%= remove_link(:anio_min, :anio_max, label: t("site3.filters.year")) %>
+    </div>
+
+    <%# Kilometraje %>
+    <div class="relative shrink-0 flex items-stretch">
+      <details data-site3-filters-target="popover" class="relative">
+        <summary class="<%= pill_class_for(any?(:km_max)) %>">
+          <span><%= mileage_pill %></span>
+          <%= render UI::IconComponent.new(:chevron_down, class: "size-3.5") %>
+        </summary>
+        <div class="<%= popover_class %>">
+          <%= form.label :km_max, t("site3.filters.mileage_max"), class: label_class %>
+          <%= form.number_field :km_max, value: value_for(:km_max), min: 0, step: 1000,
+                placeholder: t("site3.filters.mileage_placeholder"),
+                class: "#{field_class} tabular-nums" %>
+          <button type="submit"
+                  class="w-full h-10 mt-4 rounded-full bg-s3-accent text-white text-sm font-medium
+                         transition-colors hover:bg-s3-accent-2">
+            <%= t("site3.filters.apply") %>
+          </button>
+        </div>
+      </details>
+      <%= remove_link(:km_max, label: t("site3.filters.mileage")) %>
+    </div>
+
+    <%# Combustible %>
+    <div class="relative shrink-0 flex items-stretch">
+      <details data-site3-filters-target="popover" class="relative">
+        <summary class="<%= pill_class_for(any?(:combustible)) %>">
+          <span><%= fuel_pill %></span>
+          <%= render UI::IconComponent.new(:chevron_down, class: "size-3.5") %>
+        </summary>
+        <div class="<%= popover_class %>">
+          <%= form.label :combustible, t("site3.filters.fuel"), class: label_class %>
+          <%= form.select :combustible, fuel_options,
+                { include_blank: t("site3.search.any"), selected: value_for(:combustible) },
+                data: { action: "change->site3-filters#submit" }, class: field_class %>
+        </div>
+      </details>
+      <%= remove_link(:combustible, label: t("site3.filters.fuel")) %>
+    </div>
+
+    <%# Caja %>
+    <div class="relative shrink-0 flex items-stretch">
+      <details data-site3-filters-target="popover" class="relative">
+        <summary class="<%= pill_class_for(any?(:transmision)) %>">
+          <span><%= transmission_pill %></span>
+          <%= render UI::IconComponent.new(:chevron_down, class: "size-3.5") %>
+        </summary>
+        <div class="<%= popover_class %>">
+          <%= form.label :transmision, t("site3.filters.transmission"), class: label_class %>
+          <%= form.select :transmision, transmission_options,
+                { include_blank: t("site3.search.any"), selected: value_for(:transmision) },
+                data: { action: "change->site3-filters#submit" }, class: field_class %>
+        </div>
+      </details>
+      <%= remove_link(:transmision, label: t("site3.filters.transmission")) %>
+    </div>
+
+    <%# Estado %>
+    <div class="relative shrink-0 flex items-stretch">
+      <details data-site3-filters-target="popover" class="relative">
+        <summary class="<%= pill_class_for(any?(:estado)) %>">
+          <span><%= status_pill %></span>
+          <%= render UI::IconComponent.new(:chevron_down, class: "size-3.5") %>
+        </summary>
+        <div class="<%= popover_class %>">
+          <%= form.label :estado, t("site3.filters.status"), class: label_class %>
+          <%= form.select :estado, status_options,
+                { include_blank: t("site3.search.any"), selected: value_for(:estado) },
+                data: { action: "change->site3-filters#submit" }, class: field_class %>
+        </div>
+      </details>
+      <%= remove_link(:estado, label: t("site3.filters.status")) %>
+    </div>
+
+    <%# Orden — a la derecha, separado de los filtros %>
+    <details data-site3-filters-target="popover" class="relative shrink-0 ml-auto">
+      <summary class="<%= pill_class(false) %>">
+        <span class="text-s3-ink-3"><%= t("site3.sort.label") %></span>
+        <span class="font-medium text-s3-ink"><%= sort_pill %></span>
+        <%= render UI::IconComponent.new(:chevron_down, class: "size-3.5") %>
+      </summary>
+      <div class="<%= popover_class %> left-auto right-0">
+        <%= form.label :orden, t("site3.sort.label"), class: label_class %>
+        <%= form.select :orden, sort_options, { selected: search.sort_key },
+              data: { action: "change->site3-filters#submit" }, class: field_class %>
+      </div>
+    </details>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mt-5">
+    <p class="s3-label tabular-nums"><%= t("site3.filters.results", count: total) %></p>
+
+    <% if search.filtered? %>
+      <%= link_to t("site3.filters.clear_all"), clear_path,
+            class: "text-[0.8125rem] text-s3-accent font-medium hover:underline" %>
+    <% end %>
+  </div>
+<% end %>

@@ -1,0 +1,5 @@
+<% content_for :title, t("admin.differentials.edit") %>
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.differentials.edit"), description: @differential.title,
+      back_to: admin_differentials_path, back_label: t("admin.differentials.title")) %>
+<%= render "form", differential: @differential %>

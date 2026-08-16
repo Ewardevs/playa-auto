@@ -1,0 +1,160 @@
+<% content_for :structured_data do %>
+  <%= render Site4::StructuredDataComponent.new(vehicle: @vehicle, breadcrumbs: breadcrumbs) %>
+<% end %>
+
+<div class="mx-auto max-w-[88rem] px-3 sm:px-5 pb-24">
+  <%= render Site4::BreadcrumbsComponent.new(items: breadcrumbs) %>
+
+  <header class="mt-6 mb-6 flex flex-wrap items-end justify-between gap-5">
+    <div>
+      <div class="flex flex-wrap items-center gap-2 mb-3">
+        <%= render Site4::VehicleStatusBadgeComponent.new(@vehicle) %>
+        <span class="s4-chip"><%= t("site4.vehicles.code", code: @vehicle.code) %></span>
+        <span class="s4-chip"><%= @vehicle.category.name %></span>
+      </div>
+
+      <h1 class="text-4xl sm:text-5xl lg:text-[3.5rem] leading-[1.0] tracking-[-0.035em]
+                 font-extrabold text-s4-ink text-balance">
+        <%= @vehicle.display_name %>
+      </h1>
+    </div>
+  </header>
+
+  <%= render Site4::VehicleGalleryComponent.new(vehicle: @vehicle) %>
+
+  <div class="grid lg:grid-cols-12 gap-6 lg:gap-8 mt-8">
+
+    <%# Columna principal %>
+    <div class="lg:col-span-7 xl:col-span-8 min-w-0 space-y-10">
+      <section>
+        <h2 class="text-3xl leading-tight tracking-[-0.02em] font-bold text-s4-ink mb-5">
+          <%= t("site4.vehicles.specs_title") %>
+        </h2>
+        <%= render Site4::VehicleSpecsComponent.new(vehicle: @vehicle) %>
+      </section>
+
+      <section>
+        <h2 class="text-3xl leading-tight tracking-[-0.02em] font-bold text-s4-ink mb-4">
+          <%= t("site4.vehicles.description_title") %>
+        </h2>
+        <div class="text-[1.0625rem] leading-relaxed text-s4-ink-2 whitespace-pre-line max-w-2xl">
+          <%= @vehicle.description.presence || t("site4.vehicles.no_description") %>
+        </div>
+      </section>
+
+      <% if @vehicle.equipment.present? %>
+        <section>
+          <h2 class="text-3xl leading-tight tracking-[-0.02em] font-bold text-s4-ink mb-5">
+            <%= t("site4.vehicles.equipment_title") %>
+          </h2>
+          <ul class="flex flex-wrap gap-2">
+            <% @vehicle.equipment.to_s.lines.map(&:strip).reject(&:blank?).each do |item| %>
+              <li class="inline-flex items-center gap-1.5 h-9 px-4 rounded-full bg-s4-canvas
+                         text-[0.8125rem] text-s4-ink-2">
+                <span class="text-s4-accent" aria-hidden="true">
+                  <%= render UI::IconComponent.new(:check, class: "size-3.5") %>
+                </span>
+                <span><%= item %></span>
+              </li>
+            <% end %>
+          </ul>
+        </section>
+      <% end %>
+
+      <section id="consulta" class="scroll-mt-28">
+        <h2 class="text-3xl leading-tight tracking-[-0.02em] font-bold text-s4-ink">
+          <%= t("site4.vehicles.inquiry_title") %>
+        </h2>
+        <p class="mt-2 mb-6 text-[0.9375rem] text-s4-ink-2"><%= t("site4.vehicles.inquiry_lead") %></p>
+
+        <div class="s4-card p-6 sm:p-8">
+          <%= render Site4::InquiryFormComponent.new(inquiry: @inquiry, vehicle: @vehicle) %>
+        </div>
+      </section>
+    </div>
+
+    <%# Panel de decisión %>
+    <aside class="lg:col-span-5 xl:col-span-4 lg:order-none order-first">
+      <div class="s4-card lg:sticky lg:top-28 p-7">
+        <% if @vehicle.discounted? %>
+          <p class="text-[0.9375rem] text-s4-ink-3 line-through tabular-nums">
+            <%= money(@vehicle.price) %>
+          </p>
+        <% end %>
+
+        <p class="s4-price text-[2.5rem] font-bold leading-none text-s4-ink mt-1">
+          <%= money(@vehicle.current_price) %>
+        </p>
+
+        <% if @vehicle.discounted? %>
+          <% savings = @vehicle.price.to_d - @vehicle.current_price.to_d %>
+          <% if savings.positive? %>
+            <span class="inline-flex items-center h-8 px-3.5 rounded-full bg-s4-accent-soft
+                         text-s4-accent text-[0.8125rem] font-semibold mt-4">
+              <%= t("site4.vehicles.offer_badge", amount: money(savings)) %>
+            </span>
+          <% end %>
+          <% if @vehicle.running_offer&.ends_on.present? %>
+            <p class="mt-2.5 text-[0.8125rem] text-s4-ink-3">
+              <%= t("site4.vehicles.offer_until", date: short_date(@vehicle.running_offer.ends_on)) %>
+            </p>
+          <% end %>
+        <% end %>
+
+        <% if @vehicle.status == "reserved" %>
+          <p class="mt-5 rounded-[0.875rem] bg-s4-amber-soft px-4 py-3 text-[0.9375rem] text-s4-ink-2">
+            <%= t("site4.vehicles.reserved_notice") %>
+          </p>
+        <% elsif @vehicle.status == "sold" %>
+          <p class="mt-5 rounded-[0.875rem] bg-s4-canvas px-4 py-3 text-[0.9375rem] text-s4-ink-2">
+            <%= t("site4.vehicles.sold_notice") %>
+          </p>
+        <% end %>
+
+        <% whatsapp = Vehicles::WhatsappMessage.new(@vehicle, setting: current_setting) %>
+        <div class="mt-6 space-y-2">
+          <% if whatsapp.link.present? %>
+            <%= link_to whatsapp.link, target: "_blank", rel: "noopener",
+                  data: { controller: "whatsapp-track",
+                          whatsapp_track_url_value: whatsapp_click_site4_vehicle_path(@vehicle),
+                          action: "click->whatsapp-track#record" },
+                  class: "flex items-center justify-center gap-2 h-12 rounded-[0.875rem] bg-s4-accent
+                          text-white text-sm font-semibold transition-colors hover:bg-s4-accent-2" do %>
+              <%= render UI::IconComponent.new(:phone, class: "size-4") %>
+              <span><%= t("site4.cta.whatsapp") %></span>
+            <% end %>
+          <% end %>
+
+          <a href="#consulta"
+             class="flex items-center justify-center h-12 rounded-[0.875rem] bg-s4-canvas text-s4-ink
+                    text-sm font-semibold transition-colors hover:bg-s4-surface-2">
+            <%= t("site4.cta.consult") %>
+          </a>
+
+          <% if current_setting.phone.present? %>
+            <%= phone_link current_setting.phone,
+                  class: "flex items-center justify-center h-11 text-[0.9375rem] text-s4-ink-2
+                          transition-colors hover:text-s4-ink" %>
+          <% end %>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <%# Parecidos %>
+  <% if @related.any? %>
+    <section class="mt-16">
+      <h2 class="text-3xl leading-tight tracking-[-0.02em] font-bold text-s4-ink mb-6">
+        <%= t("site4.vehicles.related_title") %>
+      </h2>
+
+      <div class="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3" data-controller="site4-reveal">
+        <% @related.each do |vehicle| %>
+          <div data-site4-reveal-target="item">
+            <%= render Site4::VehicleCardComponent.new(vehicle: vehicle) %>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

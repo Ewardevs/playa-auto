@@ -1,0 +1,20 @@
+<div class="flex flex-wrap items-end justify-between gap-4 mb-8">
+  <div class="min-w-0">
+    <% if kicker.present? %>
+      <p class="site-kicker <%= "text-white/55!" if on_night? %>"><%= kicker %></p>
+    <% end %>
+
+    <h2 class="<%= title_classes %> <%= "mt-2.5" if kicker.present? %>"><%= title %></h2>
+
+    <% if description.present? %>
+      <p class="<%= description_classes %>"><%= description %></p>
+    <% end %>
+  </div>
+
+  <% if link_label.present? && link_path.present? %>
+    <%= link_to link_path, class: link_classes do %>
+      <span><%= link_label %></span>
+      <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+    <% end %>
+  <% end %>
+</div>

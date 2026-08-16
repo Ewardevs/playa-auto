@@ -1,0 +1,19 @@
+<nav aria-label="<%= t("site4.nav.breadcrumbs") %>">
+  <ol class="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[0.8125rem]">
+    <% trail.each_with_index do |(label, path), index| %>
+      <li class="flex items-center gap-1.5">
+        <% if index.positive? %>
+          <span class="text-s4-ink-3" aria-hidden="true">
+            <%= render UI::IconComponent.new(:chevron_right, class: "size-3.5") %>
+          </span>
+        <% end %>
+
+        <% if last?(index) || path.blank? %>
+          <span class="text-s4-ink-2 truncate max-w-[16rem]" aria-current="page"><%= label %></span>
+        <% else %>
+          <%= link_to label, path, class: "text-s4-ink-3 transition-colors hover:text-s4-ink" %>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+</nav>

@@ -7,6 +7,10 @@ class VehicleImage < ApplicationRecord
   has_one_attached :file do |attachable|
     attachable.variant :thumb, resize_to_fill: [ 160, 120 ], preprocessed: true
     attachable.variant :card,  resize_to_fill: [ 640, 480 ]
+    # Vertical, para las cards en formato afiche de Site2. Se agrega en lugar de
+    # recortar la variante :card en CSS, que tiraría a la basura la mitad del
+    # ancho descargado. Las demás variantes quedan exactamente como estaban.
+    attachable.variant :poster, resize_to_fill: [ 720, 900 ]
     attachable.variant :large, resize_to_limit: [ 1600, 1200 ]
   end
 

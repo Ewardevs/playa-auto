@@ -1,0 +1,15 @@
+<div class="fixed inset-x-0 bottom-4 sm:bottom-6 z-40 flex justify-center px-4">
+  <%= link_to link, target: "_blank", rel: "noopener",
+        data: track_data,
+        class: "s4-float inline-flex items-center gap-2 h-12 pl-5 pr-5 rounded-full
+                text-s4-ink text-sm font-semibold transition-colors hover:text-s4-accent" do %>
+    <span class="grid place-items-center size-6 rounded-full bg-s4-accent text-white shrink-0">
+      <%= render UI::IconComponent.new(:phone, class: "size-3.5") %>
+    </span>
+    <span><%= t("site4.cta.whatsapp_short") %></span>
+
+    <% if vehicle? %>
+      <span class="s4-price font-bold text-s4-accent"><%= money(vehicle.current_price) %></span>
+    <% end %>
+  <% end %>
+</div>

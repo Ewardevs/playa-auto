@@ -1,0 +1,120 @@
+<div class="mx-auto max-w-7xl px-4 sm:px-6 py-8 lg:py-12">
+  <%= render Site::BreadcrumbsComponent.new(crumbs: breadcrumbs) %>
+
+  <header class="mt-4 mb-10">
+    <h1 class="font-site-display text-3xl lg:text-4xl font-semibold text-graphite tracking-tight">
+      <%= t("site.contact.title") %>
+    </h1>
+    <p class="text-stone mt-2"><%= t("site.contact.description") %></p>
+  </header>
+
+  <div class="lg:grid lg:grid-cols-[1fr_24rem] lg:gap-10 lg:items-start">
+
+    <%# ── Datos y mapa ─────────────────────────────────────────────────── %>
+    <div class="min-w-0 order-2 lg:order-1">
+      <section class="rounded-site border border-sand bg-white p-6 lg:p-8">
+        <h2 class="font-site-display text-lg font-semibold text-graphite">
+          <%= t("site.contact.info_title") %>
+        </h2>
+
+        <ul class="grid sm:grid-cols-2 gap-5 mt-5">
+          <% if current_setting.phone.present? %>
+            <li class="flex items-start gap-3">
+              <span class="grid place-items-center size-10 rounded-site bg-brand-soft text-brand shrink-0">
+                <%= render UI::IconComponent.new(:phone, class: "size-4.5") %>
+              </span>
+              <div class="min-w-0">
+                <p class="text-[0.6875rem] uppercase tracking-wide text-stone font-semibold">
+                  <%= Setting.human_attribute_name(:phone) %>
+                </p>
+                <%= phone_link current_setting.phone,
+                      class: "text-sm font-medium text-graphite hover:text-brand transition-colors" %>
+              </div>
+            </li>
+          <% end %>
+
+          <% if current_setting.whatsapp? %>
+            <li class="flex items-start gap-3">
+              <span class="grid place-items-center size-10 rounded-site bg-brand-soft text-brand shrink-0">
+                <%= render UI::IconComponent.new(:phone, class: "size-4.5") %>
+              </span>
+              <div class="min-w-0">
+                <p class="text-[0.6875rem] uppercase tracking-wide text-stone font-semibold">WhatsApp</p>
+                <%= link_to current_setting.whatsapp, Vehicles::WhatsappMessage.new.link,
+                      target: "_blank", rel: "noopener",
+                      class: "text-sm font-medium text-graphite hover:text-brand transition-colors" %>
+              </div>
+            </li>
+          <% end %>
+
+          <% if current_setting.email.present? %>
+            <li class="flex items-start gap-3">
+              <span class="grid place-items-center size-10 rounded-site bg-brand-soft text-brand shrink-0">
+                <%= render UI::IconComponent.new(:mail, class: "size-4.5") %>
+              </span>
+              <div class="min-w-0">
+                <p class="text-[0.6875rem] uppercase tracking-wide text-stone font-semibold">
+                  <%= Setting.human_attribute_name(:email) %>
+                </p>
+                <%= mail_to current_setting.email,
+                      class: "text-sm font-medium text-graphite hover:text-brand transition-colors break-all" %>
+              </div>
+            </li>
+          <% end %>
+
+          <% if current_setting.address.present? %>
+            <li class="flex items-start gap-3">
+              <span class="grid place-items-center size-10 rounded-site bg-brand-soft text-brand shrink-0">
+                <%= render UI::IconComponent.new(:gauge_circle, class: "size-4.5") %>
+              </span>
+              <div class="min-w-0">
+                <p class="text-[0.6875rem] uppercase tracking-wide text-stone font-semibold">
+                  <%= Setting.human_attribute_name(:address) %>
+                </p>
+                <p class="text-sm font-medium text-graphite"><%= current_setting.address %></p>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+
+        <% if current_setting.opening_hours_lines.any? %>
+          <div class="mt-8 pt-6 border-t border-sand">
+            <h3 class="text-[0.6875rem] uppercase tracking-wide text-stone font-semibold">
+              <%= t("site.contact.hours_title") %>
+            </h3>
+            <ul class="mt-3 space-y-1.5">
+              <% current_setting.opening_hours_lines.each do |line| %>
+                <li class="text-sm text-graphite"><%= line %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <% if current_setting.google_maps_url.present? %>
+          <div class="mt-8">
+            <%= render UI::ButtonComponent.new(
+                  label: t("site.contact.open_in_maps"), href: current_setting.google_maps_url,
+                  variant: :brand_outline, size: :lg, icon: :external,
+                  target: "_blank", rel: "noopener") %>
+          </div>
+        <% end %>
+      </section>
+    </div>
+
+    <%# ── Formulario ───────────────────────────────────────────────────── %>
+    <section class="rounded-site border border-sand bg-white p-6 lg:p-8 order-1 lg:order-2 mb-6 lg:mb-0">
+      <h2 class="font-site-display text-lg font-semibold text-graphite">
+        <%= t("site.contact.form_title") %>
+      </h2>
+
+      <div class="mt-5">
+        <%= render Site::InquiryFormComponent.new(
+              inquiry: @inquiry, vehicles: @vehicles, compact: true) %>
+      </div>
+    </section>
+  </div>
+</div>
+
+<% content_for :structured_data do %>
+  <%= render Site::StructuredDataComponent.new(breadcrumbs: breadcrumbs) %>
+<% end %>

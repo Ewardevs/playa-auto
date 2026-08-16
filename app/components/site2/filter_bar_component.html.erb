@@ -1,0 +1,178 @@
+<%= form_with url: site2_vehicles_path, method: :get, data: { controller: "site2-filters" },
+              html: { class: "border-b border-s2-line" } do |form| %>
+
+  <%# Franja fija: texto libre y orden. Se queda pegada bajo el encabezado
+      mientras se recorre el catálogo. %>
+  <div class="sticky top-16 lg:top-18 z-30 bg-s2-void border-b border-s2-line">
+    <div class="mx-auto max-w-[86rem] px-4 sm:px-6">
+      <div class="flex items-center gap-2 sm:gap-3 h-16">
+        <div class="relative flex-1 min-w-0">
+          <span class="absolute left-0 top-1/2 -translate-y-1/2 text-s2-ash-2 pointer-events-none">
+            <%= render UI::IconComponent.new(:search, class: "size-4") %>
+          </span>
+          <%= form.label :q, t("site2.search.label"), class: "sr-only" %>
+          <%= form.search_field :q, value: value_for(:q),
+                placeholder: t("site2.search.placeholder"),
+                autocomplete: "off",
+                class: "w-full h-11 pl-7 bg-transparent border-0 border-b border-s2-line text-s2-chalk
+                        placeholder:text-s2-ash-2 text-[0.9375rem]
+                        focus:outline-none focus:border-s2-signal transition-colors" %>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <%= form.label :orden, t("site2.sort.label"), class: "sr-only" %>
+          <%= form.select :orden, sort_options, { selected: search.sort_key },
+                data: { action: "change->site2-filters#submit" },
+                class: "h-11 pl-3 pr-8 bg-s2-panel border border-s2-line rounded-s2 text-s2-chalk text-xs
+                        focus:outline-none focus:border-s2-ash-2" %>
+
+          <button type="submit"
+                  class="h-11 px-4 bg-s2-chalk text-s2-void text-xs font-semibold uppercase
+                         tracking-[0.1em] rounded-s2 transition-colors hover:bg-white">
+            <%= t("site2.search.submit") %>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# Panel: en el flujo, a ancho completo, idéntico en móvil y escritorio. %>
+  <details class="group" <%= "open" if panel_open? %>>
+    <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
+                    border-b border-s2-line transition-colors hover:bg-s2-panel">
+      <span class="mx-auto max-w-[86rem] px-4 sm:px-6 flex items-center justify-between py-4">
+        <span class="flex items-center gap-3">
+          <span class="s2-label"><%= t("site2.filters.title") %></span>
+          <% if active_count.positive? %>
+            <span class="inline-grid place-items-center min-w-5 h-5 px-1.5 bg-s2-signal text-s2-signal-ink
+                         text-[0.625rem] font-bold rounded-s2 tabular-nums"><%= active_count %></span>
+          <% end %>
+        </span>
+        <span class="text-s2-ash transition-transform duration-300 group-open:rotate-180">
+          <%= render UI::IconComponent.new(:chevron_down, class: "size-4") %>
+        </span>
+      </span>
+    </summary>
+
+    <div class="mx-auto max-w-[86rem] px-4 sm:px-6 py-7 border-b border-s2-line">
+      <div class="grid gap-x-5 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+
+        <div>
+          <%= form.label :marca, t("site2.filters.brand"), class: "s2-stat-label block mb-2" %>
+          <%= form.select :marca, brand_options, { include_blank: t("site2.search.any"), selected: value_for(:marca) },
+                data: { action: "change->site2-filters#submit" },
+                class: "w-full h-10 px-3 bg-s2-panel border border-s2-line rounded-s2 text-s2-chalk text-sm
+                        focus:outline-none focus:border-s2-signal" %>
+        </div>
+
+        <div>
+          <%= form.label :modelo, t("site2.filters.model"), class: "s2-stat-label block mb-2" %>
+          <%= form.select :modelo, model_options, { include_blank: t("site2.search.any"), selected: value_for(:modelo) },
+                disabled: !models_available?,
+                data: { action: "change->site2-filters#submit" },
+                class: "w-full h-10 px-3 bg-s2-panel border border-s2-line rounded-s2 text-s2-chalk text-sm
+                        focus:outline-none focus:border-s2-signal disabled:opacity-40" %>
+        </div>
+
+        <div>
+          <%= form.label :categoria, t("site2.filters.category"), class: "s2-stat-label block mb-2" %>
+          <%= form.select :categoria, category_options,
+                { include_blank: t("site2.search.any"), selected: value_for(:categoria) },
+                data: { action: "change->site2-filters#submit" },
+                class: "w-full h-10 px-3 bg-s2-panel border border-s2-line rounded-s2 text-s2-chalk text-sm
+                        focus:outline-none focus:border-s2-signal" %>
+        </div>
+
+        <div>
+          <%= form.label :estado, t("site2.filters.status"), class: "s2-stat-label block mb-2" %>
+          <%= form.select :estado, status_options,
+                { include_blank: t("site2.search.any"), selected: value_for(:estado) },
+                data: { action: "change->site2-filters#submit" },
+                class: "w-full h-10 px-3 bg-s2-panel border border-s2-line rounded-s2 text-s2-chalk text-sm
+                        focus:outline-none focus:border-s2-signal" %>
+        </div>
+
+        <div>
+          <span class="s2-stat-label block mb-2"><%= t("site2.filters.price") %></span>
+          <div class="flex items-center gap-2">
+            <%= form.label :precio_min, t("site2.filters.price_min"), class: "sr-only" %>
+            <%= form.number_field :precio_min, value: value_for(:precio_min), min: 0, step: 100,
+                  placeholder: t("site2.filters.price_min"),
+                  class: "w-full h-10 px-3 bg-s2-panel border border-s2-line rounded-s2 text-s2-chalk text-sm
+                          tabular-nums placeholder:text-s2-ash-2 focus:outline-none focus:border-s2-signal" %>
+            <span class="text-s2-ash-2" aria-hidden="true">–</span>
+            <%= form.label :precio_max, t("site2.filters.price_max"), class: "sr-only" %>
+            <%= form.number_field :precio_max, value: value_for(:precio_max), min: 0, step: 100,
+                  placeholder: t("site2.filters.price_max"),
+                  class: "w-full h-10 px-3 bg-s2-panel border border-s2-line rounded-s2 text-s2-chalk text-sm
+                          tabular-nums placeholder:text-s2-ash-2 focus:outline-none focus:border-s2-signal" %>
+          </div>
+        </div>
+
+        <div>
+          <span class="s2-stat-label block mb-2"><%= t("site2.filters.year") %></span>
+          <div class="flex items-center gap-2">
+            <%= form.label :anio_min, t("site2.filters.year_min"), class: "sr-only" %>
+            <%= form.number_field :anio_min, value: value_for(:anio_min),
+                  min: Vehicle::MIN_YEAR, max: Date.current.year + 2,
+                  placeholder: t("site2.filters.year_min"),
+                  class: "w-full h-10 px-3 bg-s2-panel border border-s2-line rounded-s2 text-s2-chalk text-sm
+                          tabular-nums placeholder:text-s2-ash-2 focus:outline-none focus:border-s2-signal" %>
+            <span class="text-s2-ash-2" aria-hidden="true">–</span>
+            <%= form.label :anio_max, t("site2.filters.year_max"), class: "sr-only" %>
+            <%= form.number_field :anio_max, value: value_for(:anio_max),
+                  min: Vehicle::MIN_YEAR, max: Date.current.year + 2,
+                  placeholder: t("site2.filters.year_max"),
+                  class: "w-full h-10 px-3 bg-s2-panel border border-s2-line rounded-s2 text-s2-chalk text-sm
+                          tabular-nums placeholder:text-s2-ash-2 focus:outline-none focus:border-s2-signal" %>
+          </div>
+        </div>
+
+        <div>
+          <%= form.label :km_max, t("site2.filters.mileage"), class: "s2-stat-label block mb-2" %>
+          <%= form.number_field :km_max, value: value_for(:km_max), min: 0, step: 1000,
+                placeholder: t("site2.filters.mileage_placeholder"),
+                class: "w-full h-10 px-3 bg-s2-panel border border-s2-line rounded-s2 text-s2-chalk text-sm
+                        tabular-nums placeholder:text-s2-ash-2 focus:outline-none focus:border-s2-signal" %>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <%= form.label :combustible, t("site2.filters.fuel"), class: "s2-stat-label block mb-2" %>
+            <%= form.select :combustible, fuel_options,
+                  { include_blank: t("site2.search.any"), selected: value_for(:combustible) },
+                  data: { action: "change->site2-filters#submit" },
+                  class: "w-full h-10 px-2 bg-s2-panel border border-s2-line rounded-s2 text-s2-chalk text-sm
+                          focus:outline-none focus:border-s2-signal" %>
+          </div>
+          <div>
+            <%= form.label :transmision, t("site2.filters.transmission"), class: "s2-stat-label block mb-2" %>
+            <%= form.select :transmision, transmission_options,
+                  { include_blank: t("site2.search.any"), selected: value_for(:transmision) },
+                  data: { action: "change->site2-filters#submit" },
+                  class: "w-full h-10 px-2 bg-s2-panel border border-s2-line rounded-s2 text-s2-chalk text-sm
+                          focus:outline-none focus:border-s2-signal" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3 mt-7">
+        <button type="submit"
+                class="h-10 px-5 bg-s2-signal text-s2-signal-ink text-xs font-semibold uppercase
+                       tracking-[0.1em] rounded-s2 transition-colors hover:bg-s2-signal-2">
+          <%= t("site2.filters.apply") %>
+        </button>
+
+        <% if search.filtered? %>
+          <%= link_to t("site2.filters.clear_all"), clear_path,
+                class: "h-10 px-4 inline-flex items-center text-xs font-medium uppercase tracking-[0.1em]
+                        text-s2-ash hover:text-s2-chalk transition-colors" %>
+        <% end %>
+
+        <p class="ml-auto s2-label tabular-nums">
+          <%= t("site2.filters.results", count: total) %>
+        </p>
+      </div>
+    </div>
+  </details>
+<% end %>

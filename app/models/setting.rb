@@ -3,7 +3,7 @@
 class Setting < ApplicationRecord
   include Auditable
 
-  audits :company_name, :phone, :whatsapp, :email, :address, :currency
+  audits :company_name, :phone, :whatsapp, :email, :address, :currency, :show_sold_vehicles
 
   CURRENCIES = {
     "USD" => "$",
@@ -32,15 +32,48 @@ class Setting < ApplicationRecord
   before_validation :sync_currency_symbol
 
   # Memoised per request via Current, so components can call it freely.
+  #
+  # `Current` only exists inside an execution context (a request or a job).
+  # Outside one — a rake task, `rails runner`, a console — reading it raises, so
+  # fall back to a direct read: every caller must be able to ask for the company
+  # settings without first knowing what wraps it.
   def self.current
-    Current.setting ||= first || create!
+    Current.setting ||= load_record
+  rescue NoMethodError
+    load_record
   end
 
-  def whatsapp_link
+  def self.load_record = first || create!
+  private_class_method :load_record
+
+  # Public site entry point for the main conversion channel. The message is
+  # optional so a plain "Hablar por WhatsApp" and a vehicle-specific enquiry
+  # both come from here — the number is never written anywhere else.
+  def whatsapp_link(message: nil)
     return if whatsapp.blank?
 
-    "https://wa.me/#{whatsapp.gsub(/\D/, '')}"
+    url = "https://wa.me/#{whatsapp.gsub(/\D/, '')}"
+    url += "?text=#{CGI.escape(message)}" if message.present?
+    url
   end
+
+  def whatsapp? = whatsapp.present?
+
+  # [[:instagram, url], …] for whichever networks are actually configured.
+  def social_links
+    {
+      instagram: instagram_url,
+      facebook: facebook_url,
+      tiktok: tiktok_url
+    }.compact_blank
+  end
+
+  # Opening hours are stored as free text, one line per row.
+  def opening_hours_lines
+    opening_hours.to_s.lines.map(&:strip).reject(&:blank?)
+  end
+
+  def analytics? = [ google_analytics_id, google_tag_manager_id, meta_pixel_id ].any?(&:present?)
 
   def display_name = company_name
 

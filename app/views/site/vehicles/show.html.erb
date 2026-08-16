@@ -1,0 +1,122 @@
+<div class="mx-auto max-w-7xl px-4 sm:px-6 py-6 lg:py-10">
+
+  <%= render Site::BreadcrumbsComponent.new(crumbs: breadcrumbs) %>
+
+  <div class="lg:grid lg:grid-cols-[1fr_22rem] lg:gap-10 lg:items-start mt-5">
+
+    <%# ── Columna principal ───────────────────────────────────────────── %>
+    <div class="min-w-0">
+      <%= render Site::VehicleGalleryComponent.new(@vehicle) %>
+
+      <%# Encabezado: en móvil va debajo de la galería, en escritorio a la derecha. %>
+      <header class="mt-6 lg:hidden">
+        <%= render partial: "site/vehicles/headline", locals: { vehicle: @vehicle } %>
+      </header>
+
+      <%# ── Ficha técnica ────────────────────────────────────────────── %>
+      <section class="mt-10">
+        <h2 class="font-site-display text-xl font-semibold text-graphite">
+          <%= t("site.vehicles.specs_title") %>
+        </h2>
+
+        <dl class="grid grid-cols-2 sm:grid-cols-3 gap-px bg-sand border border-sand rounded-site overflow-hidden mt-4">
+          <% [
+               [Vehicle.human_attribute_name(:year), @vehicle.year],
+               [Vehicle.human_attribute_name(:mileage), mileage(@vehicle.mileage)],
+               [Vehicle.human_attribute_name(:transmission), Vehicle.human_enum_name(:transmission, @vehicle.transmission)],
+               [Vehicle.human_attribute_name(:fuel_type), Vehicle.human_enum_name(:fuel_type, @vehicle.fuel_type)],
+               [Vehicle.human_attribute_name(:engine), @vehicle.engine],
+               [Vehicle.human_attribute_name(:color), @vehicle.color],
+               [Vehicle.human_attribute_name(:category), @vehicle.category.name],
+               [Vehicle.human_attribute_name(:brand), @vehicle.brand.name],
+               [t("site.vehicles.code", code: ""), @vehicle.code]
+             ].reject { |_, value| value.blank? }.each do |label, value| %>
+            <div class="bg-white px-4 py-3.5">
+              <dt class="text-[0.6875rem] uppercase tracking-wide text-stone font-semibold"><%= label.strip %></dt>
+              <dd class="text-sm font-medium text-graphite mt-1 tabular-nums"><%= value %></dd>
+            </div>
+          <% end %>
+        </dl>
+      </section>
+
+      <%# ── Descripción ──────────────────────────────────────────────── %>
+      <section class="mt-10">
+        <h2 class="font-site-display text-xl font-semibold text-graphite">
+          <%= t("site.vehicles.description_title") %>
+        </h2>
+        <div class="text-[0.9375rem] text-stone leading-relaxed whitespace-pre-line mt-3">
+          <%= @vehicle.description.presence || t("site.vehicles.no_description") %>
+        </div>
+      </section>
+
+      <%# ── Equipamiento ─────────────────────────────────────────────── %>
+      <% equipment = @vehicle.equipment.to_s.split("\n").map(&:strip).reject(&:blank?) %>
+      <% if equipment.any? %>
+        <section class="mt-10">
+          <h2 class="font-site-display text-xl font-semibold text-graphite">
+            <%= t("site.vehicles.equipment_title") %>
+          </h2>
+
+          <ul class="grid sm:grid-cols-2 gap-x-8 gap-y-2.5 mt-4">
+            <% equipment.each do |item| %>
+              <li class="flex items-start gap-2.5 text-[0.9375rem] text-stone">
+                <%= render UI::IconComponent.new(:check, class: "size-4 mt-1 text-brand shrink-0") %>
+                <span><%= item %></span>
+              </li>
+            <% end %>
+          </ul>
+        </section>
+      <% end %>
+
+      <%# ── Formulario de consulta ───────────────────────────────────── %>
+      <section class="mt-12 lg:hidden">
+        <%= render partial: "site/vehicles/inquiry", locals: { vehicle: @vehicle, inquiry: @inquiry } %>
+      </section>
+    </div>
+
+    <%# ── Columna lateral pegajosa ────────────────────────────────────── %>
+    <aside class="hidden lg:block lg:sticky lg:top-28 space-y-5">
+      <div class="rounded-site border border-sand bg-white p-6">
+        <%= render partial: "site/vehicles/headline", locals: { vehicle: @vehicle } %>
+
+        <div class="grid gap-2.5 mt-6">
+          <%= render Site::WhatsappButtonComponent.new(vehicle: @vehicle, size: :xl, full: true) %>
+          <%= link_to t("site.cta.consult"), "#consultar",
+                class: "inline-flex items-center justify-center gap-2 h-11 rounded-md border border-brand/35 text-brand text-sm font-medium hover:bg-brand-soft transition-colors" %>
+        </div>
+
+        <% if current_setting.phone.present? %>
+          <p class="text-center text-sm text-stone mt-4">
+            <%= phone_link current_setting.phone, class: "hover:text-graphite transition-colors font-medium" %>
+          </p>
+        <% end %>
+      </div>
+
+      <div id="consultar" class="rounded-site border border-sand bg-white p-6 scroll-mt-28">
+        <h2 class="font-site-display text-lg font-semibold text-graphite">
+          <%= t("site.vehicles.inquiry_title") %>
+        </h2>
+        <p class="text-sm text-stone mt-1.5 mb-5"><%= t("site.vehicles.inquiry_description") %></p>
+
+        <%= render Site::InquiryFormComponent.new(inquiry: @inquiry, vehicle: @vehicle, compact: true) %>
+      </div>
+    </aside>
+  </div>
+
+  <%# ── Relacionados ──────────────────────────────────────────────────── %>
+  <% if @related.any? %>
+    <section class="mt-20">
+      <%= render Site::SectionHeadingComponent.new(title: t("site.vehicles.related_title")) %>
+
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <% @related.each do |vehicle| %>
+          <%= render Site::VehicleCardComponent.new(vehicle) %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>
+
+<% content_for :structured_data do %>
+  <%= render Site::StructuredDataComponent.new(vehicle: @vehicle, breadcrumbs: breadcrumbs) %>
+<% end %>

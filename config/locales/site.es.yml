@@ -1,0 +1,198 @@
+# Textos del sitio público. Solo copy de interfaz: todo lo que la empresa puede
+# cambiar (nombre, teléfono, textos institucionales, FAQ, diferenciales) vive en
+# la base de datos y se administra desde /admin.
+es:
+  site:
+    nav:
+      home: Inicio
+      vehicles: Vehículos
+      offers: Ofertas
+      about: Nosotros
+      faqs: Preguntas frecuentes
+      contact: Contacto
+      primary: Navegación principal
+      breadcrumbs: Ruta de navegación
+      open_menu: Abrir menú
+      skip_to_content: Ir al contenido
+
+    cta:
+      see_vehicles: Ver vehículos
+      see_all: Ver todos
+      whatsapp: Hablar por WhatsApp
+      whatsapp_short: Escribinos
+      consult: Consultar este vehículo
+      view_detail: Ver vehículo
+      call: Llamar
+
+    whatsapp:
+      vehicle_message: "Hola, estoy interesado en el %{vehicle} (%{code}) publicado en su web, a %{price}. ¿Podrían brindarme más información?"
+      general_message: "Hola, los contacto desde la web de %{company}. Quisiera hacerles una consulta."
+
+    home:
+      hero_title_fallback: Encontrá el auto que estás buscando
+      hero_kicker:
+        one: 1 vehículo disponible
+        other: "%{count} vehículos disponibles"
+      featured_kicker: Selección
+      featured_title: Vehículos destacados
+      featured_description: Unidades revisadas y listas para entregar.
+      offers_kicker: Oportunidades
+      offers_title: Vehículos en oferta
+      offers_description: Precios promocionales por tiempo limitado.
+      brands_kicker: Marcas
+      brands_title: Trabajamos con las marcas que buscás
+      why_kicker: Por qué elegirnos
+      why_title: Comprar usado, sin sorpresas
+      cta_title: ¿No encontraste lo que buscabas?
+      cta_description: Contanos qué estás buscando y te avisamos apenas entre a la playa.
+      no_featured: Todavía no hay vehículos publicados.
+
+    search:
+      title: ¿Qué vehículo estás buscando?
+      text_label: Buscar
+      text_placeholder: Marca, modelo o color…
+      any: Todas
+      price_from: Precio desde
+      price_to: Precio hasta
+      min: Mín.
+      max: Máx.
+      submit: Buscar vehículos
+
+    filters:
+      title: Filtrar
+      open: Filtrar
+      close: Cerrar filtros
+      apply: Aplicar filtros
+      clear: Limpiar
+      search: Buscar
+      search_placeholder: Marca, modelo o color…
+      price: Precio
+      year: Año
+      year_from: Año desde
+      year_to: Año hasta
+      max_mileage: Kilometraje máximo
+      max_mileage_placeholder: Ej. 80.000
+      results:
+        one: 1 vehículo
+        other: "%{count} vehículos"
+
+    sort:
+      label: Ordenar por
+      recientes: Más recientes
+      precio-asc: "Precio: menor a mayor"
+      precio-desc: "Precio: mayor a menor"
+      anio-desc: "Año: más nuevo"
+      km-asc: "Kilometraje: menor"
+
+    vehicles:
+      title: Vehículos
+      description: Todo nuestro inventario disponible.
+      photo_alt: "Fotografía de %{vehicle}"
+      photo_alt_indexed: "%{vehicle} — fotografía %{index}"
+      offer_badge: "%{percent}% OFF"
+      offer_until: "Oferta válida hasta el %{date}"
+      empty_title: No encontramos vehículos
+      empty_description: Probá modificando los filtros de búsqueda o mirá todo el inventario.
+      empty_catalog_title: Todavía no hay vehículos publicados
+      empty_catalog_description: Estamos preparando el inventario. Escribinos y te avisamos apenas publiquemos.
+      specs_title: Ficha técnica
+      description_title: Descripción
+      no_description: Consultanos por más detalles de esta unidad.
+      equipment_title: Equipamiento
+      related_title: También podría interesarte
+      reserved_notice: Este vehículo está reservado. Consultanos por unidades similares.
+      sold_notice: Este vehículo ya fue vendido. Mirá otras unidades disponibles.
+      code: "Código %{code}"
+      inquiry_title: Consultar este vehículo
+      inquiry_description: Dejanos tus datos y te respondemos a la brevedad.
+      seo:
+        title: Vehículos usados en venta
+        brand_title: "Vehículos %{brand} usados"
+        category_title: "%{category} usados en venta"
+        description:
+          one: "1 vehículo usado seleccionado y revisado en %{company}."
+          other: "%{count} vehículos usados seleccionados y revisados en %{company}."
+        show_title: "%{vehicle} — %{price}"
+        show_description: "%{vehicle} con %{mileage}, %{fuel}, caja %{transmission}. Disponible en %{company}."
+
+    offers:
+      title: Ofertas
+      description: Vehículos con precio promocional por tiempo limitado.
+      kicker: Precio promocional
+      empty_title: No hay ofertas activas
+      empty_description: En este momento no tenemos promociones vigentes. Mirá todo el inventario disponible.
+      seo:
+        title: Ofertas en vehículos usados
+        description:
+          one: "1 vehículo con precio promocional en %{company}."
+          other: "%{count} vehículos con precio promocional en %{company}."
+
+    about:
+      title_fallback: Nosotros
+      stats_vehicles: Vehículos publicados
+      stats_brands: Marcas disponibles
+      values_kicker: Cómo trabajamos
+      values_title: Lo que podés esperar de nosotros
+      contact_title: ¿Querés visitarnos?
+      contact_description: Vení a ver las unidades o escribinos y coordinamos.
+
+    faqs:
+      title: Preguntas frecuentes
+      description: Las dudas que más nos consultan antes de comprar.
+      empty_title: Todavía no cargamos preguntas
+      empty_description: Escribinos y respondemos cualquier duda que tengas.
+      still_title: ¿Tenés otra duda?
+      still_description: Escribinos por WhatsApp y te respondemos al momento.
+      seo:
+        title: Preguntas frecuentes
+        description: "Resolvemos las dudas más comunes sobre comprar un vehículo usado en %{company}."
+
+    contact:
+      title: Contacto
+      description: Estamos para ayudarte a encontrar tu próximo vehículo.
+      form_title: Envianos tu consulta
+      info_title: Datos de contacto
+      hours_title: Horarios de atención
+      map_title: Cómo llegar
+      open_in_maps: Ver en Google Maps
+      seo:
+        title: Contacto
+        description: "Contactá a %{company}. Estamos en %{address}."
+
+    inquiries:
+      created: ¡Gracias! Recibimos tu consulta y te vamos a contactar a la brevedad.
+      invalid: Revisá los datos del formulario, por favor.
+      rate_limited: Recibimos varias consultas desde este dispositivo. Probá de nuevo en unos minutos.
+      error_title: No pudimos enviar tu consulta
+      submit: Enviar consulta
+      name_placeholder: Tu nombre
+      phone_placeholder: "0981 123 456"
+      email_placeholder: "tucorreo@ejemplo.com"
+      email_hint: Opcional. Te escribimos por WhatsApp si preferís.
+      message_placeholder: "Contanos qué querés saber%{vehicle}"
+      no_vehicle: Consulta general
+      honeypot_label: Dejá este campo vacío
+      privacy_note: Usamos tus datos solo para responderte esta consulta.
+
+    gallery:
+      previous: Foto anterior
+      next: Foto siguiente
+      thumbnails: Miniaturas
+
+    footer:
+      navigation: Navegación
+      contact: Contacto
+      hours: Horarios
+      hours_missing: Consultanos por WhatsApp.
+      rights: Todos los derechos reservados.
+      privacy: Política de privacidad
+      terms: Términos y condiciones
+
+    errors:
+      not_found_title: No encontramos esta página
+      not_found_description: Es posible que el vehículo ya no esté disponible o que el enlace haya cambiado.
+      unprocessable_title: No pudimos procesar tu pedido
+      unprocessable_description: Revisá los datos e intentá nuevamente.
+      server_title: Algo salió mal
+      server_description: Estamos trabajando para solucionarlo. Probá de nuevo en unos minutos.
+      back_home: Volver al inicio

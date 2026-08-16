@@ -1,0 +1,67 @@
+<figure data-controller="site2-gallery" class="relative">
+  <% if images.any? %>
+    <div class="s2-snap flex gap-2 overflow-x-auto"
+         data-site2-gallery-target="track"
+         data-action="scroll->site2-gallery#onScroll keydown->site2-gallery#onKeydown"
+         tabindex="0"
+         role="group"
+         aria-label="<%= t("site2.vehicles.photo_alt", vehicle: vehicle.display_name) %>">
+      <% images.each_with_index do |image, index| %>
+        <div class="relative shrink-0 w-full lg:w-[86%] aspect-16/10 bg-s2-panel rounded-s2 overflow-hidden"
+             data-site2-gallery-target="slide">
+          <%= image_tag image.file.variant(:large),
+                alt: alt_for(index),
+                loading: index.zero? ? "eager" : "lazy",
+                fetchpriority: index.zero? ? "high" : "auto",
+                decoding: "async",
+                class: "absolute inset-0 size-full object-cover" %>
+        </div>
+      <% end %>
+    </div>
+
+    <% if multiple? %>
+      <figcaption class="mt-3 flex items-center gap-4">
+        <%# Indicador segmentado: un tramo por foto, el activo en naranja. %>
+        <div class="flex-1 flex gap-1" role="group" aria-label="<%= t("site2.gallery.indicator") %>">
+          <% images.each_with_index do |_image, index| %>
+            <button type="button"
+                    data-site2-gallery-target="dot"
+                    data-action="site2-gallery#goTo"
+                    data-index="<%= index %>"
+                    class="group flex-1 h-6 grid items-center"
+                    aria-label="<%= t("site2.gallery.go_to", index: index + 1) %>">
+              <span class="block h-0.5 w-full bg-s2-line-2 transition-colors group-hover:bg-s2-ash"
+                    data-site2-gallery-target="bar"></span>
+            </button>
+          <% end %>
+        </div>
+
+        <p class="s2-label tabular-nums shrink-0" data-site2-gallery-target="counter" aria-live="polite">
+          <%= t("site2.gallery.counter", index: 1, total: images.size) %>
+        </p>
+
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button type="button" data-action="site2-gallery#previous"
+                  data-site2-gallery-target="previous"
+                  class="grid place-items-center size-9 rounded-s2 border border-s2-line text-s2-chalk
+                         transition-colors hover:border-s2-ash-2 disabled:opacity-30"
+                  aria-label="<%= t("site2.gallery.previous") %>">
+            <%= render UI::IconComponent.new(:chevron_left, class: "size-4") %>
+          </button>
+          <button type="button" data-action="site2-gallery#next"
+                  data-site2-gallery-target="next"
+                  class="grid place-items-center size-9 rounded-s2 border border-s2-line text-s2-chalk
+                         transition-colors hover:border-s2-ash-2 disabled:opacity-30"
+                  aria-label="<%= t("site2.gallery.next") %>">
+            <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+          </button>
+        </div>
+      </figcaption>
+    <% end %>
+  <% else %>
+    <div class="aspect-16/10 bg-s2-panel rounded-s2 grid place-items-center text-s2-ash-2">
+      <%= render UI::IconComponent.new(:car, class: "size-12") %>
+      <span class="sr-only"><%= t("site2.vehicles.no_photo") %></span>
+    </div>
+  <% end %>
+</figure>

@@ -1,0 +1,15 @@
+<ul class="grid gap-px bg-s2-line border border-s2-line rounded-s2 overflow-hidden <%= columns_class %>">
+  <% differentials.each_with_index do |differential, index| %>
+    <li class="bg-s2-void p-6 lg:p-8">
+      <p class="s2-index mb-5"><%= format("%02d", index + 1) %></p>
+
+      <h3 class="font-s2-display text-lg font-semibold tracking-[-0.02em] text-s2-chalk">
+        <%= differential.title %>
+      </h3>
+
+      <% if differential.description.present? %>
+        <p class="mt-2.5 text-sm leading-relaxed text-s2-ash"><%= differential.description %></p>
+      <% end %>
+    </li>
+  <% end %>
+</ul>

@@ -1,0 +1,100 @@
+<header data-controller="site-header"
+        data-site-header-transparent-value="<%= transparent? %>"
+        data-site-header-target="bar"
+        class="fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,border-color] duration-300
+               <%= transparent? ? "bg-transparent border-b border-transparent" : "bg-paper border-b border-sand" %>">
+
+  <div class="mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="flex items-center gap-6 h-16 lg:h-20">
+
+      <%# Marca %>
+      <%= link_to site_root_path, class: "flex items-center gap-2.5 shrink-0",
+                  aria: { label: current_setting.company_name } do %>
+        <% if logo.attached? %>
+          <%= image_tag logo.variant(:thumb), alt: current_setting.company_name,
+                class: "h-8 lg:h-9 w-auto object-contain" %>
+        <% else %>
+          <span data-site-header-target="mark"
+                class="grid place-items-center size-9 rounded-site shrink-0 transition-colors
+                       <%= transparent? ? "bg-white/15 text-white backdrop-blur-sm" : "bg-brand text-white" %>">
+            <%= render UI::IconComponent.new(:car, class: "size-5", stroke_width: 2) %>
+          </span>
+          <span data-site-header-target="wordmark"
+                class="font-site-display font-semibold text-[0.9375rem] leading-tight tracking-tight transition-colors
+                       <%= transparent? ? "text-white" : "text-graphite" %>">
+            <%= current_setting.company_name %>
+          </span>
+        <% end %>
+      <% end %>
+
+      <%# Navegación de escritorio %>
+      <nav class="hidden lg:flex items-center gap-1 ml-auto" aria-label="<%= t("site.nav.primary") %>">
+        <% links.each do |link| %>
+          <%= link_to link.label, link.path,
+                data: { site_header_target: "navLink" },
+                aria: { current: ("page" if active?(link)) },
+                class: "relative px-3 py-2 text-sm font-medium rounded-md transition-colors
+                        #{transparent? ? "text-white/85 hover:text-white" : "text-stone hover:text-graphite"}
+                        #{"after:absolute after:inset-x-3 after:-bottom-px after:h-0.5 after:bg-brand after:rounded-full" if active?(link)}" %>
+        <% end %>
+      </nav>
+
+      <%# Acciones %>
+      <div class="flex items-center gap-2 ml-auto lg:ml-0">
+        <% if whatsapp_url.present? %>
+          <%= link_to whatsapp_url, target: "_blank", rel: "noopener",
+                class: "hidden sm:inline-flex items-center justify-center gap-2 h-9.5 px-4 rounded-md border
+                        text-sm font-semibold transition-colors bg-[#25D366] text-[#07301a] border-[#25D366] hover:brightness-105" do %>
+            <%= render UI::IconComponent.new(:phone, class: "size-4") %>
+            <span>WhatsApp</span>
+          <% end %>
+        <% end %>
+
+        <%# Menú móvil %>
+        <button type="button" data-action="site-header#toggleMenu"
+                data-site-header-target="burger"
+                class="lg:hidden grid place-items-center size-10 -mr-2 rounded-md transition-colors
+                       <%= transparent? ? "text-white hover:bg-white/10" : "text-graphite hover:bg-paper-2" %>"
+                aria-expanded="false" aria-controls="site-menu"
+                aria-label="<%= t("site.nav.open_menu") %>">
+          <span data-site-header-target="burgerOpen">
+            <%= render UI::IconComponent.new(:menu, class: "size-5.5") %>
+          </span>
+          <span data-site-header-target="burgerClose" hidden>
+            <%= render UI::IconComponent.new(:x, class: "size-5.5") %>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <%# Cajón móvil %>
+  <div id="site-menu" data-site-header-target="menu" hidden
+       class="lg:hidden bg-paper border-t border-sand">
+    <nav class="mx-auto max-w-7xl px-4 py-3" aria-label="<%= t("site.nav.primary") %>">
+      <ul class="divide-y divide-sand">
+        <% links.each do |link| %>
+          <li>
+            <%= link_to link.path,
+                  aria: { current: ("page" if active?(link)) },
+                  class: "flex items-center justify-between py-3.5 text-[0.9375rem] font-medium
+                          #{active?(link) ? "text-brand" : "text-graphite"}" do %>
+              <span><%= link.label %></span>
+              <%= render UI::IconComponent.new(:chevron_right, class: "size-4 text-stone-2") %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+
+      <% if whatsapp_url.present? %>
+        <div class="pt-4">
+          <%= link_to whatsapp_url, target: "_blank", rel: "noopener",
+                class: "flex items-center justify-center gap-2 h-11 rounded-md bg-[#25D366] text-[#07301a] font-semibold" do %>
+            <%= render UI::IconComponent.new(:phone, class: "size-4.5") %>
+            <span><%= t("site.cta.whatsapp") %></span>
+          <% end %>
+        </div>
+      <% end %>
+    </nav>
+  </div>
+</header>

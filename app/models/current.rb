@@ -3,4 +3,5 @@
 class Current < ActiveSupport::CurrentAttributes
   attribute :user
   attribute :setting
+  attribute :site_content
 end

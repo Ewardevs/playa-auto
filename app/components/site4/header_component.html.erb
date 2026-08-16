@@ -1,0 +1,95 @@
+<header data-controller="site4-header"
+        class="fixed inset-x-0 top-0 z-50 bg-s4-canvas/0">
+  <div class="mx-auto max-w-[88rem] px-3 sm:px-5">
+    <div class="s4-dock" data-site4-header-target="dock">
+
+      <div class="flex items-center gap-2 h-16 sm:h-[4.5rem]">
+        <%# Marca %>
+        <%= link_to site4_root_path, class: "flex items-center gap-2.5 shrink-0 mr-auto",
+                    aria: { label: current_setting.company_name } do %>
+          <% if logo.attached? %>
+            <%= image_tag logo.variant(:thumb), alt: current_setting.company_name,
+                  class: "h-7 w-auto object-contain" %>
+          <% else %>
+            <span class="grid place-items-center size-9 rounded-[0.875rem] bg-s4-ink text-white shrink-0">
+              <%= render UI::IconComponent.new(:car, class: "size-4.5") %>
+            </span>
+            <span class="font-extrabold text-[1.0625rem] tracking-[-0.02em] whitespace-nowrap">
+              <%= current_setting.company_name %>
+            </span>
+          <% end %>
+        <% end %>
+
+        <%# Enlaces de escritorio %>
+        <ul class="hidden lg:flex items-center gap-1 mx-auto">
+          <% links.each do |link| %>
+            <li>
+              <%= link_to link.label, link.path,
+                    aria: { current: ("page" if active?(link)) },
+                    class: "inline-flex items-center h-10 px-4 rounded-[0.875rem] text-[0.9375rem] transition-colors
+                            #{active?(link) ? "bg-s4-accent-soft text-s4-accent font-semibold" : "text-s4-ink-2 hover:bg-s4-surface hover:text-s4-ink"}" %>
+            </li>
+          <% end %>
+        </ul>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <% if whatsapp_url.present? %>
+            <%= link_to whatsapp_url, target: "_blank", rel: "noopener",
+                  class: "hidden sm:inline-flex items-center gap-2 h-10 pl-4 pr-4 rounded-[0.875rem]
+                          bg-s4-ink text-white text-sm font-semibold
+                          transition-colors hover:bg-s4-accent" do %>
+              <%= render UI::IconComponent.new(:phone, class: "size-3.5") %>
+              <span><%= t("site4.cta.whatsapp_short") %></span>
+            <% end %>
+          <% end %>
+
+          <button type="button" data-action="site4-header#toggle"
+                  data-site4-header-target="burger"
+                  class="lg:hidden grid place-items-center size-10 rounded-[0.875rem] bg-s4-surface
+                         text-s4-ink shadow-sm"
+                  aria-expanded="false" aria-controls="site4-menu"
+                  aria-label="<%= t("site4.nav.open_menu") %>">
+            <span data-site4-header-target="burgerOpen">
+              <%= render UI::IconComponent.new(:menu, class: "size-4.5") %>
+            </span>
+            <span data-site4-header-target="burgerClose" hidden>
+              <%= render UI::IconComponent.new(:x, class: "size-4.5") %>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <%# Menú móvil %>
+      <div id="site4-menu" data-site4-header-target="menu" hidden
+           class="lg:hidden pb-4">
+        <ul class="space-y-1">
+          <% links.each do |link| %>
+            <li>
+              <%= link_to link.path,
+                    aria: { current: ("page" if active?(link)) },
+                    class: "flex items-center justify-between px-4 py-3.5 rounded-[0.875rem]
+                            text-[0.9375rem] transition-colors
+                            #{active?(link) ? "bg-s4-accent-soft text-s4-accent font-semibold" : "text-s4-ink hover:bg-s4-canvas"}" do %>
+                <span><%= link.label %></span>
+                <%= render UI::IconComponent.new(:chevron_right, class: "size-4 text-s4-ink-3") %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+
+        <% if whatsapp_url.present? %>
+          <%= link_to whatsapp_url, target: "_blank", rel: "noopener",
+                class: "mt-2 flex items-center justify-center gap-2 h-12 rounded-[0.875rem]
+                        bg-s4-accent text-white font-semibold" do %>
+            <%= render UI::IconComponent.new(:phone, class: "size-4") %>
+            <span><%= t("site4.cta.whatsapp") %></span>
+          <% end %>
+        <% end %>
+      </div>
+
+      <% if preview? %>
+        <p class="pb-2 text-center text-xs text-s4-ink-3"><%= t("site4.nav.preview_notice") %></p>
+      <% end %>
+    </div>
+  </div>
+</header>

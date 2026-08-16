@@ -50,7 +50,8 @@ module Admin
     def site_items
       [
         (item(t("admin.nav.content"), helpers.admin_content_path, :file_text) if allowed?(SiteContent.new, :show?)),
-        (item(t("admin.nav.faqs"), helpers.admin_faqs_path, :info) if allowed?(Faq, :index?))
+        (item(t("admin.nav.faqs"), helpers.admin_faqs_path, :info) if allowed?(Faq, :index?)),
+        (item(t("admin.nav.differentials"), helpers.admin_differentials_path, :star) if allowed?(Differential, :index?))
       ].compact
     end
 

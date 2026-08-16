@@ -1,0 +1,159 @@
+<% content_for :structured_data do %>
+  <%= render Site2::StructuredDataComponent.new %>
+<% end %>
+
+<%= render Site2::HeroComponent.new(
+      vehicles: @featured,
+      stock_count: @stock_count,
+      brand_count: @brand_count,
+      offer_count: @offer_count) %>
+
+<%# Accesos directos: cada segmento con su stock real. Un segmento sin unidades
+    no se ofrece, para que nadie llegue a un catálogo vacío. %>
+<% shortcuts = @categories.filter_map { |category|
+     count = @category_stock[category.id].to_i
+     [ category, count ] if count.positive?
+   } %>
+
+<% if shortcuts.any? %>
+  <section class="border-b border-s2-line">
+    <div class="mx-auto max-w-[86rem] px-4 sm:px-6 py-5">
+      <div class="flex items-center gap-4 overflow-x-auto s2-snap">
+        <span class="s2-label shrink-0 pr-2"><%= t("site2.home.quick_kicker") %></span>
+
+        <% shortcuts.each do |category, count| %>
+          <%= link_to site2_vehicles_path(categoria: category.slug),
+                class: "group shrink-0 inline-flex items-baseline gap-2 h-9 px-4 border border-s2-line
+                        rounded-s2 text-sm text-s2-ash transition-colors
+                        hover:border-s2-signal hover:text-s2-chalk" do %>
+            <span><%= category.name %></span>
+            <span class="text-[0.6875rem] tabular-nums text-s2-ash-2
+                         transition-colors group-hover:text-s2-signal"><%= count %></span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </section>
+<% end %>
+
+<%# 01 — Selección %>
+<section class="mx-auto max-w-[86rem] px-4 sm:px-6 pt-16 pb-4 lg:pt-24">
+  <%= render Site2::SectionComponent.new(
+        index: t("site2.home.featured_index"),
+        label: t("site2.home.featured_label"),
+        title: t("site2.home.featured_title"),
+        lead: t("site2.home.featured_lead")) do |section| %>
+    <% section.with_action do %>
+      <%= link_to site2_vehicles_path,
+            class: "inline-flex items-center gap-2 h-11 px-5 border border-s2-line rounded-s2
+                    text-xs font-semibold uppercase tracking-[0.1em] text-s2-chalk
+                    transition-colors hover:border-s2-ash-2" do %>
+        <span><%= t("site2.cta.see_all") %></span>
+        <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if @featured.any? %>
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+         data-controller="site2-reveal">
+      <% @featured.each_with_index do |vehicle, index| %>
+        <div data-site2-reveal-target="item">
+          <%= render Site2::VehicleCardComponent.new(
+                vehicle: vehicle, index: index + 1,
+                loading: index < 3 ? "eager" : "lazy", priority: index.zero?) %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <%= render Site2::EmptyStateComponent.new(title: t("site2.home.empty")) do |empty| %>
+      <% empty.with_action do %>
+        <%= link_to t("site2.cta.whatsapp"), site2_contact_path,
+              class: "inline-flex items-center h-11 px-5 bg-s2-signal text-s2-signal-ink
+                      text-xs font-semibold uppercase tracking-[0.1em] rounded-s2" %>
+      <% end %>
+    <% end %>
+  <% end %>
+</section>
+
+<%# 02 — Ofertas, sobre panel: la banda cambia de material para marcar que acá
+    el precio es otro. %>
+<% if @offers.any? %>
+  <section class="mt-20 lg:mt-28 py-16 lg:py-24 bg-s2-panel border-y border-s2-line">
+    <div class="mx-auto max-w-[86rem] px-4 sm:px-6">
+      <%= render Site2::SectionComponent.new(
+            index: t("site2.home.offers_index"),
+            label: t("site2.home.offers_label"),
+            title: t("site2.home.offers_title"),
+            lead: t("site2.home.offers_lead")) do |section| %>
+        <% section.with_action do %>
+          <%= link_to site2_offers_path,
+                class: "inline-flex items-center gap-2 h-11 px-5 bg-s2-signal text-s2-signal-ink
+                        rounded-s2 text-xs font-semibold uppercase tracking-[0.1em]
+                        transition-colors hover:bg-s2-signal-2" do %>
+            <span><%= t("site2.cta.see_all") %></span>
+            <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-controller="site2-reveal">
+        <% @offers.each_with_index do |vehicle, index| %>
+          <div data-site2-reveal-target="item">
+            <%= render Site2::VehicleCardComponent.new(vehicle: vehicle, index: index + 1) %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </section>
+<% end %>
+
+<%# 03 — Diferenciales %>
+<% if @differentials.any? %>
+  <section class="mx-auto max-w-[86rem] px-4 sm:px-6 pt-20 lg:pt-28">
+    <%= render Site2::SectionComponent.new(
+          index: t("site2.home.why_index"),
+          label: t("site2.home.why_label"),
+          title: t("site2.home.why_title")) %>
+
+    <div data-controller="site2-reveal">
+      <div data-site2-reveal-target="item">
+        <%= render Site2::DifferentialsComponent.new(differentials: @differentials) %>
+      </div>
+    </div>
+  </section>
+<% end %>
+
+<%# 04 — Cierre %>
+<section class="mx-auto max-w-[86rem] px-4 sm:px-6 pt-20 lg:pt-28">
+  <div class="border border-s2-line rounded-s2 px-6 sm:px-10 lg:px-16 py-14 lg:py-20">
+    <p class="flex items-center gap-3 mb-4">
+      <span class="s2-index"><%= t("site2.home.closing_index") %></span>
+      <span class="s2-label"><%= t("site2.home.closing_label") %></span>
+    </p>
+
+    <h2 class="font-s2-display text-3xl sm:text-4xl lg:text-5xl font-semibold leading-[1.02]
+               tracking-[-0.035em] text-s2-chalk max-w-2xl text-balance">
+      <%= t("site2.home.closing_title") %>
+    </h2>
+
+    <p class="mt-4 text-[0.9375rem] leading-relaxed text-s2-ash max-w-xl">
+      <%= t("site2.home.closing_lead") %>
+    </p>
+
+    <div class="flex flex-wrap items-center gap-3 mt-9">
+      <%= link_to site2_contact_path,
+            class: "inline-flex items-center gap-2 h-13 px-7 bg-s2-signal text-s2-signal-ink
+                    text-sm font-semibold uppercase tracking-[0.1em] rounded-s2
+                    transition-colors hover:bg-s2-signal-2" do %>
+        <span><%= t("site2.nav.contact") %></span>
+        <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+      <% end %>
+
+      <%= link_to t("site2.cta.explore"), site2_vehicles_path,
+            class: "inline-flex items-center h-13 px-6 border border-s2-line text-s2-chalk
+                    text-sm font-semibold uppercase tracking-[0.1em] rounded-s2
+                    transition-colors hover:border-s2-ash-2" %>
+    </div>
+  </div>
+</section>

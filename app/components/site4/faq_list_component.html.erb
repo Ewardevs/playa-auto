@@ -1,0 +1,26 @@
+<ul class="space-y-2.5">
+  <% faqs.each do |faq| %>
+    <li>
+      <details class="group s4-card px-6 sm:px-7">
+        <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
+                        flex items-start justify-between gap-6 py-5">
+          <h3 class="text-[1.0625rem] font-bold leading-snug tracking-[-0.015em] text-s4-ink
+                     transition-colors group-hover:text-s4-accent">
+            <%= faq.question %>
+          </h3>
+
+          <span class="shrink-0 mt-0.5 grid place-items-center size-8 rounded-[0.875rem] bg-s4-canvas
+                       text-s4-ink-2 transition-all duration-300
+                       group-open:rotate-45 group-open:bg-s4-accent group-open:text-white"
+                aria-hidden="true">
+            <%= render UI::IconComponent.new(:plus, class: "size-4") %>
+          </span>
+        </summary>
+
+        <div class="pb-6 pr-12 text-[0.9375rem] leading-relaxed text-s4-ink-2 whitespace-pre-line">
+          <%= faq.answer %>
+        </div>
+      </details>
+    </li>
+  <% end %>
+</ul>

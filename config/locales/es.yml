@@ -68,6 +68,9 @@ es:
       inquiry:
         one: Consulta
         other: Consultas
+      differential:
+        one: Diferencial
+        other: Diferenciales
       faq:
         one: Pregunta frecuente
         other: Preguntas frecuentes
@@ -204,6 +207,12 @@ es:
           negotiating: En negociación
           sold: Vendido
           closed: Cerrada
+      differential:
+        title: Título
+        description: Descripción
+        icon: Ícono
+        position: Orden
+        active: Estado
       faq:
         question: Pregunta
         answer: Respuesta
@@ -226,6 +235,10 @@ es:
         currency: Moneda
         currency_symbol: Símbolo
         locale: Idioma
+        show_sold_vehicles: Mostrar vehículos vendidos en la web
+        google_analytics_id: Google Analytics
+        google_tag_manager_id: Google Tag Manager
+        meta_pixel_id: Meta Pixel
       site_content:
         hero_title: Título del banner
         hero_subtitle: Subtítulo

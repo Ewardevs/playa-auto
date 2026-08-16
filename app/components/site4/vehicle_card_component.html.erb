@@ -1,0 +1,77 @@
+<article class="s4-card s4-card-hover h-full p-2.5">
+  <%= link_to path, class: "group flex flex-col h-full rounded-[calc(var(--radius-s4)-0.625rem)]
+                            focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-s4-accent" do %>
+
+    <%# Fotografía que sangra a la superficie, con datos flotando encima %>
+    <div class="relative aspect-4/3 rounded-[calc(var(--radius-s4)-0.625rem)] overflow-hidden bg-s4-canvas">
+      <% if image? %>
+        <%= image_tag image.file.variant(:card),
+              alt: image_alt,
+              loading: loading,
+              fetchpriority: fetch_priority,
+              decoding: "async",
+              class: "absolute inset-0 size-full object-cover transition-transform duration-700
+                      ease-out group-hover:scale-[1.05] #{'opacity-60' if sold?}" %>
+      <% else %>
+        <span class="absolute inset-0 grid place-items-center text-s4-ink-3">
+          <%= render UI::IconComponent.new(:car, class: "size-9") %>
+          <span class="sr-only"><%= t("site4.vehicles.no_photo") %></span>
+        </span>
+      <% end %>
+
+      <%# Metadatos flotantes: estado y ahorro arriba… %>
+      <div class="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">
+        <%= render Site4::VehicleStatusBadgeComponent.new(vehicle) %>
+
+        <% if savings %>
+          <span class="inline-flex items-center h-7 px-3 rounded-[0.875rem] bg-s4-accent text-white
+                       text-[0.8125rem] font-medium">
+            <%= t("site4.vehicles.offer_badge", amount: money(savings)) %>
+          </span>
+        <% end %>
+      </div>
+
+      <%# …y la chapa de datos, translúcida, abajo %>
+      <div class="absolute inset-x-3 bottom-3">
+        <ul class="flex flex-wrap items-center gap-1.5">
+          <% floating_specs.each do |spec| %>
+            <li class="s4-chip"><%= spec %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+
+    <%# Datos en la superficie blanda %>
+    <div class="flex flex-col flex-1 px-3 pt-4 pb-1.5">
+      <h3 class="text-[1.0625rem] font-bold leading-snug tracking-[-0.015em] text-s4-ink">
+        <%= title %>
+      </h3>
+      <p class="s4-label mt-0.5"><%= vehicle.category.name %></p>
+
+      <div class="flex items-end justify-between gap-3 mt-auto pt-4">
+        <div class="min-w-0">
+          <% if discounted? %>
+            <p class="text-[0.8125rem] text-s4-ink-3 line-through tabular-nums">
+              <%= money(vehicle.price) %>
+            </p>
+          <% end %>
+          <p class="s4-price text-[1.375rem] font-bold text-s4-ink">
+            <%= money(vehicle.current_price) %>
+          </p>
+        </div>
+
+        <span class="grid place-items-center size-10 shrink-0 rounded-full bg-s4-accent-soft text-s4-accent
+                     transition-colors duration-300 group-hover:bg-s4-accent group-hover:text-white"
+              aria-hidden="true">
+          <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+        </span>
+      </div>
+
+      <% if discounted? && offer_ends_on.present? %>
+        <p class="mt-2 text-[0.8125rem] text-s4-accent">
+          <%= t("site4.vehicles.offer_until", date: short_date(offer_ends_on)) %>
+        </p>
+      <% end %>
+    </div>
+  <% end %>
+</article>

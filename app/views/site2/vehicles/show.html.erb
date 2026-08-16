@@ -1,0 +1,152 @@
+<% content_for :structured_data do %>
+  <%= render Site2::StructuredDataComponent.new(vehicle: @vehicle, breadcrumbs: breadcrumbs) %>
+<% end %>
+
+<div class="mx-auto max-w-[86rem] px-4 sm:px-6 pt-8 pb-20">
+  <%= render Site2::BreadcrumbsComponent.new(items: breadcrumbs) %>
+
+  <div class="grid lg:grid-cols-12 gap-8 lg:gap-12 mt-6">
+
+    <%# Columna principal %>
+    <div class="lg:col-span-8 min-w-0">
+      <header class="mb-7">
+        <p class="s2-label mb-3"><%= t("site2.vehicles.code", code: @vehicle.code) %></p>
+
+        <h1 class="font-s2-display text-3xl sm:text-4xl lg:text-5xl font-bold leading-[1.0]
+                   tracking-[-0.04em] text-s2-chalk text-balance">
+          <%= @vehicle.display_name %>
+        </h1>
+
+        <p class="mt-2 text-sm text-s2-ash"><%= @vehicle.category.name %></p>
+      </header>
+
+      <%= render Site2::VehicleGalleryComponent.new(vehicle: @vehicle) %>
+
+      <%# 01 — Ficha técnica %>
+      <section class="mt-14">
+        <%= render Site2::SectionComponent.new(
+              index: t("site2.vehicles.specs_index"),
+              label: nil,
+              title: t("site2.vehicles.specs_title")) %>
+        <%= render Site2::VehicleSpecsComponent.new(vehicle: @vehicle) %>
+      </section>
+
+      <%# 02 — Descripción %>
+      <section class="mt-14">
+        <%= render Site2::SectionComponent.new(
+              index: t("site2.vehicles.description_index"),
+              title: t("site2.vehicles.description_title")) %>
+
+        <div class="max-w-3xl text-[0.9375rem] leading-relaxed text-s2-ash whitespace-pre-line">
+          <%= @vehicle.description.presence || t("site2.vehicles.no_description") %>
+        </div>
+      </section>
+
+      <%# 03 — Equipamiento %>
+      <% if @vehicle.equipment.present? %>
+        <section class="mt-14">
+          <%= render Site2::SectionComponent.new(
+                index: t("site2.vehicles.equipment_index"),
+                title: t("site2.vehicles.equipment_title")) %>
+
+          <ul class="grid gap-x-8 gap-y-2.5 sm:grid-cols-2 max-w-3xl">
+            <% @vehicle.equipment.to_s.lines.map(&:strip).reject(&:blank?).each do |item| %>
+              <li class="flex items-start gap-3 text-[0.9375rem] text-s2-ash">
+                <span class="mt-2 size-1 shrink-0 bg-s2-signal" aria-hidden="true"></span>
+                <span><%= item %></span>
+              </li>
+            <% end %>
+          </ul>
+        </section>
+      <% end %>
+    </div>
+
+    <%# Panel de decisión: acompaña al visitante mientras baja por la ficha. %>
+    <aside class="lg:col-span-4">
+      <div class="lg:sticky lg:top-28 border border-s2-line rounded-s2 bg-s2-panel p-6">
+        <% if @vehicle.discounted? %>
+          <p class="s2-struck text-sm text-s2-ash-2 tabular-nums"><%= money(@vehicle.price) %></p>
+        <% end %>
+
+        <p class="font-s2-display text-4xl font-bold tabular-nums tracking-[-0.04em] leading-none
+                  <%= @vehicle.discounted? ? "text-s2-signal" : "text-s2-chalk" %>">
+          <%= money(@vehicle.current_price) %>
+        </p>
+
+        <% if @vehicle.discounted? && @vehicle.running_offer&.ends_on.present? %>
+          <p class="mt-2 text-xs text-s2-signal-2">
+            <%= t("site2.vehicles.offer_until", date: short_date(@vehicle.running_offer.ends_on)) %>
+          </p>
+        <% end %>
+
+        <% if @vehicle.status == "reserved" %>
+          <p class="mt-5 border-l-2 border-s2-amber pl-3 py-1 text-sm text-s2-ash">
+            <%= t("site2.vehicles.reserved_notice") %>
+          </p>
+        <% elsif @vehicle.status == "sold" %>
+          <p class="mt-5 border-l-2 border-s2-ash-2 pl-3 py-1 text-sm text-s2-ash">
+            <%= t("site2.vehicles.sold_notice") %>
+          </p>
+        <% end %>
+
+        <% whatsapp = Vehicles::WhatsappMessage.new(@vehicle, setting: current_setting) %>
+        <div class="mt-7 space-y-2.5">
+          <% if whatsapp.link.present? %>
+            <%= link_to whatsapp.link, target: "_blank", rel: "noopener",
+                  data: { controller: "whatsapp-track",
+                          whatsapp_track_url_value: whatsapp_click_site2_vehicle_path(@vehicle),
+                          action: "click->whatsapp-track#record" },
+                  class: "flex items-center justify-center gap-2 h-12 bg-s2-signal text-s2-signal-ink
+                          text-xs font-semibold uppercase tracking-[0.1em] rounded-s2
+                          transition-colors hover:bg-s2-signal-2" do %>
+              <%= render UI::IconComponent.new(:phone, class: "size-4") %>
+              <span><%= t("site2.cta.whatsapp") %></span>
+            <% end %>
+          <% end %>
+
+          <a href="#consulta"
+             class="flex items-center justify-center gap-2 h-12 border border-s2-line text-s2-chalk
+                    text-xs font-semibold uppercase tracking-[0.1em] rounded-s2
+                    transition-colors hover:border-s2-ash-2">
+            <%= t("site2.cta.consult") %>
+          </a>
+
+          <% if current_setting.phone.present? %>
+            <%= phone_link current_setting.phone,
+                  class: "flex items-center justify-center h-11 text-xs uppercase tracking-[0.1em]
+                          text-s2-ash transition-colors hover:text-s2-chalk" %>
+          <% end %>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <%# 04 — Consulta %>
+  <section id="consulta" class="mt-20 scroll-mt-28">
+    <%= render Site2::SectionComponent.new(
+          index: t("site2.vehicles.inquiry_index"),
+          title: t("site2.vehicles.inquiry_title"),
+          lead: t("site2.vehicles.inquiry_lead")) %>
+
+    <div class="max-w-3xl">
+      <%= render Site2::InquiryFormComponent.new(inquiry: @inquiry, vehicle: @vehicle) %>
+    </div>
+  </section>
+
+  <%# 05 — Relacionados %>
+  <% if @related.any? %>
+    <section class="mt-20">
+      <%= render Site2::SectionComponent.new(
+            index: t("site2.vehicles.related_index"),
+            title: t("site2.vehicles.related_title")) %>
+
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4" data-controller="site2-reveal">
+        <% @related.each do |vehicle| %>
+          <div data-site2-reveal-target="item">
+            <%= render Site2::VehicleCardComponent.new(vehicle: vehicle) %>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

@@ -1,6 +1,6 @@
-<nav class="flex flex-wrap items-center justify-between gap-3 px-5 py-3 border-t border-line"
+<nav class="flex flex-wrap items-center justify-between gap-3 <%= skin[:wrapper] %>"
      aria-label="<%= t("admin.pagination.label") %>">
-  <p class="text-xs text-muted num">
+  <p class="<%= skin[:summary] %>">
     <%= t("admin.pagination.summary", from: pagy.from, to: pagy.to, count: pagy.count) %>
   </p>
 
@@ -18,7 +18,7 @@
 
     <% series.each do |number| %>
       <% if number == UI::PaginationComponent::GAP %>
-        <span class="px-1 text-faint select-none">&hellip;</span>
+        <span class="px-1 <%= skin[:gap] %> select-none">&hellip;</span>
       <% elsif number == page %>
         <span class="<%= link_classes(active: true) %> num" aria-current="page"><%= number %></span>
       <% else %>

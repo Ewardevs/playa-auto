@@ -1,0 +1,121 @@
+<% content_for :structured_data do %>
+  <%= render Site4::StructuredDataComponent.new %>
+<% end %>
+
+<div class="-mt-20 sm:-mt-24">
+  <%= render Site4::HeroComponent.new(
+        vehicle: @featured.first,
+        categories: @categories,
+        category_stock: @category_stock,
+        stock_count: @stock_count,
+        brand_count: @brand_count,
+        offer_count: @offer_count) %>
+</div>
+
+<%# Recién ingresados %>
+<section class="mx-auto max-w-[88rem] px-3 sm:px-5 pt-16 sm:pt-20 lg:pt-24">
+  <%= render Site4::SectionHeadingComponent.new(
+        label: t("site4.home.featured_kicker"),
+        title: t("site4.home.featured_title"),
+        lead: t("site4.home.featured_lead")) do |heading| %>
+    <% heading.with_action do %>
+      <%= link_to site4_vehicles_path,
+            class: "inline-flex items-center gap-2 h-11 px-5 rounded-[0.875rem] bg-s4-surface
+                    text-sm font-semibold text-s4-ink s4-card transition-colors
+                    hover:bg-s4-accent hover:text-white" do %>
+        <span><%= t("site4.cta.see_all") %></span>
+        <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if @featured.any? %>
+    <div class="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3" data-controller="site4-reveal">
+      <% @featured.each_with_index do |vehicle, index| %>
+        <div data-site4-reveal-target="item">
+          <%= render Site4::VehicleCardComponent.new(
+                vehicle: vehicle,
+                loading: index < 3 ? "eager" : "lazy",
+                priority: index.zero?) %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <%= render Site4::EmptyStateComponent.new(title: t("site4.vehicles.empty_title"),
+                                              description: t("site4.vehicles.empty_lead")) do |empty| %>
+      <% empty.with_action do %>
+        <%= link_to t("site4.nav.contact"), site4_contact_path,
+              class: "inline-flex items-center h-11 px-6 rounded-[0.875rem] bg-s4-accent text-white
+                      text-sm font-semibold" %>
+      <% end %>
+    <% end %>
+  <% end %>
+</section>
+
+<%# Ofertas %>
+<% if @offers.any? %>
+  <section class="mx-auto max-w-[88rem] px-3 sm:px-5 pt-16 sm:pt-20 lg:pt-24">
+    <%= render Site4::SectionHeadingComponent.new(
+          label: t("site4.home.offers_kicker"),
+          title: t("site4.home.offers_title"),
+          lead: t("site4.home.offers_lead")) do |heading| %>
+      <% heading.with_action do %>
+        <%= link_to site4_offers_path,
+              class: "inline-flex items-center gap-2 h-11 px-5 rounded-[0.875rem] bg-s4-accent text-white
+                      text-sm font-semibold transition-colors hover:bg-s4-accent-2" do %>
+          <span><%= t("site4.cta.see_all") %></span>
+          <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <div class="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3" data-controller="site4-reveal">
+      <% @offers.each do |vehicle| %>
+        <div data-site4-reveal-target="item">
+          <%= render Site4::VehicleCardComponent.new(vehicle: vehicle) %>
+        </div>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+
+<%# Diferenciales %>
+<% if @differentials.any? %>
+  <section class="mx-auto max-w-[88rem] px-3 sm:px-5 pt-16 sm:pt-20 lg:pt-24">
+    <%= render Site4::SectionHeadingComponent.new(
+          label: t("site4.home.why_kicker"),
+          title: t("site4.home.why_title"),
+          align: :center) %>
+
+    <div data-controller="site4-reveal">
+      <div data-site4-reveal-target="item">
+        <%= render Site4::DifferentialsComponent.new(differentials: @differentials) %>
+      </div>
+    </div>
+  </section>
+<% end %>
+
+<%# Cierre %>
+<section class="mx-auto max-w-[88rem] px-3 sm:px-5 pt-16 sm:pt-20 lg:pt-24">
+  <div class="rounded-s4-hero bg-s4-ink text-white px-7 sm:px-12 lg:px-16 py-14 lg:py-20
+              flex flex-wrap items-end justify-between gap-8">
+    <div class="max-w-xl">
+      <h2 class="text-4xl sm:text-5xl lg:text-[3.5rem] leading-[1.0] tracking-[-0.03em]
+                 font-extrabold text-balance">
+        <%= t("site4.home.closing_title") %>
+      </h2>
+      <p class="mt-4 text-[1.0625rem] leading-relaxed text-white/70">
+        <%= t("site4.home.closing_lead") %>
+      </p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2.5">
+      <%= link_to t("site4.nav.contact"), site4_contact_path,
+            class: "inline-flex items-center h-13 px-7 rounded-[0.875rem] bg-s4-accent text-white
+                    text-sm font-semibold transition-colors hover:bg-s4-accent-2" %>
+      <%= link_to t("site4.cta.explore"), site4_vehicles_path,
+            class: "inline-flex items-center h-13 px-7 rounded-[0.875rem] bg-white/15 text-white
+                    text-sm font-semibold transition-colors hover:bg-white/25" %>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,113 @@
+<div class="mx-auto max-w-7xl px-4 sm:px-6 py-8 lg:py-12">
+
+  <%= render Site::BreadcrumbsComponent.new(crumbs: breadcrumbs) %>
+
+  <header class="mt-4 mb-8">
+    <h1 class="font-site-display text-3xl lg:text-4xl font-semibold text-graphite tracking-tight">
+      <%= @search.selected_brand&.name || @search.selected_category&.name || t("site.vehicles.title") %>
+    </h1>
+    <p class="text-stone mt-2"><%= t("site.vehicles.description") %></p>
+  </header>
+
+  <div class="lg:grid lg:grid-cols-[17rem_1fr] lg:gap-10 lg:items-start"
+       data-controller="filters-drawer">
+
+    <%# ── Filtros: barra lateral en escritorio ────────────────────────── %>
+    <aside class="hidden lg:block lg:sticky lg:top-24">
+      <h2 class="font-site-display text-base font-semibold text-graphite pb-4 border-b border-sand">
+        <%= t("site.filters.title") %>
+      </h2>
+      <%= render Site::VehicleFiltersComponent.new(
+            search: @search, brands: @brands, categories: @categories,
+            models: @models, params: params) %>
+    </aside>
+
+    <div class="min-w-0">
+      <%# ── Barra de resultados y orden ───────────────────────────────── %>
+      <div class="flex flex-wrap items-center justify-between gap-3 pb-5 border-b border-sand">
+        <p class="text-sm text-stone tabular-nums">
+          <%= t("site.filters.results", count: @pagy.count) %>
+        </p>
+
+        <div class="flex items-center gap-2">
+          <%# Filtrar: cajón en móvil %>
+          <button type="button" data-action="filters-drawer#open"
+                  class="lg:hidden inline-flex items-center gap-2 h-9.5 px-4 rounded-md border border-sand
+                         bg-white text-sm font-medium text-graphite hover:border-stone-2 transition-colors">
+            <%= render UI::IconComponent.new(:filter, class: "size-4") %>
+            <span><%= t("site.filters.open") %></span>
+          </button>
+
+          <%# Orden: submit inmediato, conservando los filtros activos %>
+          <%= form_with url: site_vehicles_path, method: :get,
+                        data: { controller: "filter-form" }, class: "flex items-center gap-2" do %>
+            <% Vehicles::PublicSearch::FILTER_KEYS.each do |key| %>
+              <%= hidden_field_tag key, params[key] if params[key].present? %>
+            <% end %>
+
+            <label for="orden" class="sr-only"><%= t("site.sort.label") %></label>
+            <%= select_tag :orden,
+                  options_for_select(
+                    Vehicles::PublicSearch::SORTS.keys.map { |key| [t("site.sort.#{key}"), key] },
+                    @search.sort_key),
+                  data: { action: "change->filter-form#submit" },
+                  class: "h-9.5 pl-3 pr-8 rounded-md border border-sand bg-white text-sm text-graphite focus:border-brand focus:outline-none transition-colors" %>
+          <% end %>
+        </div>
+      </div>
+
+      <%# ── Resultados ────────────────────────────────────────────────── %>
+      <% if @vehicles.any? %>
+        <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 mt-6">
+          <% @vehicles.each_with_index do |vehicle, index| %>
+            <%= render Site::VehicleCardComponent.new(vehicle, eager: index < 3) %>
+          <% end %>
+        </div>
+
+        <%= render UI::PaginationComponent.new(@pagy, theme: :site) %>
+      <% else %>
+        <div class="mt-6">
+          <%= render Site::EmptyStateComponent.new(
+                title: @search.filtered? ? t("site.vehicles.empty_title") : t("site.vehicles.empty_catalog_title"),
+                description: @search.filtered? ? t("site.vehicles.empty_description") : t("site.vehicles.empty_catalog_description"),
+                icon: @search.filtered? ? :search : :car) do |empty| %>
+            <% empty.with_action do %>
+              <% if @search.filtered? %>
+                <%= render UI::ButtonComponent.new(
+                      label: t("site.filters.clear"), href: site_vehicles_path,
+                      variant: :brand, size: :lg, icon: :x) %>
+              <% else %>
+                <%= render Site::WhatsappButtonComponent.new(size: :lg) %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <%# ── Filtros: cajón inferior en móvil ────────────────────────────── %>
+    <div data-filters-drawer-target="scrim" data-action="click->filters-drawer#close" hidden
+         class="lg:hidden fixed inset-0 z-40 bg-night/50"></div>
+
+    <div data-filters-drawer-target="panel" hidden
+         class="lg:hidden fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] flex flex-col
+                bg-white rounded-t-2xl translate-y-full transition-transform duration-200 ease-out">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-sand">
+        <h2 class="font-site-display text-base font-semibold text-graphite"><%= t("site.filters.title") %></h2>
+        <button type="button" data-action="filters-drawer#close"
+                class="grid place-items-center size-9 -mr-2 rounded-md text-stone hover:bg-paper-2 transition-colors"
+                aria-label="<%= t("site.filters.close") %>">
+          <%= render UI::IconComponent.new(:x, class: "size-5") %>
+        </button>
+      </div>
+
+      <%= render Site::VehicleFiltersComponent.new(
+            search: @search, brands: @brands, categories: @categories,
+            models: @models, params: params) %>
+    </div>
+  </div>
+</div>
+
+<% content_for :structured_data do %>
+  <%= render Site::StructuredDataComponent.new(breadcrumbs: breadcrumbs) %>
+<% end %>

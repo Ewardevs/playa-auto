@@ -1,0 +1,27 @@
+<ul class="border-t border-s2-line">
+  <% faqs.each_with_index do |faq, index| %>
+    <li class="border-b border-s2-line">
+      <details class="group">
+        <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
+                        flex items-start gap-4 sm:gap-6 py-6 transition-colors hover:text-s2-signal">
+          <span class="s2-index pt-1.5 shrink-0"><%= format("%02d", index + 1) %></span>
+
+          <h3 class="flex-1 font-s2-display text-lg sm:text-xl font-semibold leading-snug
+                     tracking-[-0.02em] text-s2-chalk transition-colors group-hover:text-s2-signal">
+            <%= faq.question %>
+          </h3>
+
+          <span class="shrink-0 mt-1 text-s2-ash transition-transform duration-300 group-open:rotate-45"
+                aria-hidden="true">
+            <%= render UI::IconComponent.new(:plus, class: "size-5") %>
+          </span>
+        </summary>
+
+        <div class="pb-7 pl-10 sm:pl-13 pr-8 text-[0.9375rem] leading-relaxed text-s2-ash
+                    whitespace-pre-line max-w-3xl">
+          <%= faq.answer %>
+        </div>
+      </details>
+    </li>
+  <% end %>
+</ul>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>" class="bg-s4-canvas">
+  <head>
+    <meta charset="utf-8">
+    <title><%= seo.title %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <% if seo.description.present? %>
+      <meta name="description" content="<%= seo.description %>">
+    <% end %>
+    <meta name="robots" content="<%= seo.robots %>">
+    <% if seo.canonical.present? %>
+      <link rel="canonical" href="<%= seo.canonical %>">
+    <% end %>
+
+    <meta property="og:type" content="<%= seo.og_type %>">
+    <meta property="og:site_name" content="<%= seo.site_name %>">
+    <meta property="og:title" content="<%= seo.raw_title %>">
+    <% if seo.description.present? %>
+      <meta property="og:description" content="<%= seo.description %>">
+    <% end %>
+    <% if seo.canonical.present? %>
+      <meta property="og:url" content="<%= seo.canonical %>">
+    <% end %>
+    <% if seo.image_url.present? %>
+      <meta property="og:image" content="<%= seo.image_url %>">
+      <meta name="twitter:card" content="summary_large_image">
+    <% else %>
+      <meta name="twitter:card" content="summary">
+    <% end %>
+    <meta name="twitter:title" content="<%= seo.raw_title %>">
+    <% if seo.description.present? %>
+      <meta name="twitter:description" content="<%= seo.description %>">
+    <% end %>
+
+    <meta name="theme-color" content="#f5f6f7">
+    <meta name="color-scheme" content="light">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap">
+
+    <%= favicon_link_tag current_setting.favicon.attached? ? url_for(current_setting.favicon) : "/icon.png" %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+
+    <%= yield :head %>
+    <%= render Site4::AnalyticsComponent.new %>
+  </head>
+
+  <body class="min-h-dvh bg-s4-canvas text-s4-ink font-s4 antialiased
+               selection:bg-s4-accent selection:text-s4-accent-ink">
+    <a href="#contenido"
+       class="sr-only focus:not-sr-only focus:fixed focus:z-[70] focus:top-4 focus:left-4
+              focus:px-5 focus:py-2.5 focus:rounded-[0.875rem] focus:bg-s4-accent focus:text-white
+              focus:text-sm focus:font-medium">
+      <%= t("site4.nav.skip_to_content") %>
+    </a>
+
+    <%= render Site4::HeaderComponent.new(current_path: request.path, preview: preview?) %>
+
+    <main id="contenido" class="pt-20 sm:pt-24">
+      <%= render Site4::FlashComponent.new(flash) %>
+      <%= yield %>
+    </main>
+
+    <%= render Site4::FooterComponent.new %>
+    <%= render Site4::WhatsappFloatComponent.new(vehicle: @vehicle) %>
+    <%= yield :structured_data %>
+  </body>
+</html>

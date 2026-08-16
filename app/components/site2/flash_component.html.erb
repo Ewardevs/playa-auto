@@ -1,0 +1,19 @@
+<div class="border-b border-s2-line" role="status" aria-live="polite">
+  <% messages.each do |tone, message| %>
+    <div data-controller="dismiss" data-dismiss-delay-value="8000"
+         class="mx-auto max-w-[86rem] px-4 sm:px-6">
+      <div class="flex items-center gap-3 py-3.5">
+        <span class="w-1 self-stretch shrink-0 <%= tone[:bar] %>" aria-hidden="true"></span>
+        <span class="<%= tone[:text] %>">
+          <%= render UI::IconComponent.new(tone[:icon], class: "size-4") %>
+        </span>
+        <p class="flex-1 text-sm text-s2-chalk"><%= message %></p>
+        <button type="button" data-action="dismiss#close"
+                class="shrink-0 grid place-items-center size-7 text-s2-ash-2 transition-colors hover:text-s2-chalk"
+                aria-label="<%= t("site2.filters.close") %>">
+          <%= render UI::IconComponent.new(:x, class: "size-4") %>
+        </button>
+      </div>
+    </div>
+  <% end %>
+</div>

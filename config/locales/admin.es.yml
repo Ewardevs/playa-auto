@@ -15,6 +15,7 @@ es:
       inquiries: Consultas
       content: Contenido
       faqs: Preguntas frecuentes
+      differentials: Diferenciales
       settings: Configuración
       users: Usuarios
       audit: Auditoría
@@ -360,10 +361,13 @@ es:
         social_hint: Enlaces a tus perfiles.
         general: General
         general_hint: Moneda e idioma del sistema.
+        analytics: Analítica
+        analytics_hint: Se cargan solo en producción y solo si completás un identificador.
       logo_hint: PNG o SVG con fondo transparente.
       favicon_hint: Imagen cuadrada de 512×512 px.
       current_logo: Logo actual
       current_favicon: Favicon actual
+      show_sold_hint: Si está activo, los vehículos vendidos siguen visibles en la web pública, marcados como vendidos.
 
     users:
       title: Usuarios
@@ -391,6 +395,33 @@ es:
         admin: Administra inventario, ofertas, consultas y contenido.
         seller: Carga vehículos y gestiona consultas.
         editor: Administra el contenido del sitio.
+
+    differentials:
+      title: Diferenciales
+      description: Por qué comprarte a vos y no a otro. Se muestran en la web pública.
+      new: Nuevo diferencial
+      edit: Editar diferencial
+      empty_title: Todavía no hay diferenciales
+      empty_description: Cargá las ventajas que querés destacar en la web.
+      created: Se creó el diferencial.
+      updated: Se guardó el diferencial.
+      destroyed: Se eliminó el diferencial.
+      activated: Se activó el diferencial.
+      deactivated: Se desactivó el diferencial.
+      confirm_delete: ¿Eliminar este diferencial?
+      description_hint: Una frase corta. Si la dejás vacía, se muestra solo el título.
+      icons:
+        check_circle: Verificado
+        shield: Garantía
+        car: Vehículo
+        key: Llave
+        percent: Financiación
+        phone: Contacto
+        users: Equipo
+        gauge: Kilometraje
+        star: Destacado
+        tag: Precio
+        file_text: Documentación
 
     audit_logs:
       title: Auditoría

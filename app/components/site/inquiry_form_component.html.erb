@@ -1,0 +1,77 @@
+<%= form_with model: inquiry, url: site_inquiries_path, method: :post,
+              data: { controller: "inquiry-form" }, class: "space-y-4" do |f| %>
+
+  <% if inquiry.errors.any? %>
+    <div class="rounded-md border border-red-300 bg-red-50 px-4 py-3" role="alert">
+      <p class="text-sm font-semibold text-red-800"><%= t("site.inquiries.error_title") %></p>
+      <ul class="mt-1 space-y-0.5 text-sm text-red-700 list-disc list-inside">
+        <% inquiry.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%# Trampa para bots: invisible y fuera del recorrido de teclado. %>
+  <div class="absolute -left-[9999px] w-px h-px overflow-hidden" aria-hidden="true">
+    <label for="website"><%= t("site.inquiries.honeypot_label") %></label>
+    <%= text_field_tag :website, nil, tabindex: -1, autocomplete: "off", id: "website" %>
+  </div>
+  <%= hidden_field_tag :form_opened_at, Time.current.to_i,
+        data: { inquiry_form_target: "openedAt" } %>
+
+  <div class="grid gap-4 <%= "sm:grid-cols-2" unless compact? %>">
+    <div>
+      <%= f.label :name, Inquiry.human_attribute_name(:name), class: label_classes %>
+      <%= f.text_field :name, required: true, autocomplete: "name",
+            placeholder: t("site.inquiries.name_placeholder"),
+            "aria-invalid": invalid?(:name).presence,
+            class: field_classes(:name) %>
+    </div>
+
+    <div>
+      <%= f.label :phone, Inquiry.human_attribute_name(:phone), class: label_classes %>
+      <%= f.telephone_field :phone, required: true, autocomplete: "tel",
+            placeholder: t("site.inquiries.phone_placeholder"),
+            "aria-invalid": invalid?(:phone).presence,
+            class: field_classes(:phone) %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :email, Inquiry.human_attribute_name(:email), class: label_classes %>
+    <%= f.email_field :email, autocomplete: "email",
+          placeholder: t("site.inquiries.email_placeholder"),
+          "aria-invalid": invalid?(:email).presence,
+          class: field_classes(:email) %>
+    <p class="mt-1.5 text-xs text-stone"><%= t("site.inquiries.email_hint") %></p>
+  </div>
+
+  <% if vehicle_locked? %>
+    <%= hidden_field_tag "inquiry[vehicle_slug]", vehicle.slug %>
+  <% elsif vehicle_options.any? %>
+    <div>
+      <%= label_tag "inquiry_vehicle_slug", Inquiry.human_attribute_name(:vehicle), class: label_classes %>
+      <%= select_tag "inquiry[vehicle_slug]",
+            options_for_select(vehicle_options, params.dig(:inquiry, :vehicle_slug)),
+            include_blank: t("site.inquiries.no_vehicle"),
+            id: "inquiry_vehicle_slug",
+            class: field_classes(:vehicle) %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :message, Inquiry.human_attribute_name(:message), class: label_classes %>
+    <%= f.text_area :message, rows: 4,
+          placeholder: t("site.inquiries.message_placeholder", vehicle: vehicle&.display_name),
+          "aria-invalid": invalid?(:message).presence,
+          class: area_classes(:message) %>
+  </div>
+
+  <%= render UI::ButtonComponent.new(
+        label: t("site.inquiries.submit"), type: "submit",
+        variant: :brand, size: :xl, icon: :mail, full: true,
+        data: { inquiry_form_target: "submit" }) %>
+
+  <p class="text-xs text-stone text-center"><%= t("site.inquiries.privacy_note") %></p>
+<% end %>
