@@ -54,7 +54,7 @@ users = {
   seller:      { name: "Mario Ojeda",    email: "ventas@playaguarani.com.py",  role: :seller },
   seller_two:  { name: "Rocío Cabrera",  email: "rocio@playaguarani.com.py",   role: :seller },
   editor:      { name: "Nadia Fretes",   email: "contenido@playaguarani.com.py", role: :editor },
-  demo_super_admin: { name: "Admin Demo", email: "admin@admin.com", role: :super_admin, password: "admin123!" }
+  demo_super_admin: { name: "Admin Demo", email: "admin@admin.com", role: :super_admin, password: "Admin123!" }
 }.transform_values do |attributes|
   User.find_or_initialize_by(email: attributes[:email]).tap do |user|
     user.assign_attributes(attributes.merge(password: attributes[:password] || DEV_PASSWORD, active: true))
