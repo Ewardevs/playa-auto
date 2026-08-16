@@ -1,0 +1,84 @@
+<% content_for :title, t("admin.settings.title") %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.settings.title"),
+      description: t("admin.settings.description")) %>
+
+<%= form_with model: @setting, url: admin_settings_path, method: :patch, class: "space-y-4" do |f| %>
+  <%= render UI::FormErrorsComponent.new(@setting) %>
+
+  <%= render UI::FormSectionComponent.new(
+        title: t("admin.settings.sections.identity"),
+        description: t("admin.settings.sections.identity_hint"),
+        icon: :tag) do %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :company_name, required: true) %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :tagline) %>
+
+    <div>
+      <%= render UI::FieldComponent.new(form: f, attribute: :logo, type: :file,
+            hint: t("admin.settings.logo_hint")) %>
+      <% if @setting.logo.attached? %>
+        <div class="flex items-center gap-3 mt-3">
+          <span class="grid place-items-center w-20 h-14 rounded-md bg-surface-3 border border-line overflow-hidden">
+            <%= image_tag @setting.logo.variant(:thumb), class: "max-w-full max-h-full object-contain", alt: "" %>
+          </span>
+          <span class="text-xs text-muted"><%= t("admin.settings.current_logo") %></span>
+        </div>
+      <% end %>
+    </div>
+
+    <div>
+      <%= render UI::FieldComponent.new(form: f, attribute: :favicon, type: :file,
+            hint: t("admin.settings.favicon_hint")) %>
+      <% if @setting.favicon.attached? %>
+        <div class="flex items-center gap-3 mt-3">
+          <span class="grid place-items-center size-10 rounded-md bg-surface-3 border border-line overflow-hidden">
+            <%= image_tag @setting.favicon, class: "max-w-full max-h-full object-contain", alt: "" %>
+          </span>
+          <span class="text-xs text-muted"><%= t("admin.settings.current_favicon") %></span>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= render UI::FormSectionComponent.new(
+        title: t("admin.settings.sections.contact"),
+        description: t("admin.settings.sections.contact_hint"),
+        icon: :phone) do %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :phone, type: :tel, placeholder: "021 123 456") %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :whatsapp, type: :tel, placeholder: "595981123456") %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :email, type: :email) %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :address) %>
+
+    <div class="sm:col-span-2">
+      <%= render UI::FieldComponent.new(form: f, attribute: :opening_hours, type: :textarea, rows: 3,
+            placeholder: "Lunes a viernes de 8:00 a 18:00\nSábados de 8:00 a 12:00") %>
+    </div>
+
+    <div class="sm:col-span-2">
+      <%= render UI::FieldComponent.new(form: f, attribute: :google_maps_url, type: :url) %>
+    </div>
+  <% end %>
+
+  <%= render UI::FormSectionComponent.new(
+        title: t("admin.settings.sections.social"),
+        description: t("admin.settings.sections.social_hint"),
+        icon: :external, columns: 3) do %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :instagram_url, type: :url) %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :facebook_url, type: :url) %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :tiktok_url, type: :url) %>
+  <% end %>
+
+  <%= render UI::FormSectionComponent.new(
+        title: t("admin.settings.sections.general"),
+        description: t("admin.settings.sections.general_hint"),
+        icon: :settings) do %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :currency, type: :select,
+          choices: Setting::CURRENCIES.map { |code, symbol| ["#{code} (#{symbol})", code] }) %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :currency_symbol, disabled: true,
+          hint: t("admin.settings.symbol_hint", default: "Se ajusta según la moneda elegida.")) %>
+  <% end %>
+
+  <%= render "admin/shared/form_actions",
+        cancel_path: admin_root_path, persisted: true, submit_label: t("admin.actions.save") %>
+<% end %>

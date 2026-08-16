@@ -1,0 +1,50 @@
+<%# Estado de la oferta del vehículo: solo lectura.
+    La oferta se carga y se edita en su propio módulo; acá se muestra qué hay y
+    se ofrece el acceso directo. %>
+<% offer = vehicle.persisted? ? vehicle.offer : nil %>
+
+<div class="rounded-md border border-line bg-surface-2 p-4">
+  <div class="flex flex-wrap items-start justify-between gap-3">
+    <div class="min-w-0">
+      <p class="eyebrow"><%= Offer.model_name.human %></p>
+
+      <% if offer.present? %>
+        <div class="flex flex-wrap items-center gap-2 mt-2">
+          <% tone = { running: :ok, scheduled: :info, expired: :off, inactive: :off }[offer.state] %>
+          <%= render UI::BadgeComponent.new(
+                t("admin.offers.#{offer.state == :inactive ? 'paused' : offer.state}"),
+                tone: tone, lamp: true) %>
+
+          <span class="text-sm text-faint line-through num"><%= money(offer.previous_price) %></span>
+          <span class="text-sm font-semibold text-ink num"><%= money(offer.promo_price) %></span>
+          <%= render UI::BadgeComponent.new(
+                t("admin.offers.discount", percent: offer.discount_percentage),
+                tone: :accent, size: :sm) %>
+        </div>
+
+        <p class="text-xs text-muted mt-1.5 num">
+          <%= t("admin.offers.period", from: short_date(offer.starts_on), to: short_date(offer.ends_on)) %>
+        </p>
+      <% elsif vehicle.persisted? %>
+        <p class="text-sm text-muted mt-1.5"><%= t("admin.vehicles.offer_panel.none") %></p>
+      <% else %>
+        <p class="text-sm text-muted mt-1.5"><%= t("admin.vehicles.offer_panel.save_first") %></p>
+      <% end %>
+    </div>
+
+    <% if vehicle.persisted? %>
+      <div class="shrink-0">
+        <% if offer.present? && policy(offer).update? %>
+          <%= render UI::ButtonComponent.new(
+                label: t("admin.offers.edit"), href: edit_admin_offer_path(offer),
+                variant: :secondary, size: :sm, icon: :pencil) %>
+        <% elsif offer.blank? && policy(Offer).create? %>
+          <%= render UI::ButtonComponent.new(
+                label: t("admin.offers.new"),
+                href: new_admin_offer_path(vehicle_id: vehicle.id),
+                variant: :secondary, size: :sm, icon: :percent) %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

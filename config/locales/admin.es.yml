@@ -1,0 +1,444 @@
+# Every string the admin panel puts on screen. Kept apart from es.yml, which
+# holds model and validation vocabulary.
+es:
+  admin:
+    nav:
+      panel: Panel
+      primary: Navegación principal
+      breadcrumbs: Ruta de navegación
+      dashboard: Panel
+      vehicles: Vehículos
+      brands: Marcas
+      models: Modelos
+      categories: Categorías
+      offers: Ofertas
+      inquiries: Consultas
+      content: Contenido
+      faqs: Preguntas frecuentes
+      settings: Configuración
+      users: Usuarios
+      audit: Auditoría
+      profile: Mi perfil
+      sign_out: Cerrar sesión
+      open_menu: Abrir menú
+      collapse_menu: Contraer menú
+      groups:
+        inventory: Inventario
+        sales: Ventas
+        site: Sitio
+        system: Sistema
+
+    actions:
+      new: Nuevo
+      create: Crear
+      edit: Editar
+      update: Guardar cambios
+      save: Guardar
+      delete: Eliminar
+      view: Ver
+      duplicate: Duplicar
+      cancel: Cancelar
+      back: Volver
+      close: Cerrar
+      open_menu: Abrir opciones
+      toggle_theme: Cambiar tema
+      archive: Archivar
+      restore: Restaurar
+      activate: Activar
+      deactivate: Desactivar
+      change_status: Cambiar estado
+      reset_password: Restablecer contraseña
+      export: Exportar
+      more: Más opciones
+
+    states:
+      active: Activo
+      inactive: Inactivo
+
+    confirm:
+      title: ¿Confirmás esta acción?
+      accept: Sí, continuar
+
+    errors:
+      not_authorized: No tenés permiso para realizar esta acción.
+      not_found: No encontramos lo que estabas buscando.
+      generic: Ocurrió un error inesperado. Intentá nuevamente.
+
+    forms:
+      error_title:
+        one: Hay 1 campo que necesita tu atención
+        other: Hay %{count} campos que necesitan tu atención
+      error_more:
+        one: y 1 error más
+        other: y %{count} errores más
+      required_note: Los campos marcados con * son obligatorios.
+      optional: Opcional
+
+    filters:
+      search: Buscar…
+      apply: Filtrar
+      clear: Limpiar
+      all: Todos
+      any_brand: Todas las marcas
+      any_category: Todas las categorías
+      any_status: Todos los estados
+      any_seller: Todos los vendedores
+      from: Desde
+      to: Hasta
+
+    pagination:
+      label: Paginación
+      summary: "%{from}–%{to} de %{count}"
+      previous: Página anterior
+      next: Página siguiente
+
+    time:
+      ago: "hace %{time}"
+      never: Nunca
+
+    empty:
+      no_results_title: Sin resultados
+      no_results_description: Probá con otros términos de búsqueda o limpiá los filtros.
+
+    dashboard:
+      title: Panel
+      description: Resumen del inventario y de la actividad comercial.
+      metrics:
+        published: Publicados
+        available: Disponibles
+        reserved: Reservados
+        sold: Vendidos
+        featured: Destacados
+        new_inquiries: Consultas nuevas
+        month_inquiries: Consultas del mes
+      inventory_title: Estado del inventario
+      inventory_total: Vehículos
+      inquiries_chart_title: Consultas por mes
+      inquiries_chart_subtitle: Últimos 6 meses
+      latest_inquiries: Últimas consultas
+      recent_vehicles: Vehículos recientes
+      most_inquired: Más consultados
+      most_viewed: Más vistos
+      view_all: Ver todo
+      no_inquiries: Todavía no recibiste consultas.
+      no_vehicles: Todavía no cargaste vehículos.
+      no_activity: Sin actividad para mostrar.
+      inquiries_count:
+        one: 1 consulta
+        other: "%{count} consultas"
+      views_count:
+        one: 1 vista
+        other: "%{count} vistas"
+
+    vehicles:
+      title: Vehículos
+      description: Todo el inventario de la playa.
+      new: Cargar vehículo
+      edit: Editar vehículo
+      show: Ficha del vehículo
+      search_placeholder: Buscar por código, marca o modelo…
+      count:
+        one: 1 vehículo
+        other: "%{count} vehículos"
+      chips:
+        all: Todos
+        featured: Destacados
+        not_featured: Sin destacar
+        on_offer: En oferta
+        archived: Archivados
+      columns:
+        image: Imagen
+        code: Código
+        vehicle: Vehículo
+        year: Año
+        price: Precio
+        mileage: Kilometraje
+        status: Estado
+        featured: Destacado
+        offer: Oferta
+        date: Publicado
+        actions: Acciones
+      sections:
+        basic: Información básica
+        basic_hint: Marca, modelo, categoría y año.
+        commercial: Información comercial
+        commercial_hint: Precio de venta y precio anterior.
+        specs: Especificaciones
+        specs_hint: Kilometraje, combustible, transmisión, motor y color.
+        description: Descripción
+        description_hint: Texto y equipamiento que verá el cliente.
+        status: Estado y visibilidad
+        status_hint: Dónde y cómo se muestra este vehículo.
+        seo: SEO
+        seo_hint: Preparado para la futura web pública.
+        images: Fotografías
+        images_hint: La primera imagen es la principal del aviso.
+      images:
+        main: Principal
+        make_main: Marcar como principal
+        drop_title: Arrastrá las fotos acá
+        drop_hint: O hacé clic para elegirlas. JPG, PNG o WEBP, hasta 10 MB.
+        uploading: Subiendo fotografías…
+        reorder_hint: Arrastrá las fotos para cambiar el orden.
+        empty_title: Sin fotografías
+        empty_description: Un aviso con fotos recibe muchas más consultas.
+        confirm_delete: ¿Eliminar esta fotografía?
+        save_first: Guardá el vehículo para poder cargar sus fotografías.
+        added:
+          one: Se agregó 1 fotografía.
+          other: Se agregaron %{count} fotografías.
+        deleted: Se eliminó la fotografía.
+        main_updated: Se actualizó la fotografía principal.
+        reordered: Se actualizó el orden.
+        invalid: "No se pudieron subir algunas fotos: %{errors}"
+      empty_title: Todavía no hay vehículos
+      empty_description: Cargá el primer vehículo para empezar a publicar.
+      archived_notice: Estás viendo vehículos archivados.
+      is_archived: Este vehículo está archivado y no aparece en el inventario.
+      no_offer: Sin oferta
+      offer_active: En oferta
+      offer_panel:
+        none: Este vehículo no tiene ninguna oferta cargada.
+        save_first: Guardá el vehículo para poder cargarle una oferta.
+      created: Se cargó el vehículo.
+      updated: Se guardaron los cambios.
+      destroyed: Se eliminó el vehículo.
+      archived: Se archivó el vehículo.
+      restored: Se restauró el vehículo.
+      duplicated: Se duplicó el vehículo. Revisá los datos antes de publicarlo.
+      status_changed: "Estado actualizado a %{status}."
+      confirm_delete: Se eliminará el vehículo y sus fotografías. Esta acción no se puede deshacer.
+      confirm_archive: El vehículo dejará de aparecer en el inventario. Vas a poder restaurarlo después.
+      published_on: Publicado el %{date}
+      views:
+        one: 1 vista
+        other: "%{count} vistas"
+
+    brands:
+      title: Marcas
+      description: Marcas disponibles en el inventario.
+      new: Nueva marca
+      edit: Editar marca
+      empty_title: Todavía no hay marcas
+      empty_description: Cargá las marcas que vende la playa.
+      created: Se creó la marca.
+      updated: Se guardó la marca.
+      destroyed: Se eliminó la marca.
+      activated: Se activó la marca.
+      deactivated: Se desactivó la marca.
+      in_use: No se puede eliminar una marca con vehículos cargados. Desactivala en su lugar.
+      confirm_delete: ¿Eliminar esta marca?
+      models_count:
+        one: 1 modelo
+        other: "%{count} modelos"
+
+    vehicle_models:
+      title: Modelos
+      description: Modelos agrupados por marca.
+      new: Nuevo modelo
+      edit: Editar modelo
+      empty_title: Todavía no hay modelos
+      empty_description: Cargá los modelos de cada marca.
+      created: Se creó el modelo.
+      updated: Se guardó el modelo.
+      destroyed: Se eliminó el modelo.
+      activated: Se activó el modelo.
+      deactivated: Se desactivó el modelo.
+      in_use: No se puede eliminar un modelo con vehículos cargados. Desactivalo en su lugar.
+      confirm_delete: ¿Eliminar este modelo?
+
+    categories:
+      title: Categorías
+      description: Tipos de vehículo que maneja la playa.
+      new: Nueva categoría
+      edit: Editar categoría
+      empty_title: Todavía no hay categorías
+      empty_description: Creá categorías como Autos, SUVs o Camionetas.
+      created: Se creó la categoría.
+      updated: Se guardó la categoría.
+      destroyed: Se eliminó la categoría.
+      activated: Se activó la categoría.
+      deactivated: Se desactivó la categoría.
+      in_use: No se puede eliminar una categoría con vehículos cargados. Desactivala en su lugar.
+      confirm_delete: ¿Eliminar esta categoría?
+
+    offers:
+      title: Ofertas
+      description: Promociones vigentes y programadas.
+      new: Nueva oferta
+      edit: Editar oferta
+      empty_title: Todavía no hay ofertas
+      empty_description: Creá una oferta para destacar un vehículo con precio promocional.
+      created: Se creó la oferta.
+      updated: Se guardó la oferta.
+      destroyed: Se eliminó la oferta.
+      activated: Se activó la oferta.
+      deactivated: Se desactivó la oferta.
+      confirm_delete: ¿Eliminar esta oferta?
+      running: Vigente
+      scheduled: Programada
+      expired: Finalizada
+      paused: Pausada
+      discount: "%{percent}% off"
+      period: "%{from} al %{to}"
+      period_label: Vigencia
+      form_hint: El precio de lista lo toma del vehículo. Vos solo definís el precio promocional y las fechas.
+      pick_vehicle: Elegí un vehículo
+      list_price: Precio de lista
+      list_price_hint: Es el precio actual del vehículo. Para cambiarlo, editá el vehículo.
+      promo_price_hint: Tiene que ser menor al precio de lista.
+      active_hint: Una oferta pausada no se aplica aunque esté dentro de las fechas.
+      vehicle_taken: Este vehículo ya tiene una oferta cargada.
+
+    inquiries:
+      title: Consultas
+      description: Consultas recibidas desde la web.
+      show: Detalle de la consulta
+      empty_title: Todavía no hay consultas
+      empty_description: Acá vas a ver las consultas que dejen los clientes.
+      updated: Se actualizó la consulta.
+      destroyed: Se eliminó la consulta.
+      status_changed: "Estado actualizado a %{status}."
+      confirm_delete: ¿Eliminar esta consulta?
+      columns:
+        name: Nombre
+        phone: Teléfono
+        vehicle: Vehículo
+        date: Fecha
+        status: Estado
+        seller: Vendedor
+      general: Consulta general
+      no_vehicle: Sin vehículo asociado
+      contact: Contacto
+      message: Mensaje
+      no_message: El cliente no dejó un mensaje.
+      internal_notes: Notas internas
+      notes_hint: Solo el equipo ve estas notas.
+      assign: Asignar a
+      unassigned: Sin asignar
+      write_whatsapp: Escribir por WhatsApp
+      call: Llamar
+      send_email: Enviar email
+      whatsapp_template: "Hola %{name}, te contactamos de %{company} por tu consulta."
+      received: Recibida %{time}
+
+    content:
+      title: Contenido
+      description: Textos e imágenes de la futura web pública.
+      updated: Se guardó el contenido.
+      sections:
+        hero: Banner principal
+        hero_hint: Lo primero que ve el visitante al entrar.
+        about: Nosotros
+        about_hint: Quiénes son y por qué comprarles.
+      company_note: Los datos de contacto de la empresa se administran en Configuración.
+
+    faqs:
+      title: Preguntas frecuentes
+      description: Respuestas que verá el cliente en la web.
+      new: Nueva pregunta
+      edit: Editar pregunta
+      empty_title: Todavía no hay preguntas
+      empty_description: Cargá las preguntas que más te hacen los clientes.
+      created: Se creó la pregunta.
+      updated: Se guardó la pregunta.
+      destroyed: Se eliminó la pregunta.
+      activated: Se activó la pregunta.
+      deactivated: Se desactivó la pregunta.
+      confirm_delete: ¿Eliminar esta pregunta?
+
+    settings:
+      title: Configuración
+      description: Datos de la empresa que usa todo el sistema.
+      updated: Se guardó la configuración.
+      sections:
+        identity: Identidad
+        identity_hint: Nombre e imágenes de la marca.
+        contact: Contacto
+        contact_hint: Cómo te encuentran los clientes.
+        social: Redes sociales
+        social_hint: Enlaces a tus perfiles.
+        general: General
+        general_hint: Moneda e idioma del sistema.
+      logo_hint: PNG o SVG con fondo transparente.
+      favicon_hint: Imagen cuadrada de 512×512 px.
+      current_logo: Logo actual
+      current_favicon: Favicon actual
+
+    users:
+      title: Usuarios
+      description: Quién puede entrar al panel y qué puede hacer.
+      new: Nuevo usuario
+      edit: Editar usuario
+      empty_title: Todavía no hay usuarios
+      empty_description: Creá cuentas para tu equipo.
+      created: Se creó el usuario.
+      updated: Se guardó el usuario.
+      destroyed: Se eliminó el usuario.
+      activated: Se activó el usuario.
+      deactivated: Se desactivó el usuario.
+      password_reset: "Se envió un email a %{email} para restablecer la contraseña."
+      confirm_delete: Se eliminará la cuenta. Los vehículos y consultas que cargó se mantienen.
+      confirm_deactivate: El usuario no va a poder ingresar al panel.
+      last_sign_in: Último acceso
+      never_signed_in: Nunca ingresó
+      own_account: Tu cuenta
+      password_hint: Mínimo 8 caracteres. Dejalo en blanco para no cambiarla.
+      password_note: Si lo dejás vacío, se genera una contraseña aleatoria y el usuario la define desde el email de recuperación.
+      roles_hint: El rol define a qué secciones accede.
+      role_descriptions:
+        super_admin: Acceso total, incluidos usuarios y configuración.
+        admin: Administra inventario, ofertas, consultas y contenido.
+        seller: Carga vehículos y gestiona consultas.
+        editor: Administra el contenido del sitio.
+
+    audit_logs:
+      title: Auditoría
+      description: Quién hizo qué, y cuándo.
+      empty_title: Sin registros
+      empty_description: Acá se registran los cambios importantes del sistema.
+      columns:
+        user: Usuario
+        action: Acción
+        record: Registro
+        changes: Cambios
+        date: Fecha
+      no_changes: Sin detalle de cambios
+      system: Sistema
+      filter_action: Todas las acciones
+
+    profile:
+      title: Mi perfil
+      description: Tus datos y tu contraseña.
+      updated: Se actualizaron tus datos.
+      password_updated: Se actualizó tu contraseña.
+      sections:
+        details: Datos personales
+        details_hint: Cómo te ve el resto del equipo.
+        password: Contraseña
+        password_hint: Necesitás tu contraseña actual para cambiarla.
+      role_note: Tu rol y tus permisos los administra un Super Admin.
+
+  auth:
+    eyebrow: Panel administrativo
+    headline: Todo tu inventario, bajo control.
+    subhead: Cargá vehículos, respondé consultas y seguí tus ventas desde un solo lugar.
+    footer: "© %{year} %{company}"
+    back_to_sign_in: Volver al inicio de sesión
+    sign_in:
+      title: Ingresar
+      subtitle: Accedé con la cuenta que te dieron.
+      submit: Ingresar
+      forgot: ¿Olvidaste tu contraseña?
+      remember: Mantener la sesión iniciada
+      no_account: Las cuentas las crea un administrador de la playa.
+    forgot:
+      title: Recuperar contraseña
+      subtitle: Te enviamos un enlace para definir una nueva.
+      submit: Enviarme el enlace
+    reset:
+      title: Nueva contraseña
+      subtitle: Elegí una contraseña que no uses en otro lado.
+      new_password: Nueva contraseña
+      submit: Guardar contraseña
+      hint: "Mínimo %{count} caracteres."

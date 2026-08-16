@@ -1,0 +1,225 @@
+@import "tailwindcss";
+
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Playa Autos — design tokens
+ *
+ * Direction: "instrument cluster". The panel is graphite, hairlines and precise
+ * numerals, like the binnacle of a well-built car. Status is communicated the
+ * way a dashboard communicates it — with illuminated telltale lamps in the
+ * conventional colours (green go, amber caution, blue information, grey off) —
+ * and amber is the only colour allowed to glow anywhere in the interface.
+ *
+ * Type: Archivo (tight industrial display) for headings and figures,
+ *       IBM Plex Sans for interface copy, IBM Plex Mono for codes, prices and
+ *       odometer readings, because spec sheets are set in monospace.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+/* Class-based dark mode so the toggle can override the OS preference. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+
+  --c-canvas: #f1f2f4;
+  --c-surface: #ffffff;
+  --c-surface-2: #f7f8f9;
+  --c-surface-3: #eceef1;
+  --c-line: #dde1e6;
+  --c-line-strong: #c6ccd4;
+
+  --c-ink: #14161a;
+  --c-muted: #5b6270;
+  --c-faint: #8a92a0;
+
+  /* The binnacle: dark in both themes on purpose. */
+  --c-rail: #16181d;
+  --c-rail-2: #20242b;
+  --c-rail-line: #2c313a;
+  --c-rail-ink: #eef0f3;
+  --c-rail-muted: #939aa8;
+
+  --c-accent: #e8a317;
+  --c-accent-soft: #fdf3dd;
+  --c-accent-ink: #1a1204;
+
+  --c-ok: #0f8a3d;
+  --c-ok-soft: #e4f4ea;
+  --c-warn: #d1890b;
+  --c-warn-soft: #fbf0d9;
+  --c-info: #2563a8;
+  --c-info-soft: #e5eef8;
+  --c-off: #6b7280;
+  --c-off-soft: #eef0f2;
+  --c-danger: #c0322b;
+  --c-danger-soft: #fbeae9;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --c-canvas: #0e1013;
+  --c-surface: #171a1f;
+  --c-surface-2: #1d2127;
+  --c-surface-3: #242931;
+  --c-line: #282d35;
+  --c-line-strong: #39404a;
+
+  --c-ink: #e9ecf0;
+  --c-muted: #9aa2b0;
+  --c-faint: #6d7684;
+
+  --c-rail: #101216;
+  --c-rail-2: #191d23;
+  --c-rail-line: #262b33;
+  --c-rail-ink: #e9ecf0;
+  --c-rail-muted: #868e9c;
+
+  --c-accent: #f0b132;
+  --c-accent-soft: #2a2110;
+  --c-accent-ink: #14161a;
+
+  --c-ok: #3fb56b;
+  --c-ok-soft: #12261a;
+  --c-warn: #e0a531;
+  --c-warn-soft: #2a2110;
+  --c-info: #4d90da;
+  --c-info-soft: #12202f;
+  --c-off: #8a92a0;
+  --c-off-soft: #1e232a;
+  --c-danger: #e0655c;
+  --c-danger-soft: #2c1614;
+}
+
+/* `inline` keeps Tailwind from adding a second layer of indirection, so the
+   utilities resolve straight to the runtime variables above and flip with the
+   theme. */
+@theme inline {
+  --color-canvas: var(--c-canvas);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-surface-3: var(--c-surface-3);
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+
+  --color-ink: var(--c-ink);
+  --color-muted: var(--c-muted);
+  --color-faint: var(--c-faint);
+
+  --color-rail: var(--c-rail);
+  --color-rail-2: var(--c-rail-2);
+  --color-rail-line: var(--c-rail-line);
+  --color-rail-ink: var(--c-rail-ink);
+  --color-rail-muted: var(--c-rail-muted);
+
+  --color-accent: var(--c-accent);
+  --color-accent-soft: var(--c-accent-soft);
+  --color-accent-ink: var(--c-accent-ink);
+
+  --color-ok: var(--c-ok);
+  --color-ok-soft: var(--c-ok-soft);
+  --color-warn: var(--c-warn);
+  --color-warn-soft: var(--c-warn-soft);
+  --color-info: var(--c-info);
+  --color-info-soft: var(--c-info-soft);
+  --color-off: var(--c-off);
+  --color-off-soft: var(--c-off-soft);
+  --color-danger: var(--c-danger);
+  --color-danger-soft: var(--c-danger-soft);
+
+  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+
+  --radius-panel: 0.625rem;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--c-canvas);
+    color: var(--c-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.017em;
+  }
+
+  /* Figures must never shift width as they tick over. */
+  .num, table td, table th, input[type="number"] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  ::selection {
+    background: var(--c-accent);
+    color: var(--c-accent-ink);
+  }
+
+  /* Slim, unobtrusive scrollbars inside the rail and scroll areas. */
+  .scroll-slim {
+    scrollbar-width: thin;
+    scrollbar-color: var(--c-line-strong) transparent;
+  }
+  .scroll-slim::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scroll-slim::-webkit-scrollbar-thumb {
+    background: var(--c-line-strong);
+    border-radius: 999px;
+  }
+  .scroll-slim::-webkit-scrollbar-track { background: transparent; }
+}
+
+@layer components {
+  /* The signature: a status telltale, lit like a dashboard indicator lamp. */
+  .lamp {
+    --lamp: var(--c-off);
+    position: relative;
+    display: inline-block;
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: 999px;
+    background: var(--lamp);
+    box-shadow: 0 0 0 2.5px color-mix(in srgb, var(--lamp) 22%, transparent);
+  }
+  .lamp-ok   { --lamp: var(--c-ok); }
+  .lamp-warn { --lamp: var(--c-warn); }
+  .lamp-info { --lamp: var(--c-info); }
+  .lamp-off  { --lamp: var(--c-off); }
+
+  /* Small-caps label used across the cluster, table heads and eyebrows. */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--c-faint);
+  }
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

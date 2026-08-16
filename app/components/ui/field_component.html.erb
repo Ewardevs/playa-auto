@@ -1,0 +1,26 @@
+<div class="<%= class_names("min-w-0", @wrapper_class) %>">
+  <%= form.label attribute, class: "block text-[0.8125rem] font-medium text-ink mb-1.5" do %>
+    <%= label_text %><% if required? %><span class="text-danger ml-0.5" aria-hidden="true">*</span><% end %>
+  <% end %>
+
+  <div class="relative">
+    <% if prefix.present? %>
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-faint pointer-events-none num"><%= prefix %></span>
+    <% end %>
+
+    <%= control %>
+
+    <% if suffix.present? %>
+      <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-faint pointer-events-none"><%= suffix %></span>
+    <% end %>
+  </div>
+
+  <% if invalid? %>
+    <p id="<%= field_id %>_error" class="flex items-start gap-1.5 mt-1.5 text-xs text-danger">
+      <%= render UI::IconComponent.new(:alert, class: "size-3.5 mt-px") %>
+      <span><%= errors.to_sentence %></span>
+    </p>
+  <% elsif hint.present? %>
+    <p id="<%= field_id %>_hint" class="mt-1.5 text-xs text-muted"><%= hint %></p>
+  <% end %>
+</div>

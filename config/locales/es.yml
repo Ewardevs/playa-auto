@@ -1,0 +1,332 @@
+es:
+  date:
+    formats:
+      default: "%d/%m/%Y"
+      short: "%d %b"
+      long: "%d de %B de %Y"
+    day_names: [domingo, lunes, martes, miércoles, jueves, viernes, sábado]
+    abbr_day_names: [dom, lun, mar, mié, jue, vie, sáb]
+    month_names: [~, enero, febrero, marzo, abril, mayo, junio, julio, agosto, septiembre, octubre, noviembre, diciembre]
+    abbr_month_names: [~, ene, feb, mar, abr, may, jun, jul, ago, sep, oct, nov, dic]
+  time:
+    formats:
+      default: "%d/%m/%Y %H:%M"
+      short: "%d/%m %H:%M"
+      long: "%d de %B de %Y a las %H:%M"
+      date_only: "%d/%m/%Y"
+    am: "am"
+    pm: "pm"
+  number:
+    format:
+      separator: ","
+      delimiter: "."
+      precision: 2
+    currency:
+      format:
+        format: "%u %n"
+        unit: "$"
+        separator: ","
+        delimiter: "."
+        precision: 0
+    human:
+      decimal_units:
+        format: "%n %u"
+        units:
+          unit: ""
+          thousand: mil
+          million: M
+          billion: MM
+  support:
+    array:
+      words_connector: ", "
+      two_words_connector: " y "
+      last_word_connector: " y "
+
+  activerecord:
+    models:
+      user:
+        one: Usuario
+        other: Usuarios
+      brand:
+        one: Marca
+        other: Marcas
+      vehicle_model:
+        one: Modelo
+        other: Modelos
+      category:
+        one: Categoría
+        other: Categorías
+      vehicle:
+        one: Vehículo
+        other: Vehículos
+      vehicle_image:
+        one: Imagen
+        other: Imágenes
+      offer:
+        one: Oferta
+        other: Ofertas
+      inquiry:
+        one: Consulta
+        other: Consultas
+      faq:
+        one: Pregunta frecuente
+        other: Preguntas frecuentes
+      setting:
+        one: Configuración
+        other: Configuración
+      site_content:
+        one: Contenido
+        other: Contenido
+      audit_log:
+        one: Registro de auditoría
+        other: Registros de auditoría
+    attributes:
+      user:
+        name: Nombre
+        email: Email
+        phone: Teléfono
+        password: Contraseña
+        password_confirmation: Confirmar contraseña
+        current_password: Contraseña actual
+        role: Rol
+        active: Activo
+        avatar: Foto de perfil
+        last_sign_in_at: Último acceso
+        current_sign_in_at: Acceso actual
+        sign_in_count: Cantidad de accesos
+        created_at: Fecha de alta
+        roles:
+          super_admin: Super Admin
+          admin: Administrador
+          seller: Vendedor
+          editor: Editor
+      brand:
+        name: Nombre
+        logo: Logo
+        active: Estado
+        position: Orden
+        slug: Slug
+        meta_title: Meta título
+        meta_description: Meta descripción
+        vehicles_count: Vehículos
+      vehicle_model:
+        brand: Marca
+        brand_id: Marca
+        name: Nombre
+        active: Estado
+        slug: Slug
+        vehicles_count: Vehículos
+      category:
+        name: Nombre
+        description: Descripción
+        active: Estado
+        position: Orden
+        slug: Slug
+        vehicles_count: Vehículos
+      vehicle:
+        brand: Marca
+        brand_id: Marca
+        vehicle_model: Modelo
+        vehicle_model_id: Modelo
+        category: Categoría
+        category_id: Categoría
+        user: Publicado por
+        code: Código
+        slug: Slug
+        year: Año
+        price: Precio
+        previous_price: Precio anterior
+        mileage: Kilometraje
+        fuel_type: Combustible
+        transmission: Transmisión
+        engine: Motor
+        color: Color
+        description: Descripción
+        equipment: Equipamiento
+        status: Estado
+        featured: Destacado
+        on_offer: En oferta
+        published_at: Fecha de publicación
+        views_count: Visitas
+        inquiries_count: Consultas
+        meta_title: Meta título
+        meta_description: Meta descripción
+        seo_description: Descripción SEO
+        discarded_at: Archivado el
+        images: Imágenes
+        statuses:
+          available: Disponible
+          reserved: Reservado
+          sold: Vendido
+          hidden: Oculto
+        fuel_types:
+          gasoline: Nafta
+          diesel: Diésel
+          hybrid: Híbrido
+          electric: Eléctrico
+          flex: Flex
+          gas: GNV
+        transmissions:
+          manual: Manual
+          automatic: Automática
+          cvt: CVT
+          semi_automatic: Semiautomática
+      vehicle_image:
+        file: Imagen
+        position: Orden
+        main: Principal
+        alt_text: Texto alternativo
+      offer:
+        vehicle: Vehículo
+        vehicle_id: Vehículo
+        previous_price: Precio anterior
+        promo_price: Precio promocional
+        starts_on: Fecha de inicio
+        ends_on: Fecha de finalización
+        active: Estado
+      inquiry:
+        vehicle: Vehículo
+        vehicle_id: Vehículo
+        user: Asignado a
+        user_id: Asignado a
+        name: Nombre
+        email: Email
+        phone: Teléfono
+        message: Mensaje
+        status: Estado
+        notes: Notas internas
+        contacted_at: Contactado el
+        closed_at: Cerrado el
+        created_at: Fecha
+        statuses:
+          new_lead: Nueva
+          contacted: Contactado
+          negotiating: En negociación
+          sold: Vendido
+          closed: Cerrada
+      faq:
+        question: Pregunta
+        answer: Respuesta
+        position: Orden
+        active: Estado
+      setting:
+        company_name: Nombre de la playa
+        tagline: Eslogan
+        logo: Logo
+        favicon: Favicon
+        phone: Teléfono
+        whatsapp: WhatsApp
+        email: Email
+        address: Dirección
+        opening_hours: Horarios
+        google_maps_url: Google Maps
+        instagram_url: Instagram
+        facebook_url: Facebook
+        tiktok_url: TikTok
+        currency: Moneda
+        currency_symbol: Símbolo
+        locale: Idioma
+      site_content:
+        hero_title: Título del banner
+        hero_subtitle: Subtítulo
+        hero_text: Texto
+        hero_button_label: Texto del botón
+        hero_button_url: URL del botón
+        hero_image: Imagen del banner
+        about_title: Título
+        about_description: Descripción
+        about_image: Imagen
+    errors:
+      messages:
+        record_invalid: "La validación falló: %{errors}"
+        restrict_dependent_destroy:
+          has_one: No se puede eliminar porque tiene %{record} asociado.
+          has_many: No se puede eliminar porque tiene %{record} asociados.
+      models:
+        vehicle:
+          attributes:
+            previous_price:
+              must_exceed_price: debe ser mayor que el precio actual
+            vehicle_model_id:
+              not_in_brand: no pertenece a la marca seleccionada
+        offer:
+          attributes:
+            ends_on:
+              must_follow_start: debe ser posterior a la fecha de inicio
+            promo_price:
+              must_be_below_previous: debe ser menor que el precio de lista del vehículo
+        user:
+          attributes:
+            role:
+              last_super_admin: no se puede cambiar, es el último Super Admin
+            active:
+              last_super_admin: no se puede desactivar, es el último Super Admin
+        setting:
+          attributes:
+            google_maps_url:
+              must_be_a_url: debe ser una URL válida (http:// o https://)
+            instagram_url:
+              must_be_a_url: debe ser una URL válida (http:// o https://)
+            facebook_url:
+              must_be_a_url: debe ser una URL válida (http:// o https://)
+            tiktok_url:
+              must_be_a_url: debe ser una URL válida (http:// o https://)
+        site_content:
+          attributes:
+            hero_button_url:
+              must_be_a_url: debe ser una URL válida o una ruta interna (/...)
+        vehicle_image:
+          attributes:
+            file:
+              invalid_image_type: debe ser una imagen JPG, PNG, WEBP o AVIF
+              image_too_large: no puede superar los 10 MB
+
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      blank: no puede estar en blanco
+      taken: ya está en uso
+      invalid: no tiene un formato válido
+      confirmation: no coincide con %{attribute}
+      too_long: es demasiado largo (máximo %{count} caracteres)
+      too_short: es demasiado corto (mínimo %{count} caracteres)
+      not_a_number: no es un número
+      not_an_integer: debe ser un número entero
+      greater_than: debe ser mayor que %{count}
+      greater_than_or_equal_to: debe ser mayor o igual que %{count}
+      less_than: debe ser menor que %{count}
+      less_than_or_equal_to: debe ser menor o igual que %{count}
+      inclusion: no está incluido en la lista
+      present: debe estar en blanco
+    template:
+      header:
+        one: "No se pudo guardar: 1 error"
+        other: "No se pudo guardar: %{count} errores"
+      body: "Revisá los siguientes campos:"
+
+  audit:
+    system_actor: Sistema
+    labels:
+      settings: Configuración general
+      site_content: Contenido del sitio
+    actions:
+      created: Creó
+      updated: Modificó
+      deleted: Eliminó
+      archived: Archivó
+      restored: Restauró
+      duplicated: Duplicó
+      status_changed: Cambió el estado de
+      price_changed: Cambió el precio de
+      marked_as_sold: Marcó como vendido
+      offer_created: Creó una oferta para
+      offer_updated: Modificó la oferta de
+      role_changed: Cambió el rol de
+      user_activated: Activó
+      user_deactivated: Desactivó
+      password_reset: Restableció la contraseña de
+      settings_updated: Actualizó
+      content_updated: Actualizó
+
+  inquiries:
+    general: Consulta general

@@ -1,0 +1,15 @@
+<%= form_with model: [:admin, vehicle_model], class: "space-y-4" do |f| %>
+  <%= render UI::FormErrorsComponent.new(vehicle_model) %>
+
+  <%= render UI::FormSectionComponent.new(title: t("admin.vehicle_models.title"), icon: :layers) do %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :brand_id, type: :select, required: true,
+          choices: Brand.order(:name).pluck(:name, :id),
+          include_blank: t("admin.filters.any_brand")) %>
+
+    <%= render UI::FieldComponent.new(form: f, attribute: :name, required: true, placeholder: "Hilux") %>
+
+    <%= render UI::SwitchComponent.new(form: f, attribute: :active) %>
+  <% end %>
+
+  <%= render "admin/shared/form_actions", cancel_path: admin_vehicle_models_path, persisted: vehicle_model.persisted? %>
+<% end %>

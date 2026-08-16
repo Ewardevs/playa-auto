@@ -1,0 +1,152 @@
+<% content_for :title, @vehicle.display_name %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: @vehicle.display_name,
+      back_to: admin_vehicles_path,
+      back_label: t("admin.vehicles.title")) do |header| %>
+  <% header.with_meta do %>
+    <span class="font-mono text-xs text-muted"><%= @vehicle.code %></span>
+    <%= render Vehicles::StatusBadgeComponent.new(@vehicle) %>
+    <% if @vehicle.featured? %>
+      <%= render UI::BadgeComponent.new(t("admin.vehicles.columns.featured"), tone: :accent, size: :sm) %>
+    <% end %>
+    <% if @vehicle.discounted? %>
+      <%= render UI::BadgeComponent.new(
+            t("admin.offers.discount", percent: @vehicle.discount_percentage), tone: :ok, size: :sm) %>
+    <% end %>
+  <% end %>
+
+  <% header.with_actions do %>
+    <% if policy(@vehicle).update? %>
+      <%= render UI::ButtonComponent.new(
+            label: t("admin.actions.edit"), href: edit_admin_vehicle_path(@vehicle),
+            variant: :primary, icon: :pencil) %>
+    <% end %>
+    <%= render partial: "admin/vehicles/row_actions", locals: { vehicle: @vehicle } %>
+  <% end %>
+<% end %>
+
+<% if @vehicle.discarded? %>
+  <div class="mb-4">
+    <%= render UI::AlertComponent.new(t("admin.vehicles.is_archived"), tone: :warn) %>
+  </div>
+<% end %>
+
+<div class="grid gap-4 lg:grid-cols-3 items-start">
+  <div class="lg:col-span-2 space-y-4">
+    <%= render UI::CardComponent.new(title: t("admin.vehicles.sections.images"), icon: :image) do %>
+      <%= render Vehicles::ImageGalleryComponent.new(vehicle: @vehicle, editable: false) %>
+    <% end %>
+
+    <%= render UI::CardComponent.new(title: t("admin.vehicles.sections.description"), icon: :file_text) do %>
+      <% if @vehicle.description.present? %>
+        <div class="text-sm text-ink leading-relaxed whitespace-pre-line"><%= @vehicle.description %></div>
+      <% else %>
+        <p class="text-sm text-faint"><%= t("admin.vehicles.no_description", default: "Sin descripción.") %></p>
+      <% end %>
+
+      <% if @vehicle.equipment.present? %>
+        <div class="mt-5 pt-5 border-t border-line">
+          <p class="eyebrow mb-2.5"><%= Vehicle.human_attribute_name(:equipment) %></p>
+          <ul class="grid gap-1.5 sm:grid-cols-2">
+            <% @vehicle.equipment.split("\n").map(&:strip).reject(&:blank?).each do |item| %>
+              <li class="flex items-start gap-2 text-sm text-muted">
+                <%= render UI::IconComponent.new(:check, class: "size-3.5 mt-0.5 text-ok shrink-0") %>
+                <span><%= item %></span>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    <% end %>
+
+    <% if policy(Inquiry).index? %>
+      <%= render UI::CardComponent.new(
+            title: t("admin.inquiries.title"), icon: :inbox, flush: true) do %>
+        <%= render Admin::DataTableComponent.new(rows: @vehicle.inquiries.order(created_at: :desc).limit(10)) do |table| %>
+          <% table.column(label: t("admin.inquiries.columns.name")) do |inquiry| %>
+            <%= link_to inquiry.name, admin_inquiry_path(inquiry),
+                  class: "font-medium text-ink hover:text-accent transition-colors" %>
+          <% end %>
+          <% table.column(label: t("admin.inquiries.columns.phone")) do |inquiry| %>
+            <span class="text-muted num"><%= inquiry.phone %></span>
+          <% end %>
+          <% table.column(label: t("admin.inquiries.columns.date")) do |inquiry| %>
+            <span class="text-muted num text-xs"><%= short_date(inquiry.created_at) %></span>
+          <% end %>
+          <% table.column(label: t("admin.inquiries.columns.status"), align: :right) do |inquiry| %>
+            <%= render Inquiries::StatusBadgeComponent.new(inquiry) %>
+          <% end %>
+          <% table.with_empty_state do %>
+            <%= render UI::EmptyStateComponent.new(
+                  title: t("admin.dashboard.no_inquiries"), icon: :inbox, compact: true) %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%# ── Ficha técnica ───────────────────────────────────────────────────── %>
+  <div class="space-y-4">
+    <%= render UI::CardComponent.new do %>
+      <p class="eyebrow"><%= Vehicle.human_attribute_name(:price) %></p>
+      <p class="font-display text-3xl font-semibold text-ink num mt-1.5 tracking-tight">
+        <%= money(@vehicle.current_price) %>
+      </p>
+      <% if @vehicle.discounted? %>
+        <p class="text-sm text-faint line-through num mt-1"><%= money(@vehicle.price) %></p>
+      <% elsif @vehicle.previous_price.present? %>
+        <p class="text-sm text-faint line-through num mt-1"><%= money(@vehicle.previous_price) %></p>
+      <% end %>
+    <% end %>
+
+    <%= render UI::CardComponent.new(title: t("admin.vehicles.sections.specs"), icon: :gauge, flush: true) do %>
+      <dl class="divide-y divide-line">
+        <% [
+             [Vehicle.human_attribute_name(:brand), @vehicle.brand.name],
+             [Vehicle.human_attribute_name(:vehicle_model), @vehicle.vehicle_model.name],
+             [Vehicle.human_attribute_name(:category), @vehicle.category.name],
+             [Vehicle.human_attribute_name(:year), @vehicle.year],
+             [Vehicle.human_attribute_name(:mileage), mileage(@vehicle.mileage)],
+             [Vehicle.human_attribute_name(:fuel_type), Vehicle.human_enum_name(:fuel_type, @vehicle.fuel_type)],
+             [Vehicle.human_attribute_name(:transmission), Vehicle.human_enum_name(:transmission, @vehicle.transmission)],
+             [Vehicle.human_attribute_name(:engine), @vehicle.engine],
+             [Vehicle.human_attribute_name(:color), @vehicle.color]
+           ].each do |label, value| %>
+          <div class="flex items-baseline justify-between gap-4 px-5 py-2.5">
+            <dt class="text-sm text-muted shrink-0"><%= label %></dt>
+            <dd class="text-sm font-medium text-ink text-right"><%= blank_dash(value) %></dd>
+          </div>
+        <% end %>
+      </dl>
+    <% end %>
+
+    <%= render UI::CardComponent.new(flush: true) do %>
+      <dl class="divide-y divide-line">
+        <div class="flex items-baseline justify-between gap-4 px-5 py-2.5">
+          <dt class="text-sm text-muted"><%= Vehicle.human_attribute_name(:views_count) %></dt>
+          <dd class="text-sm font-medium text-ink num"><%= number_with_delimiter(@vehicle.views_count) %></dd>
+        </div>
+        <div class="flex items-baseline justify-between gap-4 px-5 py-2.5">
+          <dt class="text-sm text-muted"><%= Vehicle.human_attribute_name(:inquiries_count) %></dt>
+          <dd class="text-sm font-medium text-ink num"><%= number_with_delimiter(@vehicle.inquiries_count) %></dd>
+        </div>
+        <div class="flex items-baseline justify-between gap-4 px-5 py-2.5">
+          <dt class="text-sm text-muted"><%= Vehicle.human_attribute_name(:published_at) %></dt>
+          <dd class="text-sm font-medium text-ink num"><%= short_date(@vehicle.published_at) %></dd>
+        </div>
+        <div class="flex items-baseline justify-between gap-4 px-5 py-2.5">
+          <dt class="text-sm text-muted"><%= Vehicle.human_attribute_name(:slug) %></dt>
+          <dd class="text-xs font-mono text-muted truncate"><%= @vehicle.slug %></dd>
+        </div>
+      </dl>
+    <% end %>
+
+    <% if policy(AuditLog).index? && @vehicle.audit_logs.any? %>
+      <%= render UI::CardComponent.new(title: t("admin.audit_logs.title"), icon: :history) do %>
+        <%= render partial: "admin/audit_logs/timeline",
+                   locals: { logs: @vehicle.audit_logs.includes(:user).order(created_at: :desc).limit(8) } %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

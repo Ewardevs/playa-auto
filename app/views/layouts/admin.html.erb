@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <title><%= [content_for(:title), current_setting.company_name].compact.join(" · ") %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+
+    <%# Applied before first paint so the panel never flashes the wrong theme. %>
+    <script>
+      (function () {
+        var stored = localStorage.getItem("playa:theme");
+        var dark = stored ? stored === "dark"
+                          : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.classList.toggle("dark", dark);
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+    <%= favicon_link_tag current_setting.favicon.attached? ? url_for(current_setting.favicon) : "/icon.png" %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-dvh bg-canvas text-ink antialiased">
+    <div data-controller="sidebar theme">
+      <%= render Admin::SidebarComponent.new(current_path: request.path) %>
+
+      <div id="admin-shell" class="lg:pl-64 transition-[padding] duration-200 ease-out">
+        <%= render Admin::HeaderComponent.new(
+              crumbs: breadcrumbs,
+              search_path: (admin_vehicles_path if policy(Vehicle).index?),
+              search_query: params[:q]) %>
+
+        <main class="px-4 sm:px-6 py-6 max-w-[100rem] mx-auto">
+          <div id="flash"><%= render UI::FlashComponent.new(flash) %></div>
+          <%= yield %>
+        </main>
+      </div>
+    </div>
+
+    <%# One dialog serves every destructive confirmation on the page. %>
+    <dialog id="confirm-dialog"
+            class="w-[calc(100vw-2rem)] max-w-sm p-0 rounded-panel border border-line bg-surface text-ink
+                   backdrop:bg-ink/45 backdrop:backdrop-blur-[1px]">
+      <form method="dialog">
+        <div class="flex items-start gap-3.5 p-5">
+          <span class="grid place-items-center size-9 rounded-full bg-danger-soft text-danger shrink-0">
+            <%= render UI::IconComponent.new(:alert, class: "size-4.5") %>
+          </span>
+          <div class="min-w-0">
+            <h2 class="text-[0.9375rem] font-semibold"><%= t("admin.confirm.title") %></h2>
+            <p data-confirm-message class="text-sm text-muted mt-1"></p>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 px-5 py-3.5 border-t border-line bg-surface-2">
+          <button value="cancel"
+                  class="inline-flex items-center justify-center h-9 px-4 rounded-md border border-line bg-surface text-sm font-medium hover:bg-surface-3 transition-colors">
+            <%= t("admin.actions.cancel") %>
+          </button>
+          <button value="confirm"
+                  class="inline-flex items-center justify-center h-9 px-4 rounded-md border border-danger bg-danger text-white text-sm font-medium hover:brightness-110 transition-colors">
+            <%= t("admin.confirm.accept") %>
+          </button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>

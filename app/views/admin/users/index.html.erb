@@ -1,0 +1,97 @@
+<% content_for :title, t("admin.users.title") %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.users.title"),
+      description: t("admin.users.description")) do |header| %>
+  <% if policy(User).create? %>
+    <% header.with_actions do %>
+      <%= render UI::ButtonComponent.new(
+            label: t("admin.users.new"), href: new_admin_user_path, variant: :primary, icon: :plus) %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= render Admin::DataTableComponent.new(rows: @users) do |table| %>
+  <% table.with_toolbar do %>
+    <%= render Admin::FilterBarComponent.new(url: admin_users_path, query: params[:q]) do |bar| %>
+      <% bar.with_filter do %>
+        <%= render Admin::SelectFilterComponent.new(
+              name: :role,
+              choices: User.roles.keys.map { |r| [User.human_enum_name(:role, r), r] },
+              selected: params[:role],
+              prompt: t("admin.filters.all")) %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% table.column(label: User.human_attribute_name(:name)) do |user| %>
+    <div class="flex items-center gap-3">
+      <%= render UI::AvatarComponent.new(user, size: :sm) %>
+      <div class="min-w-0">
+        <% if policy(user).update? %>
+          <%= link_to user.display_name, edit_admin_user_path(user),
+                class: "font-medium text-ink hover:text-accent transition-colors" %>
+        <% else %>
+          <span class="font-medium text-ink"><%= user.display_name %></span>
+        <% end %>
+        <% if user == current_user %>
+          <span class="ml-1.5 text-[0.6875rem] text-faint">(<%= t("admin.users.own_account") %>)</span>
+        <% end %>
+        <p class="text-xs text-muted truncate"><%= user.email %></p>
+      </div>
+    </div>
+  <% end %>
+
+  <% table.column(label: User.human_attribute_name(:role)) do |user| %>
+    <%= render UI::BadgeComponent.new(User.human_enum_name(:role, user.role),
+          tone: user.super_admin? ? :accent : :neutral) %>
+  <% end %>
+
+  <% table.column(label: t("admin.users.last_sign_in")) do |user| %>
+    <% if user.last_sign_in_at %>
+      <span class="text-muted num text-xs" title="<%= long_datetime(user.last_sign_in_at) %>">
+        <%= short_date(user.last_sign_in_at) %>
+      </span>
+    <% else %>
+      <span class="text-faint text-xs"><%= t("admin.users.never_signed_in") %></span>
+    <% end %>
+  <% end %>
+
+  <% table.column(label: User.human_attribute_name(:active)) do |user| %>
+    <%= render UI::StateBadgeComponent.new(user.active?) %>
+  <% end %>
+
+  <% table.column(label: t("admin.vehicles.columns.actions"), align: :right, width: "4rem") do |user| %>
+    <%= render UI::DropdownComponent.new do |menu| %>
+      <% if policy(user).update? %>
+        <% menu.with_item(label: t("admin.actions.edit"), href: edit_admin_user_path(user), icon: :pencil) %>
+      <% end %>
+      <% if policy(user).reset_password? %>
+        <% menu.with_item(label: t("admin.actions.reset_password"),
+                          href: reset_password_admin_user_path(user), icon: :key, method: :post) %>
+      <% end %>
+      <% if policy(user).toggle? %>
+        <% menu.with_item(
+             label: user.active? ? t("admin.actions.deactivate") : t("admin.actions.activate"),
+             href: toggle_admin_user_path(user), icon: :power, method: :patch,
+             confirm: (t("admin.users.confirm_deactivate") if user.active?)) %>
+      <% end %>
+      <% if policy(user).destroy? %>
+        <% menu.with_item(divider: true) %>
+        <% menu.with_item(label: t("admin.actions.delete"), href: admin_user_path(user),
+                          icon: :trash, method: :delete, tone: :danger,
+                          confirm: t("admin.users.confirm_delete")) %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% table.with_empty_state do %>
+    <%= render UI::EmptyStateComponent.new(
+          title: t("admin.users.empty_title"),
+          description: t("admin.users.empty_description"), icon: :users) %>
+  <% end %>
+
+  <% table.with_footer do %>
+    <%= render UI::PaginationComponent.new(@pagy) %>
+  <% end %>
+<% end %>

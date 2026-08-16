@@ -1,0 +1,18 @@
+<%= form_with model: [:admin, faq], class: "space-y-4" do |f| %>
+  <%= render UI::FormErrorsComponent.new(faq) %>
+
+  <%= render UI::FormSectionComponent.new(title: t("admin.faqs.title"), icon: :info, columns: 1) do %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :question, required: true,
+          placeholder: "¿Aceptan vehículos en parte de pago?") %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :answer, type: :textarea, rows: 5, required: true) %>
+
+    <div class="grid gap-5 sm:grid-cols-2">
+      <%= render UI::FieldComponent.new(form: f, attribute: :position, type: :number) %>
+      <div class="flex items-end pb-1">
+        <%= render UI::SwitchComponent.new(form: f, attribute: :active) %>
+      </div>
+    </div>
+  <% end %>
+
+  <%= render "admin/shared/form_actions", cancel_path: admin_faqs_path, persisted: faq.persisted? %>
+<% end %>

@@ -1,0 +1,168 @@
+<% content_for :title, t("admin.vehicles.title") %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.vehicles.title"),
+      description: t("admin.vehicles.description")) do |header| %>
+  <% header.with_meta do %>
+    <span class="eyebrow"><%= t("admin.vehicles.count", count: @pagy.count) %></span>
+  <% end %>
+
+  <% if policy(Vehicle).create? %>
+    <% header.with_actions do %>
+      <%= render UI::ButtonComponent.new(
+            label: t("admin.vehicles.new"), href: new_admin_vehicle_path,
+            variant: :primary, icon: :plus) %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<div class="space-y-4">
+  <%= render Admin::FilterBarComponent.new(
+        url: admin_vehicles_path,
+        query: params[:q],
+        placeholder: t("admin.vehicles.search_placeholder"),
+        chip_param: :featured,
+        active_chip: params[:featured],
+        chips: [
+          Admin::FilterBarComponent::Chip.new(label: t("admin.vehicles.chips.all"), value: nil, count: @counts[:total]),
+          Admin::FilterBarComponent::Chip.new(label: t("admin.vehicles.chips.featured"), value: "1", count: @counts[:featured]),
+          Admin::FilterBarComponent::Chip.new(label: t("admin.vehicles.chips.not_featured"), value: "0", count: @counts[:not_featured])
+        ]) do |bar| %>
+
+    <% bar.with_filter do %>
+      <%= render Admin::SelectFilterComponent.new(
+            name: :status,
+            choices: Vehicle.statuses.keys.map { |s| [Vehicle.human_enum_name(:status, s), s] },
+            selected: params[:status],
+            prompt: t("admin.filters.any_status")) %>
+    <% end %>
+
+    <% bar.with_filter do %>
+      <%= render Admin::SelectFilterComponent.new(
+            name: :brand_id,
+            choices: Brand.active.order(:name).pluck(:name, :id),
+            selected: params[:brand_id],
+            prompt: t("admin.filters.any_brand")) %>
+    <% end %>
+
+    <% bar.with_filter do %>
+      <%= render Admin::SelectFilterComponent.new(
+            name: :category_id,
+            choices: Category.active.order(:name).pluck(:name, :id),
+            selected: params[:category_id],
+            prompt: t("admin.filters.any_category")) %>
+    <% end %>
+
+    <% bar.with_extra do %>
+      <% if @counts[:archived].positive? && policy(Vehicle).archive? %>
+        <%= link_to admin_vehicles_path(archived: params[:archived] == "1" ? nil : 1),
+              class: "inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-[0.8125rem] font-medium border transition-colors #{params[:archived] == '1' ? 'bg-ink text-canvas border-ink' : 'bg-surface text-muted border-line hover:text-ink'}" do %>
+          <%= render UI::IconComponent.new(:archive, class: "size-3.5") %>
+          <%= t("admin.vehicles.chips.archived") %>
+          <span class="num opacity-65"><%= @counts[:archived] %></span>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if params[:archived] == "1" %>
+    <%= render UI::AlertComponent.new(t("admin.vehicles.archived_notice"), tone: :warn) %>
+  <% end %>
+
+  <%= render Admin::DataTableComponent.new(rows: @vehicles) do |table| %>
+    <% table.column(label: t("admin.vehicles.columns.image"), width: "6rem") do |vehicle| %>
+      <%= link_to admin_vehicle_path(vehicle) do %>
+        <%= render Vehicles::ThumbnailComponent.new(vehicle, size: :md) %>
+      <% end %>
+    <% end %>
+
+    <% table.column(label: t("admin.vehicles.columns.code"), sort: :code) do |vehicle| %>
+      <span class="font-mono text-xs text-muted"><%= vehicle.code %></span>
+    <% end %>
+
+    <% table.column(label: t("admin.vehicles.columns.vehicle")) do |vehicle| %>
+      <%= link_to vehicle.display_name, admin_vehicle_path(vehicle),
+            class: "font-medium text-ink hover:text-accent transition-colors" %>
+      <p class="text-xs text-faint mt-0.5"><%= vehicle.category.name %></p>
+    <% end %>
+
+    <% table.column(label: t("admin.vehicles.columns.year"), sort: :year, align: :right) do |vehicle| %>
+      <span class="text-muted num"><%= vehicle.year %></span>
+    <% end %>
+
+    <% table.column(label: t("admin.vehicles.columns.price"), sort: :price, align: :right) do |vehicle| %>
+      <span class="font-medium text-ink num"><%= money(vehicle.current_price) %></span>
+      <% if vehicle.discounted? %>
+        <p class="text-xs text-faint line-through num mt-0.5"><%= money(vehicle.price) %></p>
+      <% end %>
+    <% end %>
+
+    <% table.column(label: t("admin.vehicles.columns.mileage"), sort: :mileage, align: :right) do |vehicle| %>
+      <span class="text-muted num"><%= mileage(vehicle.mileage) %></span>
+    <% end %>
+
+    <% table.column(label: t("admin.vehicles.columns.status"), sort: :status) do |vehicle| %>
+      <%= render Vehicles::StatusBadgeComponent.new(vehicle) %>
+    <% end %>
+
+    <% table.column(label: t("admin.vehicles.columns.featured"), align: :center) do |vehicle| %>
+      <% if vehicle.featured? %>
+        <span class="inline-grid place-items-center size-6 rounded-md bg-accent-soft text-warn"
+              title="<%= t("admin.vehicles.columns.featured") %>">
+          <%= render UI::IconComponent.new(:star, class: "size-3.5") %>
+        </span>
+      <% else %>
+        <span class="text-faint">—</span>
+      <% end %>
+    <% end %>
+
+    <% table.column(label: t("admin.vehicles.columns.offer"), align: :center) do |vehicle| %>
+      <% if vehicle.discounted? %>
+        <%= render UI::BadgeComponent.new(
+              t("admin.offers.discount", percent: vehicle.discount_percentage),
+              tone: :accent, size: :sm) %>
+      <% else %>
+        <span class="text-faint">—</span>
+      <% end %>
+    <% end %>
+
+    <% table.column(label: t("admin.vehicles.columns.date"), sort: :published_at, align: :right) do |vehicle| %>
+      <span class="text-muted num text-xs"><%= short_date(vehicle.published_at) %></span>
+    <% end %>
+
+    <% table.column(label: t("admin.vehicles.columns.actions"), align: :right, width: "4rem") do |vehicle| %>
+      <%= render partial: "admin/vehicles/row_actions", locals: { vehicle: vehicle } %>
+    <% end %>
+
+    <% table.with_empty_state do %>
+      <% if @search.results.count.zero? && params[:q].blank? && params[:status].blank? %>
+        <%= render UI::EmptyStateComponent.new(
+              title: t("admin.vehicles.empty_title"),
+              description: t("admin.vehicles.empty_description"),
+              icon: :car) do |empty| %>
+          <% if policy(Vehicle).create? %>
+            <% empty.with_action do %>
+              <%= render UI::ButtonComponent.new(
+                    label: t("admin.vehicles.new"), href: new_admin_vehicle_path,
+                    variant: :primary, icon: :plus) %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% else %>
+        <%= render UI::EmptyStateComponent.new(
+              title: t("admin.empty.no_results_title"),
+              description: t("admin.empty.no_results_description"),
+              icon: :search) do |empty| %>
+          <% empty.with_action do %>
+            <%= render UI::ButtonComponent.new(
+                  label: t("admin.filters.clear"), href: admin_vehicles_path, variant: :secondary) %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% table.with_footer do %>
+      <%= render UI::PaginationComponent.new(@pagy) %>
+    <% end %>
+  <% end %>
+</div>

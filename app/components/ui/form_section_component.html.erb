@@ -1,0 +1,20 @@
+<section class="bg-surface border border-line rounded-panel">
+  <header class="flex items-start gap-3 px-5 py-4 border-b border-line">
+    <% if icon.present? %>
+      <span class="grid place-items-center size-8 rounded-md bg-surface-3 text-muted shrink-0">
+        <%= render UI::IconComponent.new(icon, class: "size-4") %>
+      </span>
+    <% end %>
+
+    <div class="min-w-0">
+      <h2 class="text-[0.9375rem] font-semibold text-ink"><%= title %></h2>
+      <% if description.present? %>
+        <p class="text-xs text-muted mt-0.5"><%= description %></p>
+      <% end %>
+    </div>
+  </header>
+
+  <div class="p-5">
+    <div class="<%= grid_classes %>"><%= content %></div>
+  </div>
+</section>

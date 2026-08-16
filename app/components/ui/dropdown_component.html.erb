@@ -1,0 +1,17 @@
+<div class="<%= wrapper_classes %>" data-controller="dropdown">
+  <% if trigger? %>
+    <div data-action="click->dropdown#toggle"><%= trigger %></div>
+  <% else %>
+    <button type="button" data-action="dropdown#toggle"
+            class="grid place-items-center size-8 rounded-md text-muted hover:bg-surface-3 hover:text-ink transition-colors"
+            aria-haspopup="true"
+            aria-label="<%= label || t("admin.actions.open_menu") %>">
+      <%= render UI::IconComponent.new(icon, class: "size-4") %>
+    </button>
+  <% end %>
+
+  <div data-dropdown-target="menu" role="menu" hidden
+       class="absolute <%= menu_alignment %> z-40 mt-1.5 min-w-48 py-1 bg-surface border border-line rounded-md shadow-lg shadow-ink/5 origin-top">
+    <% items.each do |item| %><%= item %><% end %>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<div class="flex items-start gap-3 rounded-md border border-danger/25 bg-danger-soft px-4 py-3 mb-5" role="alert">
+  <%= render UI::IconComponent.new(:alert, class: "size-4.5 text-danger mt-px") %>
+
+  <div class="min-w-0">
+    <p class="text-sm font-semibold text-danger">
+      <%= t("admin.forms.error_title", count: count) %>
+    </p>
+    <ul class="mt-1.5 space-y-0.5 text-sm text-danger/90 list-disc list-inside">
+      <% messages.first(6).each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+    <% if messages.size > 6 %>
+      <p class="mt-1 text-xs text-danger/80"><%= t("admin.forms.error_more", count: messages.size - 6) %></p>
+    <% end %>
+  </div>
+</div>

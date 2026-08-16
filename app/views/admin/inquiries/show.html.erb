@@ -1,0 +1,118 @@
+<% content_for :title, @inquiry.name %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: @inquiry.name,
+      description: t("admin.inquiries.received", time: long_datetime(@inquiry.created_at)),
+      back_to: admin_inquiries_path,
+      back_label: t("admin.inquiries.title")) do |header| %>
+  <% header.with_meta do %>
+    <%= render Inquiries::StatusBadgeComponent.new(@inquiry) %>
+  <% end %>
+
+  <% header.with_actions do %>
+    <%= whatsapp_link @inquiry.phone,
+          message: t("admin.inquiries.whatsapp_template",
+                     name: @inquiry.name, company: current_setting.company_name),
+          class: "inline-flex items-center justify-center gap-2 h-9.5 px-4 rounded-md border border-ok bg-ok text-white text-sm font-medium hover:brightness-110 transition-colors" do %>
+      <%= render UI::IconComponent.new(:phone, class: "size-4") %>
+      <span><%= t("admin.inquiries.write_whatsapp") %></span>
+    <% end %>
+  <% end %>
+<% end %>
+
+<div class="grid gap-4 lg:grid-cols-3 items-start">
+  <div class="lg:col-span-2 space-y-4">
+    <%= render UI::CardComponent.new(title: t("admin.inquiries.message"), icon: :inbox) do %>
+      <% if @inquiry.message.present? %>
+        <p class="text-sm text-ink leading-relaxed whitespace-pre-line"><%= @inquiry.message %></p>
+      <% else %>
+        <p class="text-sm text-faint"><%= t("admin.inquiries.no_message") %></p>
+      <% end %>
+    <% end %>
+
+    <% if @inquiry.vehicle %>
+      <%= render UI::CardComponent.new(title: t("admin.inquiries.columns.vehicle"), icon: :car) do %>
+        <%= link_to admin_vehicle_path(@inquiry.vehicle),
+              class: "flex items-center gap-4 -m-1 p-1 rounded-md hover:bg-surface-2 transition-colors" do %>
+          <%= render Vehicles::ThumbnailComponent.new(@inquiry.vehicle, size: :lg) %>
+          <div class="min-w-0 flex-1">
+            <p class="font-medium text-ink"><%= @inquiry.vehicle.display_name %></p>
+            <p class="text-xs text-faint font-mono mt-0.5"><%= @inquiry.vehicle.code %></p>
+            <div class="flex items-center gap-2 mt-2">
+              <%= render Vehicles::StatusBadgeComponent.new(@inquiry.vehicle, size: :sm) %>
+              <span class="text-sm font-medium text-ink num"><%= money(@inquiry.vehicle.current_price) %></span>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <%# Status, assignment and internal notes are all one form: one save, one audit entry. %>
+    <%= render UI::CardComponent.new(title: t("admin.inquiries.internal_notes"), icon: :file_text) do %>
+      <%= form_with model: [:admin, @inquiry], class: "space-y-4" do |f| %>
+        <%= render UI::FormErrorsComponent.new(@inquiry) %>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <%= render UI::FieldComponent.new(form: f, attribute: :status, type: :select,
+                choices: Inquiry.statuses.keys.map { |s| [Inquiry.human_enum_name(:status, s), s] }) %>
+
+          <%= render UI::FieldComponent.new(form: f, attribute: :user_id, type: :select,
+                label: t("admin.inquiries.assign"),
+                choices: User.active.ordered.pluck(:name, :id),
+                include_blank: t("admin.inquiries.unassigned")) %>
+        </div>
+
+        <%= render UI::FieldComponent.new(form: f, attribute: :notes, type: :textarea, rows: 4,
+              hint: t("admin.inquiries.notes_hint")) %>
+
+        <div class="flex justify-end">
+          <%= render UI::ButtonComponent.new(
+                label: t("admin.actions.update"), type: "submit", variant: :primary, icon: :check) %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="space-y-4">
+    <%= render UI::CardComponent.new(title: t("admin.inquiries.contact"), icon: :phone, flush: true) do %>
+      <dl class="divide-y divide-line">
+        <div class="px-5 py-3">
+          <dt class="eyebrow"><%= Inquiry.human_attribute_name(:phone) %></dt>
+          <dd class="mt-1">
+            <%= phone_link @inquiry.phone, class: "text-sm font-medium text-ink hover:text-accent transition-colors num" %>
+          </dd>
+        </div>
+
+        <div class="px-5 py-3">
+          <dt class="eyebrow"><%= Inquiry.human_attribute_name(:email) %></dt>
+          <dd class="mt-1">
+            <% if @inquiry.email.present? %>
+              <%= mail_to @inquiry.email, class: "text-sm font-medium text-ink hover:text-accent transition-colors break-all" %>
+            <% else %>
+              <span class="text-sm text-faint">—</span>
+            <% end %>
+          </dd>
+        </div>
+
+        <div class="px-5 py-3">
+          <dt class="eyebrow"><%= Inquiry.human_attribute_name(:created_at) %></dt>
+          <dd class="mt-1 text-sm text-ink num"><%= long_datetime(@inquiry.created_at) %></dd>
+        </div>
+
+        <% if @inquiry.contacted_at %>
+          <div class="px-5 py-3">
+            <dt class="eyebrow"><%= Inquiry.human_attribute_name(:contacted_at) %></dt>
+            <dd class="mt-1 text-sm text-ink num"><%= long_datetime(@inquiry.contacted_at) %></dd>
+          </div>
+        <% end %>
+      </dl>
+    <% end %>
+
+    <% if policy(AuditLog).index? && @inquiry.audit_logs.any? %>
+      <%= render UI::CardComponent.new(title: t("admin.audit_logs.title"), icon: :history) do %>
+        <%= render partial: "admin/audit_logs/timeline",
+                   locals: { logs: @inquiry.audit_logs.includes(:user).order(created_at: :desc).limit(8) } %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

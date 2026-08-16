@@ -1,0 +1,201 @@
+<% content_for :title, t("admin.dashboard.title") %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.dashboard.title"),
+      description: t("admin.dashboard.description")) do |header| %>
+  <% if policy(Vehicle).create? %>
+    <% header.with_actions do %>
+      <%= render UI::ButtonComponent.new(
+            label: t("admin.vehicles.new"),
+            href: new_admin_vehicle_path,
+            variant: :primary, icon: :plus) %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%# ── The instrument cluster ───────────────────────────────────────────── %>
+<% total = @dashboard.total_vehicles %>
+<%= render Admin::InstrumentClusterComponent.new(metrics: [
+      (Admin::InstrumentClusterComponent::Metric.new(
+        label: t("admin.dashboard.metrics.published"),
+        value: @dashboard.published_count,
+        ratio: total.zero? ? 0 : @dashboard.published_count.to_f / total,
+        tone: :ink,
+        href: (admin_vehicles_path if policy(Vehicle).index?)) if @dashboard.vehicles?),
+
+      (Admin::InstrumentClusterComponent::Metric.new(
+        label: t("admin.dashboard.metrics.available"),
+        value: @dashboard.available_count,
+        ratio: total.zero? ? 0 : @dashboard.available_count.to_f / total,
+        tone: :ok,
+        href: (admin_vehicles_path(status: :available) if policy(Vehicle).index?)) if @dashboard.vehicles?),
+
+      (Admin::InstrumentClusterComponent::Metric.new(
+        label: t("admin.dashboard.metrics.reserved"),
+        value: @dashboard.reserved_count,
+        ratio: total.zero? ? 0 : @dashboard.reserved_count.to_f / total,
+        tone: :warn,
+        href: (admin_vehicles_path(status: :reserved) if policy(Vehicle).index?)) if @dashboard.vehicles?),
+
+      (Admin::InstrumentClusterComponent::Metric.new(
+        label: t("admin.dashboard.metrics.sold"),
+        value: @dashboard.sold_count,
+        ratio: total.zero? ? 0 : @dashboard.sold_count.to_f / total,
+        tone: :info,
+        href: (admin_vehicles_path(status: :sold) if policy(Vehicle).index?)) if @dashboard.vehicles?),
+
+      (Admin::InstrumentClusterComponent::Metric.new(
+        label: t("admin.dashboard.metrics.featured"),
+        value: @dashboard.featured_count,
+        ratio: total.zero? ? 0 : @dashboard.featured_count.to_f / total,
+        tone: :accent,
+        href: (admin_vehicles_path(featured: "1") if policy(Vehicle).index?)) if @dashboard.vehicles?),
+
+      (Admin::InstrumentClusterComponent::Metric.new(
+        label: t("admin.dashboard.metrics.new_inquiries"),
+        value: @dashboard.new_inquiries_count,
+        ratio: @dashboard.month_inquiries_count.zero? ? 0 : @dashboard.new_inquiries_count.to_f / @dashboard.month_inquiries_count,
+        tone: :accent,
+        hint: t("admin.dashboard.metrics.month_inquiries") + ": " + @dashboard.month_inquiries_count.to_s,
+        href: (admin_inquiries_path(status: :new_lead) if policy(Inquiry).index?)) if @dashboard.inquiries?)
+    ].compact) %>
+
+<%# ── Charts ───────────────────────────────────────────────────────────── %>
+<div class="grid gap-4 lg:grid-cols-2 mt-4">
+  <% if @dashboard.inquiries? %>
+    <%= render UI::CardComponent.new(
+          title: t("admin.dashboard.inquiries_chart_title"),
+          subtitle: t("admin.dashboard.inquiries_chart_subtitle"),
+          icon: :trending) do %>
+      <% if @dashboard.inquiries_by_month.any? { |(_, value)| value.positive? } %>
+        <%= render Admin::BarChartComponent.new(series: @dashboard.inquiries_by_month) %>
+      <% else %>
+        <%= render UI::EmptyStateComponent.new(
+              title: t("admin.dashboard.no_inquiries"), icon: :inbox, compact: true) %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if @dashboard.vehicles? %>
+    <%= render UI::CardComponent.new(
+          title: t("admin.dashboard.inventory_title"), icon: :car) do %>
+      <% if @dashboard.total_vehicles.positive? %>
+        <%= render Admin::DonutChartComponent.new(
+              segments: @dashboard.inventory_segments,
+              total_label: t("admin.dashboard.inventory_total")) %>
+      <% else %>
+        <%= render UI::EmptyStateComponent.new(
+              title: t("admin.dashboard.no_vehicles"), icon: :car, compact: true) %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
+
+<%# ── Latest inquiries ─────────────────────────────────────────────────── %>
+<% if @dashboard.inquiries? %>
+  <div class="mt-4">
+    <%= render UI::CardComponent.new(
+          title: t("admin.dashboard.latest_inquiries"), icon: :inbox, flush: true) do |card| %>
+      <% card.with_actions do %>
+        <%= render UI::ButtonComponent.new(
+              label: t("admin.dashboard.view_all"), href: admin_inquiries_path,
+              variant: :ghost, size: :sm) %>
+      <% end %>
+
+      <%= render Admin::DataTableComponent.new(rows: @dashboard.latest_inquiries) do |table| %>
+        <% table.column(label: t("admin.inquiries.columns.name")) do |inquiry| %>
+          <%= link_to inquiry.name, admin_inquiry_path(inquiry),
+                class: "font-medium text-ink hover:text-accent transition-colors" %>
+        <% end %>
+
+        <% table.column(label: t("admin.inquiries.columns.phone")) do |inquiry| %>
+          <%= phone_link inquiry.phone, class: "text-muted hover:text-ink transition-colors num" %>
+        <% end %>
+
+        <% table.column(label: t("admin.inquiries.columns.vehicle")) do |inquiry| %>
+          <% if inquiry.vehicle %>
+            <%= link_to inquiry.vehicle.display_name, admin_vehicle_path(inquiry.vehicle),
+                  class: "text-muted hover:text-ink transition-colors" %>
+          <% else %>
+            <span class="text-faint"><%= t("admin.inquiries.general") %></span>
+          <% end %>
+        <% end %>
+
+        <% table.column(label: t("admin.inquiries.columns.date")) do |inquiry| %>
+          <span class="text-muted num"><%= short_date(inquiry.created_at) %></span>
+        <% end %>
+
+        <% table.column(label: t("admin.inquiries.columns.status"), align: :right) do |inquiry| %>
+          <%= render Inquiries::StatusBadgeComponent.new(inquiry) %>
+        <% end %>
+
+        <% table.with_empty_state do %>
+          <%= render UI::EmptyStateComponent.new(
+                title: t("admin.dashboard.no_inquiries"), icon: :inbox, compact: true) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+
+<%# ── Recent vehicles ──────────────────────────────────────────────────── %>
+<% if @dashboard.vehicles? %>
+  <div class="mt-4">
+    <%= render UI::CardComponent.new(
+          title: t("admin.dashboard.recent_vehicles"), icon: :car, flush: true) do |card| %>
+      <% card.with_actions do %>
+        <%= render UI::ButtonComponent.new(
+              label: t("admin.dashboard.view_all"), href: admin_vehicles_path,
+              variant: :ghost, size: :sm) %>
+      <% end %>
+
+      <%= render Admin::DataTableComponent.new(rows: @dashboard.recent_vehicles) do |table| %>
+        <% table.column(label: t("admin.vehicles.columns.image"), width: "5.5rem") do |vehicle| %>
+          <%= render Vehicles::ThumbnailComponent.new(vehicle, size: :sm) %>
+        <% end %>
+
+        <% table.column(label: t("admin.vehicles.columns.vehicle")) do |vehicle| %>
+          <%= link_to vehicle.display_name, admin_vehicle_path(vehicle),
+                class: "font-medium text-ink hover:text-accent transition-colors" %>
+          <p class="text-xs text-faint num mt-0.5"><%= vehicle.code %></p>
+        <% end %>
+
+        <% table.column(label: t("admin.vehicles.columns.year"), align: :right) do |vehicle| %>
+          <span class="text-muted num"><%= vehicle.year %></span>
+        <% end %>
+
+        <% table.column(label: t("admin.vehicles.columns.price"), align: :right) do |vehicle| %>
+          <span class="font-medium text-ink num"><%= money(vehicle.current_price) %></span>
+        <% end %>
+
+        <% table.column(label: t("admin.vehicles.columns.status")) do |vehicle| %>
+          <%= render Vehicles::StatusBadgeComponent.new(vehicle) %>
+        <% end %>
+
+        <% table.column(label: t("admin.vehicles.columns.date"), align: :right) do |vehicle| %>
+          <span class="text-muted num"><%= short_date(vehicle.published_at) %></span>
+        <% end %>
+
+        <% table.with_empty_state do %>
+          <%= render UI::EmptyStateComponent.new(
+                title: t("admin.dashboard.no_vehicles"), icon: :car, compact: true) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+
+<%# ── Leaderboards ─────────────────────────────────────────────────────── %>
+<% if @dashboard.vehicles? %>
+  <div class="grid gap-4 lg:grid-cols-2 mt-4">
+    <%= render UI::CardComponent.new(title: t("admin.dashboard.most_inquired"), icon: :inbox) do %>
+      <%= render partial: "admin/dashboard/leaderboard",
+                 locals: { vehicles: @dashboard.most_inquired, metric: :inquiries } %>
+    <% end %>
+
+    <%= render UI::CardComponent.new(title: t("admin.dashboard.most_viewed"), icon: :eye) do %>
+      <%= render partial: "admin/dashboard/leaderboard",
+                 locals: { vehicles: @dashboard.most_viewed, metric: :views } %>
+    <% end %>
+  </div>
+<% end %>

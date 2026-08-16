@@ -1,0 +1,26 @@
+<% content_for :title, t("admin.profile.sections.password") %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.profile.sections.password"),
+      description: t("admin.profile.sections.password_hint"),
+      back_to: admin_profile_path, back_label: t("admin.profile.title")) %>
+
+<div class="max-w-xl">
+  <%= form_with model: @account, url: admin_password_path, method: :patch, class: "space-y-4" do |f| %>
+    <%= render UI::FormErrorsComponent.new(@account) %>
+
+    <%= render UI::FormSectionComponent.new(
+          title: t("admin.profile.sections.password"), icon: :key, columns: 1) do %>
+      <%= render UI::FieldComponent.new(form: f, attribute: :current_password, type: :password,
+            required: true, autocomplete: "current-password") %>
+      <%= render UI::FieldComponent.new(form: f, attribute: :password, type: :password,
+            required: true, autocomplete: "new-password",
+            hint: t("admin.users.password_hint")) %>
+      <%= render UI::FieldComponent.new(form: f, attribute: :password_confirmation, type: :password,
+            required: true, autocomplete: "new-password") %>
+    <% end %>
+
+    <%= render "admin/shared/form_actions",
+          cancel_path: admin_profile_path, persisted: true, submit_label: t("admin.actions.save") %>
+  <% end %>
+</div>

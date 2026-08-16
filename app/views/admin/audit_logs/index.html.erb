@@ -1,0 +1,73 @@
+<% content_for :title, t("admin.audit_logs.title") %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.audit_logs.title"),
+      description: t("admin.audit_logs.description")) %>
+
+<%= render Admin::DataTableComponent.new(rows: @logs) do |table| %>
+  <% table.with_toolbar do %>
+    <%= form_with url: admin_audit_logs_path, method: :get,
+                  data: { controller: "filter-form" }, class: "flex flex-wrap items-center gap-2" do %>
+      <%= select_tag :action_name,
+            options_for_select(@actions.map { |a| [t("audit.actions.#{a}", default: a.humanize), a] }, params[:action_name]),
+            include_blank: t("admin.audit_logs.filter_action"),
+            data: { action: "change->filter-form#submit" },
+            class: "h-9 pl-3 pr-8 rounded-md border border-line bg-surface text-sm text-ink focus:border-line-strong transition-colors" %>
+
+      <%= select_tag :user_id,
+            options_for_select(User.ordered.pluck(:name, :id), params[:user_id]),
+            include_blank: t("admin.filters.all"),
+            data: { action: "change->filter-form#submit" },
+            class: "h-9 pl-3 pr-8 rounded-md border border-line bg-surface text-sm text-ink focus:border-line-strong transition-colors" %>
+
+      <% if params[:action_name].present? || params[:user_id].present? %>
+        <%= render UI::ButtonComponent.new(
+              label: t("admin.filters.clear"), href: admin_audit_logs_path, variant: :ghost, size: :sm, icon: :x) %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% table.column(label: t("admin.audit_logs.columns.date"), width: "11rem") do |log| %>
+    <span class="text-muted num text-xs"><%= long_datetime(log.created_at) %></span>
+  <% end %>
+
+  <% table.column(label: t("admin.audit_logs.columns.user")) do |log| %>
+    <span class="text-sm font-medium text-ink"><%= log.actor_name %></span>
+  <% end %>
+
+  <% table.column(label: t("admin.audit_logs.columns.action")) do |log| %>
+    <%= render UI::BadgeComponent.new(log.action_label, tone: log.tone, size: :sm) %>
+  <% end %>
+
+  <% table.column(label: t("admin.audit_logs.columns.record")) do |log| %>
+    <span class="text-sm text-muted"><%= log.auditable_label.presence || "—" %></span>
+    <p class="text-[0.6875rem] text-faint"><%= log.auditable_type %></p>
+  <% end %>
+
+  <% table.column(label: t("admin.audit_logs.columns.changes")) do |log| %>
+    <% if log.changed_data.present? %>
+      <ul class="space-y-0.5">
+        <% log.readable_changes.each do |attribute, (before, after)| %>
+          <li class="text-xs text-muted">
+            <span class="text-faint"><%= attribute %>:</span>
+            <span class="line-through"><%= before %></span>
+            <span aria-hidden="true">→</span>
+            <span class="text-ink font-medium"><%= after %></span>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <span class="text-xs text-faint"><%= t("admin.audit_logs.no_changes") %></span>
+    <% end %>
+  <% end %>
+
+  <% table.with_empty_state do %>
+    <%= render UI::EmptyStateComponent.new(
+          title: t("admin.audit_logs.empty_title"),
+          description: t("admin.audit_logs.empty_description"), icon: :history) %>
+  <% end %>
+
+  <% table.with_footer do %>
+    <%= render UI::PaginationComponent.new(@pagy) %>
+  <% end %>
+<% end %>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <title><%= [content_for(:title), Setting.current.company_name].compact.join(" · ") %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <script>
+      (function () {
+        var stored = localStorage.getItem("playa:theme");
+        var dark = stored ? stored === "dark"
+                          : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.classList.toggle("dark", dark);
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-dvh bg-canvas text-ink antialiased">
+    <div class="min-h-dvh lg:grid lg:grid-cols-[1.1fr_1fr]">
+      <%# The binnacle: brand side, dark in both themes. %>
+      <aside class="relative hidden lg:flex flex-col justify-between p-10 bg-rail text-rail-ink overflow-hidden">
+        <div class="flex items-center gap-3">
+          <span class="grid place-items-center size-9 rounded-md bg-accent text-accent-ink">
+            <%= render UI::IconComponent.new(:car, class: "size-5", stroke_width: 2) %>
+          </span>
+          <span class="font-display font-semibold"><%= Setting.current.company_name %></span>
+        </div>
+
+        <div class="relative z-10 max-w-md">
+          <p class="eyebrow text-accent!"><%= t("auth.eyebrow") %></p>
+          <h1 class="font-display text-4xl font-semibold leading-[1.1] tracking-tight mt-3">
+            <%= t("auth.headline") %>
+          </h1>
+          <p class="text-rail-muted mt-4 leading-relaxed"><%= t("auth.subhead") %></p>
+        </div>
+
+        <p class="relative z-10 text-xs text-rail-muted">
+          <%= t("auth.footer", year: Date.current.year, company: Setting.current.company_name) %>
+        </p>
+
+        <%# Instrument-panel arcs: quiet texture, drawn not decorated. %>
+        <svg class="absolute -right-24 -bottom-24 size-[30rem] text-rail-2 pointer-events-none"
+             viewBox="0 0 200 200" fill="none" aria-hidden="true">
+          <circle cx="100" cy="100" r="90" stroke="currentColor" stroke-width="1" />
+          <circle cx="100" cy="100" r="66" stroke="currentColor" stroke-width="1" />
+          <circle cx="100" cy="100" r="42" stroke="currentColor" stroke-width="1" />
+          <path d="M100 10 A90 90 0 0 1 190 100" stroke="var(--c-accent)" stroke-width="2" opacity="0.5" />
+        </svg>
+      </aside>
+
+      <main class="flex items-center justify-center p-6 sm:p-10">
+        <div class="w-full max-w-sm">
+          <div class="flex items-center gap-2.5 lg:hidden mb-8">
+            <span class="grid place-items-center size-9 rounded-md bg-accent text-accent-ink">
+              <%= render UI::IconComponent.new(:car, class: "size-5", stroke_width: 2) %>
+            </span>
+            <span class="font-display font-semibold text-ink"><%= Setting.current.company_name %></span>
+          </div>
+
+          <%= render UI::FlashComponent.new(flash) %>
+          <%= yield %>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

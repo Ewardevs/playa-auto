@@ -1,0 +1,84 @@
+<% content_for :title, t("admin.vehicle_models.title") %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.vehicle_models.title"),
+      description: t("admin.vehicle_models.description")) do |header| %>
+  <% if policy(VehicleModel).create? %>
+    <% header.with_actions do %>
+      <%= render UI::ButtonComponent.new(
+            label: t("admin.vehicle_models.new"), href: new_admin_vehicle_model_path, variant: :primary, icon: :plus) %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= render Admin::DataTableComponent.new(rows: @vehicle_models) do |table| %>
+  <% table.with_toolbar do %>
+    <%= render Admin::FilterBarComponent.new(url: admin_vehicle_models_path, query: params[:q]) do |bar| %>
+      <% bar.with_filter do %>
+        <%= render Admin::SelectFilterComponent.new(
+              name: :brand_id,
+              choices: Brand.order(:name).pluck(:name, :id),
+              selected: params[:brand_id],
+              prompt: t("admin.filters.any_brand")) %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% table.column(label: VehicleModel.human_attribute_name(:brand)) do |model| %>
+    <span class="text-muted"><%= model.brand.name %></span>
+  <% end %>
+
+  <% table.column(label: VehicleModel.human_attribute_name(:name)) do |model| %>
+    <% if policy(model).update? %>
+      <%= link_to model.name, edit_admin_vehicle_model_path(model),
+            class: "font-medium text-ink hover:text-accent transition-colors" %>
+    <% else %>
+      <span class="font-medium text-ink"><%= model.name %></span>
+    <% end %>
+  <% end %>
+
+  <% table.column(label: VehicleModel.human_attribute_name(:vehicles_count), align: :right) do |model| %>
+    <span class="text-muted num"><%= model.vehicles_count %></span>
+  <% end %>
+
+  <% table.column(label: VehicleModel.human_attribute_name(:active)) do |model| %>
+    <%= render UI::StateBadgeComponent.new(model.active?) %>
+  <% end %>
+
+  <% table.column(label: t("admin.vehicles.columns.actions"), align: :right, width: "4rem") do |model| %>
+    <%= render UI::DropdownComponent.new do |menu| %>
+      <% if policy(model).update? %>
+        <% menu.with_item(label: t("admin.actions.edit"), href: edit_admin_vehicle_model_path(model), icon: :pencil) %>
+      <% end %>
+      <% if policy(model).toggle? %>
+        <% menu.with_item(
+             label: model.active? ? t("admin.actions.deactivate") : t("admin.actions.activate"),
+             href: toggle_admin_vehicle_model_path(model), icon: :power, method: :patch) %>
+      <% end %>
+      <% if policy(model).destroy? %>
+        <% menu.with_item(divider: true) %>
+        <% menu.with_item(label: t("admin.actions.delete"), href: admin_vehicle_model_path(model),
+                          icon: :trash, method: :delete, tone: :danger,
+                          confirm: t("admin.vehicle_models.confirm_delete")) %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% table.with_empty_state do %>
+    <%= render UI::EmptyStateComponent.new(
+          title: t("admin.vehicle_models.empty_title"),
+          description: t("admin.vehicle_models.empty_description"),
+          icon: :layers) do |empty| %>
+      <% if policy(VehicleModel).create? %>
+        <% empty.with_action do %>
+          <%= render UI::ButtonComponent.new(
+                label: t("admin.vehicle_models.new"), href: new_admin_vehicle_model_path, variant: :primary, icon: :plus) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% table.with_footer do %>
+    <%= render UI::PaginationComponent.new(@pagy) %>
+  <% end %>
+<% end %>

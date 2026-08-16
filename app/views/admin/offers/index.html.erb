@@ -1,0 +1,82 @@
+<% content_for :title, t("admin.offers.title") %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.offers.title"),
+      description: t("admin.offers.description")) do |header| %>
+  <% if policy(Offer).create? %>
+    <% header.with_actions do %>
+      <%= render UI::ButtonComponent.new(
+            label: t("admin.offers.new"), href: new_admin_offer_path, variant: :primary, icon: :plus) %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= render Admin::DataTableComponent.new(rows: @offers) do |table| %>
+  <% table.column(label: t("admin.vehicles.columns.image"), width: "5.5rem") do |offer| %>
+    <%= render Vehicles::ThumbnailComponent.new(offer.vehicle, size: :sm) %>
+  <% end %>
+
+  <% table.column(label: Offer.human_attribute_name(:vehicle)) do |offer| %>
+    <%= link_to offer.vehicle.display_name, admin_vehicle_path(offer.vehicle),
+          class: "font-medium text-ink hover:text-accent transition-colors" %>
+    <p class="text-xs text-faint font-mono mt-0.5"><%= offer.vehicle.code %></p>
+  <% end %>
+
+  <% table.column(label: Offer.human_attribute_name(:previous_price), align: :right) do |offer| %>
+    <span class="text-faint line-through num"><%= money(offer.previous_price) %></span>
+  <% end %>
+
+  <% table.column(label: Offer.human_attribute_name(:promo_price), align: :right) do |offer| %>
+    <span class="font-medium text-ink num"><%= money(offer.promo_price) %></span>
+    <p class="text-xs text-ok num mt-0.5"><%= t("admin.offers.discount", percent: offer.discount_percentage) %></p>
+  <% end %>
+
+  <% table.column(label: t("admin.offers.period_label")) do |offer| %>
+    <span class="text-muted num text-xs">
+      <%= t("admin.offers.period", from: short_date(offer.starts_on), to: short_date(offer.ends_on)) %>
+    </span>
+  <% end %>
+
+  <% table.column(label: Offer.human_attribute_name(:active)) do |offer| %>
+    <% tone = { running: :ok, scheduled: :info, expired: :off, inactive: :off }[offer.state] %>
+    <%= render UI::BadgeComponent.new(t("admin.offers.#{offer.state == :inactive ? 'paused' : offer.state}"),
+          tone: tone, lamp: true) %>
+  <% end %>
+
+  <% table.column(label: t("admin.vehicles.columns.actions"), align: :right, width: "4rem") do |offer| %>
+    <%= render UI::DropdownComponent.new do |menu| %>
+      <% if policy(offer).update? %>
+        <% menu.with_item(label: t("admin.actions.edit"), href: edit_admin_offer_path(offer), icon: :pencil) %>
+      <% end %>
+      <% if policy(offer).toggle? %>
+        <% menu.with_item(
+             label: offer.active? ? t("admin.actions.deactivate") : t("admin.actions.activate"),
+             href: toggle_admin_offer_path(offer), icon: :power, method: :patch) %>
+      <% end %>
+      <% if policy(offer).destroy? %>
+        <% menu.with_item(divider: true) %>
+        <% menu.with_item(label: t("admin.actions.delete"), href: admin_offer_path(offer),
+                          icon: :trash, method: :delete, tone: :danger,
+                          confirm: t("admin.offers.confirm_delete")) %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% table.with_empty_state do %>
+    <%= render UI::EmptyStateComponent.new(
+          title: t("admin.offers.empty_title"),
+          description: t("admin.offers.empty_description"),
+          icon: :percent) do |empty| %>
+      <% if policy(Offer).create? %>
+        <% empty.with_action do %>
+          <%= render UI::ButtonComponent.new(
+                label: t("admin.offers.new"), href: new_admin_offer_path, variant: :primary, icon: :plus) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% table.with_footer do %>
+    <%= render UI::PaginationComponent.new(@pagy) %>
+  <% end %>
+<% end %>

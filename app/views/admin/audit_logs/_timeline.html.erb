@@ -1,0 +1,32 @@
+<%# Compact history used on a record's own page. %>
+<ol class="space-y-3">
+  <% logs.each do |log| %>
+    <li class="flex gap-3">
+      <span class="mt-1.5 shrink-0"><span class="lamp lamp-off"></span></span>
+
+      <div class="min-w-0 flex-1">
+        <p class="text-sm text-ink">
+          <span class="font-medium"><%= log.actor_name %></span>
+          <span class="text-muted"><%= log.action_label.downcase %></span>
+        </p>
+
+        <% if log.changed_data.present? %>
+          <ul class="mt-1 space-y-0.5">
+            <% log.readable_changes.each do |attribute, (before, after)| %>
+              <li class="text-xs text-muted">
+                <span class="text-faint"><%= attribute %>:</span>
+                <span class="line-through"><%= before %></span>
+                <span aria-hidden="true">→</span>
+                <span class="text-ink font-medium"><%= after %></span>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+
+        <p class="text-[0.6875rem] text-faint num mt-1" title="<%= long_datetime(log.created_at) %>">
+          <%= long_datetime(log.created_at) %>
+        </p>
+      </div>
+    </li>
+  <% end %>
+</ol>

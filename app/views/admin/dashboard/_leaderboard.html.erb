@@ -1,0 +1,33 @@
+<% if vehicles.any? %>
+  <ol class="space-y-1">
+    <% vehicles.each_with_index do |vehicle, index| %>
+      <li>
+        <%= link_to admin_vehicle_path(vehicle),
+              class: "flex items-center gap-3 -mx-2 px-2 py-1.5 rounded-md hover:bg-surface-2 transition-colors" do %>
+          <%# The rank is real information here: this is an ordered leaderboard. %>
+          <span class="eyebrow w-4 text-right shrink-0"><%= index + 1 %></span>
+
+          <%= render Vehicles::ThumbnailComponent.new(vehicle, size: :sm) %>
+
+          <span class="min-w-0 flex-1">
+            <span class="block text-sm font-medium text-ink truncate"><%= vehicle.display_name %></span>
+            <span class="block text-xs text-faint num"><%= vehicle.code %></span>
+          </span>
+
+          <span class="text-sm font-medium text-ink num shrink-0">
+            <% if metric == :inquiries %>
+              <%= t("admin.dashboard.inquiries_count", count: vehicle.inquiries_count) %>
+            <% else %>
+              <%= t("admin.dashboard.views_count", count: vehicle.views_count) %>
+            <% end %>
+          </span>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+<% else %>
+  <%= render UI::EmptyStateComponent.new(
+        title: t("admin.dashboard.no_activity"),
+        icon: (metric == :inquiries ? :inbox : :eye),
+        compact: true) %>
+<% end %>

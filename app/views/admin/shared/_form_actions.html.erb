@@ -1,0 +1,12 @@
+<%# Sticky action bar shared by every form in the panel. %>
+<div class="flex flex-wrap items-center justify-between gap-3 sticky bottom-0 py-3 bg-canvas/90 backdrop-blur-sm border-t border-line">
+  <p class="text-xs text-muted"><%= t("admin.forms.required_note") %></p>
+
+  <div class="flex items-center gap-2">
+    <%= render UI::ButtonComponent.new(
+          label: t("admin.actions.cancel"), href: cancel_path, variant: :ghost) %>
+    <%= render UI::ButtonComponent.new(
+          label: local_assigns[:submit_label] || (persisted ? t("admin.actions.update") : t("admin.actions.create")),
+          type: "submit", variant: :primary, icon: :check) %>
+  </div>
+</div>

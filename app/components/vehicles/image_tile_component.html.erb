@@ -1,0 +1,42 @@
+<figure id="<%= dom_id(image) %>"
+        data-sortable-target="item"
+        data-image-id="<%= image.id %>"
+        <%= "draggable=true".html_safe if editable? %>
+        class="group relative aspect-4/3 rounded-md overflow-hidden border bg-surface-3
+               <%= main? ? "border-accent ring-2 ring-accent/25" : "border-line" %>
+               <%= "cursor-grab active:cursor-grabbing" if editable? %>">
+
+  <% if image.file.attached? %>
+    <%= image_tag image.file.variant(:card), class: "size-full object-cover pointer-events-none",
+                  loading: "lazy", alt: image.alt_text.presence || vehicle.display_name %>
+  <% end %>
+
+  <% if main? %>
+    <figcaption class="absolute top-1.5 left-1.5 z-10">
+      <%= render UI::BadgeComponent.new(t("admin.vehicles.images.main"), tone: :accent, size: :sm, class: "shadow-sm") %>
+    </figcaption>
+  <% end %>
+
+  <% if editable? %>
+    <div class="absolute inset-x-0 bottom-0 z-10 flex items-center justify-end gap-1 p-1.5
+                bg-gradient-to-t from-ink/75 to-transparent pt-8
+                opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+      <% unless main? %>
+        <%= button_to main_path, method: :patch,
+              class: "grid place-items-center size-7 rounded-md bg-surface/90 text-ink hover:bg-surface transition-colors",
+              title: t("admin.vehicles.images.make_main"),
+              aria: { label: t("admin.vehicles.images.make_main") } do %>
+          <%= render UI::IconComponent.new(:star, class: "size-3.5") %>
+        <% end %>
+      <% end %>
+
+      <%= button_to destroy_path, method: :delete,
+            form: { data: { turbo_confirm: t("admin.vehicles.images.confirm_delete") } },
+            class: "grid place-items-center size-7 rounded-md bg-surface/90 text-danger hover:bg-surface transition-colors",
+            title: t("admin.actions.delete"),
+            aria: { label: t("admin.actions.delete") } do %>
+        <%= render UI::IconComponent.new(:trash, class: "size-3.5") %>
+      <% end %>
+    </div>
+  <% end %>
+</figure>

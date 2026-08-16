@@ -1,0 +1,8 @@
+<% content_for :title, t("admin.vehicles.new") %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.vehicles.new"),
+      back_to: admin_vehicles_path,
+      back_label: t("admin.vehicles.title")) %>
+
+<%= render "form", vehicle: @vehicle %>

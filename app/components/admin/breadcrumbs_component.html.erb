@@ -1,0 +1,23 @@
+<nav aria-label="<%= t("admin.nav.breadcrumbs") %>" class="min-w-0">
+  <ol class="flex items-center gap-1.5 text-[0.8125rem] text-muted">
+    <li class="shrink-0">
+      <%= link_to admin_root_path, class: "hover:text-ink transition-colors grid place-items-center",
+                  aria: { label: t("admin.nav.dashboard") } do %>
+        <%= render UI::IconComponent.new(:gauge, class: "size-3.5") %>
+      <% end %>
+    </li>
+
+    <% crumbs.each_with_index do |(label, path), index| %>
+      <li aria-hidden="true" class="text-faint shrink-0">
+        <%= render UI::IconComponent.new(:chevron_right, class: "size-3.5") %>
+      </li>
+      <li class="min-w-0 <%= "truncate" if index == crumbs.size - 1 %>">
+        <% if path.present? && index < crumbs.size - 1 %>
+          <%= link_to label, path, class: "hover:text-ink transition-colors" %>
+        <% else %>
+          <span class="text-ink font-medium" aria-current="page"><%= label %></span>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+</nav>

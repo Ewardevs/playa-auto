@@ -1,0 +1,63 @@
+<div id="<%= dom_id(vehicle, :gallery) %>" class="space-y-4">
+  <% unless vehicle.persisted? %>
+    <div class="flex items-start gap-3 rounded-md border border-line bg-surface-2 px-4 py-3 text-sm text-muted">
+      <%= render UI::IconComponent.new(:info, class: "size-4.5 mt-px shrink-0") %>
+      <p><%= t("admin.vehicles.images.save_first") %></p>
+    </div>
+  <% end %>
+
+  <% if editable? %>
+    <%= form_with url: upload_path, method: :post, multipart: true,
+                  data: { controller: "uploader", uploader_target: "form" },
+                  class: "block" do |f| %>
+      <label data-uploader-target="zone"
+             data-action="dragover->uploader#dragover dragleave->uploader#dragleave drop->uploader#drop"
+             class="flex flex-col items-center justify-center gap-2 px-6 py-8 rounded-panel cursor-pointer
+                    border-2 border-dashed border-line hover:border-line-strong hover:bg-surface-2
+                    transition-colors text-center">
+        <span class="grid place-items-center size-10 rounded-full bg-surface-3 text-muted">
+          <%= render UI::IconComponent.new(:upload, class: "size-5") %>
+        </span>
+
+        <span class="text-sm font-medium text-ink"><%= t("admin.vehicles.images.drop_title") %></span>
+        <span class="text-xs text-muted"><%= t("admin.vehicles.images.drop_hint") %></span>
+
+        <%= f.file_field :files, multiple: true, accept: "image/jpeg,image/png,image/webp,image/avif",
+              class: "sr-only",
+              data: { uploader_target: "input", action: "change->uploader#submit" } %>
+      </label>
+
+      <%# Progress is a real state, not decoration: it shows while files upload. %>
+      <div data-uploader-target="progress" hidden
+           class="flex items-center gap-2.5 mt-3 text-sm text-muted">
+        <span class="size-3.5 rounded-full border-2 border-line-strong border-t-accent animate-spin"></span>
+        <span><%= t("admin.vehicles.images.uploading") %></span>
+      </div>
+    <% end %>
+  <% end %>
+
+  <% if any? %>
+    <div id="<%= dom_id(vehicle, :images) %>"
+         data-controller="sortable"
+         data-sortable-url-value="<%= reorder_path %>"
+         data-sortable-enabled-value="<%= editable? %>"
+         class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+      <% images.each do |image| %>
+        <%= render Vehicles::ImageTileComponent.new(image: image, editable: editable?) %>
+      <% end %>
+    </div>
+
+    <% if editable? %>
+      <p class="text-xs text-muted flex items-center gap-1.5">
+        <%= render UI::IconComponent.new(:grip, class: "size-3.5") %>
+        <%= t("admin.vehicles.images.reorder_hint") %>
+      </p>
+    <% end %>
+  <% elsif vehicle.persisted? %>
+    <%= render UI::EmptyStateComponent.new(
+          title: t("admin.vehicles.images.empty_title"),
+          description: t("admin.vehicles.images.empty_description"),
+          icon: :image,
+          compact: true) %>
+  <% end %>
+</div>

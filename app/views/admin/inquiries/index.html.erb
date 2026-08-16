@@ -1,0 +1,121 @@
+<% content_for :title, t("admin.inquiries.title") %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.inquiries.title"),
+      description: t("admin.inquiries.description")) do |header| %>
+  <% header.with_meta do %>
+    <span class="eyebrow"><%= t("admin.dashboard.inquiries_count", count: @pagy.count) %></span>
+  <% end %>
+<% end %>
+
+<div class="space-y-4">
+  <%= render Admin::FilterBarComponent.new(
+        url: admin_inquiries_path,
+        query: params[:q],
+        placeholder: t("admin.inquiries.search_placeholder", default: "Buscar por nombre, teléfono o email…"),
+        chip_param: :status,
+        active_chip: params[:status],
+        chips: [
+          Admin::FilterBarComponent::Chip.new(
+            label: t("admin.filters.all"), value: nil, count: @status_counts.values.sum)
+        ] + Inquiry.statuses.keys.map { |status|
+          Admin::FilterBarComponent::Chip.new(
+            label: Inquiry.human_enum_name(:status, status),
+            value: status,
+            count: @status_counts[status].to_i)
+        }) do |bar| %>
+
+    <% bar.with_filter do %>
+      <%= render Admin::SelectFilterComponent.new(
+            name: :user_id,
+            choices: [[t("admin.inquiries.unassigned"), "none"]] + User.ordered.pluck(:name, :id),
+            selected: params[:user_id],
+            prompt: t("admin.filters.any_seller")) %>
+    <% end %>
+
+    <% bar.with_filter do %>
+      <%= date_field_tag :from, params[:from],
+            class: "h-9 px-3 rounded-md border border-line bg-surface text-sm text-ink focus:border-line-strong transition-colors",
+            "aria-label": t("admin.filters.from") %>
+    <% end %>
+
+    <% bar.with_filter do %>
+      <%= date_field_tag :to, params[:to],
+            class: "h-9 px-3 rounded-md border border-line bg-surface text-sm text-ink focus:border-line-strong transition-colors",
+            "aria-label": t("admin.filters.to") %>
+    <% end %>
+  <% end %>
+
+  <%= render Admin::DataTableComponent.new(rows: @inquiries) do |table| %>
+    <% table.column(label: t("admin.inquiries.columns.name")) do |inquiry| %>
+      <%= link_to inquiry.name, admin_inquiry_path(inquiry),
+            class: "font-medium text-ink hover:text-accent transition-colors" %>
+      <% if inquiry.email.present? %>
+        <p class="text-xs text-muted truncate"><%= inquiry.email %></p>
+      <% end %>
+    <% end %>
+
+    <% table.column(label: t("admin.inquiries.columns.phone")) do |inquiry| %>
+      <%= phone_link inquiry.phone, class: "text-muted hover:text-ink transition-colors num text-sm" %>
+    <% end %>
+
+    <% table.column(label: t("admin.inquiries.columns.vehicle")) do |inquiry| %>
+      <% if inquiry.vehicle %>
+        <%= link_to inquiry.vehicle.display_name, admin_vehicle_path(inquiry.vehicle),
+              class: "text-muted hover:text-ink transition-colors text-sm" %>
+      <% else %>
+        <span class="text-faint text-sm"><%= t("admin.inquiries.general") %></span>
+      <% end %>
+    <% end %>
+
+    <% table.column(label: t("admin.inquiries.columns.seller")) do |inquiry| %>
+      <% if inquiry.user %>
+        <span class="text-muted text-sm"><%= inquiry.user.display_name %></span>
+      <% else %>
+        <span class="text-faint text-sm"><%= t("admin.inquiries.unassigned") %></span>
+      <% end %>
+    <% end %>
+
+    <% table.column(label: t("admin.inquiries.columns.date"), align: :right) do |inquiry| %>
+      <span class="text-muted num text-xs" title="<%= long_datetime(inquiry.created_at) %>">
+        <%= short_date(inquiry.created_at) %>
+      </span>
+    <% end %>
+
+    <% table.column(label: t("admin.inquiries.columns.status")) do |inquiry| %>
+      <%= render Inquiries::StatusBadgeComponent.new(inquiry) %>
+    <% end %>
+
+    <% table.column(label: t("admin.vehicles.columns.actions"), align: :right, width: "4rem") do |inquiry| %>
+      <%= render UI::DropdownComponent.new do |menu| %>
+        <% menu.with_item(label: t("admin.actions.view"), href: admin_inquiry_path(inquiry), icon: :eye) %>
+
+        <% if policy(inquiry).status? %>
+          <% menu.with_item(divider: true) %>
+          <% Inquiry.statuses.keys.reject { |s| s == inquiry.status }.each do |status| %>
+            <% menu.with_item(label: Inquiry.human_enum_name(:status, status),
+                              href: status_admin_inquiry_path(inquiry, status: status),
+                              icon: :check, method: :patch) %>
+          <% end %>
+        <% end %>
+
+        <% if policy(inquiry).destroy? %>
+          <% menu.with_item(divider: true) %>
+          <% menu.with_item(label: t("admin.actions.delete"), href: admin_inquiry_path(inquiry),
+                            icon: :trash, method: :delete, tone: :danger,
+                            confirm: t("admin.inquiries.confirm_delete")) %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% table.with_empty_state do %>
+      <%= render UI::EmptyStateComponent.new(
+            title: t("admin.inquiries.empty_title"),
+            description: t("admin.inquiries.empty_description"), icon: :inbox) %>
+    <% end %>
+
+    <% table.with_footer do %>
+      <%= render UI::PaginationComponent.new(@pagy) %>
+    <% end %>
+  <% end %>
+</div>

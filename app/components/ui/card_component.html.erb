@@ -1,0 +1,30 @@
+<section class="<%= wrapper_classes %>">
+  <% if header? %>
+    <header class="flex items-center gap-3 px-5 py-3.5 border-b border-line">
+      <% if icon.present? %>
+        <span class="grid place-items-center size-8 rounded-md bg-surface-3 text-muted">
+          <%= render UI::IconComponent.new(icon, class: "size-4") %>
+        </span>
+      <% end %>
+
+      <div class="min-w-0 flex-1">
+        <% if title.present? %>
+          <h2 class="text-[0.9375rem] font-semibold text-ink truncate"><%= title %></h2>
+        <% end %>
+        <% if subtitle.present? %>
+          <p class="text-xs text-muted mt-0.5 truncate"><%= subtitle %></p>
+        <% end %>
+      </div>
+
+      <% if actions? %>
+        <div class="flex items-center gap-2 shrink-0"><%= actions %></div>
+      <% end %>
+    </header>
+  <% end %>
+
+  <div class="<%= body_classes %>"><%= content %></div>
+
+  <% if footer? %>
+    <footer class="px-5 py-3 border-t border-line bg-surface-2"><%= footer %></footer>
+  <% end %>
+</section>

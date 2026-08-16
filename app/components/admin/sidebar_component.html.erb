@@ -1,0 +1,76 @@
+<%# Mobile scrim %>
+<div data-sidebar-target="scrim" data-action="click->sidebar#closeMobile" hidden
+     class="fixed inset-0 z-40 bg-ink/50 lg:hidden"></div>
+
+<aside data-sidebar-target="rail"
+       class="fixed inset-y-0 left-0 z-50 flex flex-col w-64 bg-rail border-r border-rail-line
+              -translate-x-full lg:translate-x-0
+              transition-[transform,width] duration-200 ease-out">
+
+  <%# Brand %>
+  <div class="flex items-center gap-2.5 h-14 px-4 border-b border-rail-line shrink-0">
+    <span class="grid place-items-center size-8 rounded-md bg-accent text-accent-ink shrink-0">
+      <%= render UI::IconComponent.new(:car, class: "size-4.5", stroke_width: 2) %>
+    </span>
+
+    <span class="min-w-0 flex-1" data-sidebar-target="label">
+      <span class="block font-display font-semibold text-rail-ink text-sm leading-tight truncate">
+        <%= current_setting.company_name %>
+      </span>
+      <span class="eyebrow block mt-0.5 text-rail-muted!"><%= t("admin.nav.panel") %></span>
+    </span>
+  </div>
+
+  <%# Navigation %>
+  <nav class="flex-1 overflow-y-auto scroll-slim px-2.5 py-3 space-y-4" aria-label="<%= t("admin.nav.primary") %>">
+    <% sections.each do |section| %>
+      <div>
+        <% if section[:label].present? %>
+          <p class="eyebrow px-2.5 pb-1.5 text-rail-muted!" data-sidebar-target="label">
+            <%= section[:label] %>
+          </p>
+        <% end %>
+
+        <ul class="space-y-0.5">
+          <% section[:items].each do |entry| %>
+            <li>
+              <%= link_to entry.path, class: link_classes(entry),
+                          aria: { current: ("page" if active?(entry)) },
+                          title: entry.label do %>
+                <% if active?(entry) %>
+                  <span class="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r bg-accent" aria-hidden="true"></span>
+                <% end %>
+
+                <%= render UI::IconComponent.new(entry.icon, class: "size-4.5 shrink-0") %>
+                <span class="truncate" data-sidebar-target="label"><%= entry.label %></span>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  </nav>
+
+  <%# Account %>
+  <div class="border-t border-rail-line p-2.5 shrink-0">
+    <div class="flex items-center gap-2.5 px-1.5 py-1.5">
+      <%= link_to admin_profile_path, class: "shrink-0", title: t("admin.nav.profile") do %>
+        <%= render UI::AvatarComponent.new(current_user, size: :sm, class: "bg-rail-2! text-rail-ink!") %>
+      <% end %>
+
+      <div class="min-w-0 flex-1" data-sidebar-target="label">
+        <p class="text-[0.8125rem] font-medium text-rail-ink truncate"><%= current_user.display_name %></p>
+        <p class="text-[0.6875rem] text-rail-muted truncate">
+          <%= User.human_enum_name(:role, current_user.role) %>
+        </p>
+      </div>
+
+      <%= button_to destroy_user_session_path, method: :delete,
+                    class: "grid place-items-center size-8 rounded-md text-rail-muted hover:text-rail-ink hover:bg-rail-2 transition-colors shrink-0",
+                    title: t("admin.nav.sign_out"),
+                    aria: { label: t("admin.nav.sign_out") } do %>
+        <%= render UI::IconComponent.new(:logout, class: "size-4") %>
+      <% end %>
+    </div>
+  </div>
+</aside>

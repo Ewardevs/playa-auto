@@ -1,0 +1,40 @@
+<nav class="flex flex-wrap items-center justify-between gap-3 px-5 py-3 border-t border-line"
+     aria-label="<%= t("admin.pagination.label") %>">
+  <p class="text-xs text-muted num">
+    <%= t("admin.pagination.summary", from: pagy.from, to: pagy.to, count: pagy.count) %>
+  </p>
+
+  <div class="flex items-center gap-1">
+    <% if pagy.previous %>
+      <%= link_to url_for_page(pagy.previous), class: step_classes(enabled: true),
+                  rel: "prev", aria: { label: t("admin.pagination.previous") } do %>
+        <%= render UI::IconComponent.new(:chevron_left, class: "size-4") %>
+      <% end %>
+    <% else %>
+      <span class="<%= step_classes(enabled: false) %>" aria-hidden="true">
+        <%= render UI::IconComponent.new(:chevron_left, class: "size-4") %>
+      </span>
+    <% end %>
+
+    <% series.each do |number| %>
+      <% if number == UI::PaginationComponent::GAP %>
+        <span class="px-1 text-faint select-none">&hellip;</span>
+      <% elsif number == page %>
+        <span class="<%= link_classes(active: true) %> num" aria-current="page"><%= number %></span>
+      <% else %>
+        <%= link_to number, url_for_page(number), class: "#{link_classes(active: false)} num" %>
+      <% end %>
+    <% end %>
+
+    <% if pagy.next %>
+      <%= link_to url_for_page(pagy.next), class: step_classes(enabled: true),
+                  rel: "next", aria: { label: t("admin.pagination.next") } do %>
+        <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+      <% end %>
+    <% else %>
+      <span class="<%= step_classes(enabled: false) %>" aria-hidden="true">
+        <%= render UI::IconComponent.new(:chevron_right, class: "size-4") %>
+      </span>
+    <% end %>
+  </div>
+</nav>

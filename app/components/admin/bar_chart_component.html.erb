@@ -1,0 +1,23 @@
+<figure class="w-full">
+  <svg viewBox="0 0 100 <%= height %>" preserveAspectRatio="none"
+       class="w-full block" style="height: <%= height %>px" role="img"
+       aria-label="<%= series.map { |label, value| "#{label}: #{value}" }.join(", ") %>">
+    <% series.each_with_index do |(label, value), index| %>
+      <%# The tallest column is lit amber; the rest stay quiet graphite. %>
+      <rect x="<%= bar_x(index) %>" y="<%= bar_y(value) %>"
+            width="<%= bar_width %>" height="<%= bar_height(value) %>"
+            class="<%= peak?(value) ? "fill-accent" : "fill-line-strong" %>">
+        <title><%= label %>: <%= formatted(value) %></title>
+      </rect>
+    <% end %>
+  </svg>
+
+  <figcaption class="grid mt-2" style="grid-template-columns: repeat(<%= series.size %>, minmax(0, 1fr))">
+    <% series.each do |label, value| %>
+      <div class="text-center min-w-0">
+        <p class="text-[0.625rem] text-faint uppercase tracking-wide truncate"><%= label %></p>
+        <p class="text-xs font-medium text-ink num mt-0.5"><%= formatted(value) %></p>
+      </div>
+    <% end %>
+  </figcaption>
+</figure>

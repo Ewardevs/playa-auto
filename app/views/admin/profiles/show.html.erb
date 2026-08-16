@@ -1,0 +1,65 @@
+<% content_for :title, t("admin.profile.title") %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.profile.title"),
+      description: t("admin.profile.description")) do |header| %>
+  <% header.with_meta do %>
+    <%= render UI::BadgeComponent.new(User.human_enum_name(:role, @profile.role), tone: :neutral) %>
+  <% end %>
+
+  <% header.with_actions do %>
+    <%= render UI::ButtonComponent.new(
+          label: t("admin.profile.sections.password"), href: edit_admin_password_path,
+          variant: :secondary, icon: :key) %>
+  <% end %>
+<% end %>
+
+<div class="grid gap-4 lg:grid-cols-3 items-start">
+  <div class="lg:col-span-2">
+    <%= form_with model: @profile, url: admin_profile_path, method: :patch, class: "space-y-4" do |f| %>
+      <%= render UI::FormErrorsComponent.new(@profile) %>
+
+      <%= render UI::FormSectionComponent.new(
+            title: t("admin.profile.sections.details"),
+            description: t("admin.profile.sections.details_hint"),
+            icon: :users) do %>
+        <%= render UI::FieldComponent.new(form: f, attribute: :name, required: true) %>
+        <%= render UI::FieldComponent.new(form: f, attribute: :email, type: :email, required: true) %>
+        <%= render UI::FieldComponent.new(form: f, attribute: :phone, type: :tel) %>
+        <%= render UI::FieldComponent.new(form: f, attribute: :avatar, type: :file) %>
+      <% end %>
+
+      <%= render "admin/shared/form_actions",
+            cancel_path: admin_root_path, persisted: true, submit_label: t("admin.actions.save") %>
+    <% end %>
+  </div>
+
+  <div class="space-y-4">
+    <%= render UI::CardComponent.new do %>
+      <div class="flex flex-col items-center text-center">
+        <%= render UI::AvatarComponent.new(@profile, size: :lg) %>
+        <p class="mt-3 font-medium text-ink"><%= @profile.display_name %></p>
+        <p class="text-sm text-muted"><%= @profile.email %></p>
+      </div>
+    <% end %>
+
+    <%= render UI::CardComponent.new(flush: true) do %>
+      <dl class="divide-y divide-line">
+        <div class="flex items-baseline justify-between gap-4 px-5 py-2.5">
+          <dt class="text-sm text-muted"><%= User.human_attribute_name(:role) %></dt>
+          <dd class="text-sm font-medium text-ink"><%= User.human_enum_name(:role, @profile.role) %></dd>
+        </div>
+        <div class="flex items-baseline justify-between gap-4 px-5 py-2.5">
+          <dt class="text-sm text-muted"><%= t("admin.users.last_sign_in") %></dt>
+          <dd class="text-sm font-medium text-ink num"><%= short_date(@profile.last_sign_in_at) %></dd>
+        </div>
+        <div class="flex items-baseline justify-between gap-4 px-5 py-2.5">
+          <dt class="text-sm text-muted"><%= User.human_attribute_name(:sign_in_count) %></dt>
+          <dd class="text-sm font-medium text-ink num"><%= @profile.sign_in_count %></dd>
+        </div>
+      </dl>
+    <% end %>
+
+    <%= render UI::AlertComponent.new(t("admin.profile.role_note"), tone: :info) %>
+  </div>
+</div>

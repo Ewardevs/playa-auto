@@ -1,0 +1,66 @@
+<% content_for :title, t("admin.content.title") %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.content.title"),
+      description: t("admin.content.description")) do |header| %>
+  <% if policy(Faq).index? %>
+    <% header.with_actions do %>
+      <%= render UI::ButtonComponent.new(
+            label: t("admin.faqs.title"), href: admin_faqs_path, variant: :secondary, icon: :info) %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= form_with model: @content, url: admin_content_path, method: :patch, class: "space-y-4" do |f| %>
+  <%= render UI::FormErrorsComponent.new(@content) %>
+
+  <%= render UI::FormSectionComponent.new(
+        title: t("admin.content.sections.hero"),
+        description: t("admin.content.sections.hero_hint"),
+        icon: :image) do %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :hero_title,
+          placeholder: "Tu próximo auto te está esperando") %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :hero_subtitle) %>
+
+    <div class="sm:col-span-2">
+      <%= render UI::FieldComponent.new(form: f, attribute: :hero_text, type: :textarea, rows: 3) %>
+    </div>
+
+    <%= render UI::FieldComponent.new(form: f, attribute: :hero_button_label, placeholder: "Ver catálogo") %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :hero_button_url, placeholder: "/vehiculos") %>
+
+    <div class="sm:col-span-2">
+      <%= render UI::FieldComponent.new(form: f, attribute: :hero_image, type: :file) %>
+      <% if @content.hero_image.attached? %>
+        <%= image_tag @content.hero_image.variant(:preview),
+              class: "mt-3 rounded-md border border-line max-h-40 object-cover", alt: "" %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= render UI::FormSectionComponent.new(
+        title: t("admin.content.sections.about"),
+        description: t("admin.content.sections.about_hint"),
+        icon: :file_text) do %>
+    <div class="sm:col-span-2">
+      <%= render UI::FieldComponent.new(form: f, attribute: :about_title) %>
+    </div>
+
+    <div class="sm:col-span-2">
+      <%= render UI::FieldComponent.new(form: f, attribute: :about_description, type: :textarea, rows: 5) %>
+    </div>
+
+    <div class="sm:col-span-2">
+      <%= render UI::FieldComponent.new(form: f, attribute: :about_image, type: :file) %>
+      <% if @content.about_image.attached? %>
+        <%= image_tag @content.about_image.variant(:preview),
+              class: "mt-3 rounded-md border border-line max-h-40 object-cover", alt: "" %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= render UI::AlertComponent.new(t("admin.content.company_note"), tone: :info) %>
+
+  <%= render "admin/shared/form_actions",
+        cancel_path: admin_root_path, persisted: true, submit_label: t("admin.actions.save") %>
+<% end %>

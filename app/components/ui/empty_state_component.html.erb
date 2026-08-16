@@ -1,0 +1,15 @@
+<div class="flex flex-col items-center justify-center text-center px-6 <%= padding %>">
+  <span class="grid place-items-center size-11 rounded-full bg-surface-3 text-faint mb-3.5">
+    <%= render UI::IconComponent.new(icon, class: "size-5") %>
+  </span>
+
+  <p class="text-sm font-semibold text-ink"><%= title %></p>
+
+  <% if description.present? %>
+    <p class="text-sm text-muted mt-1 max-w-sm"><%= description %></p>
+  <% end %>
+
+  <% if action? %>
+    <div class="mt-4"><%= action %></div>
+  <% end %>
+</div>

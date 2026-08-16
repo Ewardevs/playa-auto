@@ -1,0 +1,52 @@
+<%= form_with model: [:admin, user], class: "space-y-4" do |f| %>
+  <%= render UI::FormErrorsComponent.new(user) %>
+
+  <%= render UI::FormSectionComponent.new(title: t("admin.profile.sections.details"), icon: :users) do %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :name, required: true) %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :email, type: :email, required: true) %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :phone, type: :tel) %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :avatar, type: :file) %>
+  <% end %>
+
+  <% if policy(user).change_privileges? %>
+    <%= render UI::FormSectionComponent.new(
+          title: User.human_attribute_name(:role),
+          description: t("admin.users.roles_hint"), icon: :key) do %>
+      <%= render UI::FieldComponent.new(form: f, attribute: :role, type: :select,
+            choices: User.roles.keys.map { |r| [User.human_enum_name(:role, r), r] }) %>
+
+      <div class="flex items-end pb-1">
+        <%= render UI::SwitchComponent.new(form: f, attribute: :active) %>
+      </div>
+
+      <div class="sm:col-span-2 rounded-md border border-line bg-surface-2 p-4">
+        <dl class="space-y-2">
+          <% User.roles.keys.each do |role| %>
+            <div class="flex items-start gap-2.5 text-xs">
+              <dt class="font-medium text-ink w-28 shrink-0"><%= User.human_enum_name(:role, role) %></dt>
+              <dd class="text-muted"><%= t("admin.users.role_descriptions.#{role}") %></dd>
+            </div>
+          <% end %>
+        </dl>
+      </div>
+    <% end %>
+  <% else %>
+    <%= render UI::AlertComponent.new(t("admin.profile.role_note"), tone: :info) %>
+  <% end %>
+
+  <%= render UI::FormSectionComponent.new(
+        title: t("admin.profile.sections.password"), icon: :key) do %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :password, type: :password,
+          hint: t("admin.users.password_hint"), autocomplete: "new-password") %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :password_confirmation, type: :password,
+          autocomplete: "new-password") %>
+
+    <% unless user.persisted? %>
+      <div class="sm:col-span-2">
+        <p class="text-xs text-muted"><%= t("admin.users.password_note") %></p>
+      </div>
+    <% end %>
+  <% end %>
+
+  <%= render "admin/shared/form_actions", cancel_path: admin_users_path, persisted: user.persisted? %>
+<% end %>

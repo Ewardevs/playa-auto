@@ -1,0 +1,9 @@
+<div class="fixed z-50 top-3 right-3 left-3 sm:left-auto sm:w-96 space-y-2 pointer-events-none"
+     aria-live="polite">
+  <% messages.each do |tone, message| %>
+    <div class="pointer-events-auto rounded-md shadow-lg shadow-ink/10"
+         data-controller="dismiss" data-dismiss-delay-value="6000">
+      <%= render UI::AlertComponent.new(message, tone: tone, dismissible: true) %>
+    </div>
+  <% end %>
+</div>

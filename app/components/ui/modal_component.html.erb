@@ -1,0 +1,35 @@
+<div data-controller="modal" data-modal-id-value="<%= id %>">
+  <% if trigger? %>
+    <div data-action="click->modal#open"><%= trigger %></div>
+  <% end %>
+
+  <dialog data-modal-target="dialog"
+          aria-labelledby="<%= id %>_title"
+          class="w-[calc(100vw-2rem)] <%= size_class %> p-0 rounded-panel border border-line bg-surface text-ink
+                 backdrop:bg-ink/45 backdrop:backdrop-blur-[1px] open:animate-[modal-in_150ms_ease-out]">
+    <form method="dialog" class="contents">
+      <header class="flex items-start gap-4 px-5 py-4 border-b border-line">
+        <div class="min-w-0 flex-1">
+          <h2 id="<%= id %>_title" class="text-base font-semibold"><%= title %></h2>
+          <% if description.present? %>
+            <p class="text-sm text-muted mt-1"><%= description %></p>
+          <% end %>
+        </div>
+
+        <button type="submit" value="cancel"
+                class="grid place-items-center size-8 -mr-1 -mt-1 rounded-md text-muted hover:bg-surface-3 hover:text-ink transition-colors"
+                aria-label="<%= t("admin.actions.close") %>">
+          <%= render UI::IconComponent.new(:x, class: "size-4") %>
+        </button>
+      </header>
+    </form>
+
+    <div class="px-5 py-4 max-h-[70vh] overflow-y-auto scroll-slim"><%= content %></div>
+
+    <% if footer? %>
+      <footer class="flex items-center justify-end gap-2 px-5 py-3.5 border-t border-line bg-surface-2">
+        <%= footer %>
+      </footer>
+    <% end %>
+  </dialog>
+</div>

@@ -1,0 +1,140 @@
+<%= form_with model: [:admin, vehicle], class: "space-y-4" do |f| %>
+  <%= render UI::FormErrorsComponent.new(vehicle) %>
+
+  <%# ── Información básica ────────────────────────────────────────────── %>
+  <%= render UI::FormSectionComponent.new(
+        title: t("admin.vehicles.sections.basic"),
+        description: t("admin.vehicles.sections.basic_hint"),
+        icon: :car) do %>
+
+    <%# Choosing a brand loads its models; the pairing is re-checked server-side. %>
+    <div class="sm:col-span-2 grid gap-5 sm:grid-cols-2"
+         data-controller="dependent-select"
+         data-dependent-select-url-value="<%= options_admin_vehicle_models_path %>"
+         data-dependent-select-prompt-value="<%= t("admin.filters.any_brand") %>">
+      <%= render UI::FieldComponent.new(
+            form: f, attribute: :brand_id, type: :select, required: true,
+            choices: Brand.active.order(:name).pluck(:name, :id),
+            include_blank: t("admin.filters.any_brand"),
+            data: { dependent_select_target: "parent", action: "change->dependent-select#load" }) %>
+
+      <%= render UI::FieldComponent.new(
+            form: f, attribute: :vehicle_model_id, type: :select, required: true,
+            choices: vehicle.brand_id ? VehicleModel.where(brand_id: vehicle.brand_id).active.order(:name).pluck(:name, :id) : [],
+            include_blank: t("admin.filters.any_brand"),
+            data: { dependent_select_target: "child" }) %>
+    </div>
+
+    <%= render UI::FieldComponent.new(
+          form: f, attribute: :category_id, type: :select, required: true,
+          choices: Category.active.order(:position, :name).pluck(:name, :id),
+          include_blank: t("admin.filters.any_category")) %>
+
+    <%= render UI::FieldComponent.new(
+          form: f, attribute: :year, type: :number, required: true,
+          min: Vehicle::MIN_YEAR, max: Date.current.year + 2) %>
+  <% end %>
+
+  <%# ── Información comercial ─────────────────────────────────────────── %>
+  <%= render UI::FormSectionComponent.new(
+        title: t("admin.vehicles.sections.commercial"),
+        description: t("admin.vehicles.sections.commercial_hint"),
+        icon: :percent) do %>
+    <%= render UI::FieldComponent.new(
+          form: f, attribute: :price, type: :number, required: true,
+          prefix: current_setting.currency_symbol, step: "0.01", min: 0) %>
+
+    <%= render UI::FieldComponent.new(
+          form: f, attribute: :previous_price, type: :number,
+          prefix: current_setting.currency_symbol, step: "0.01", min: 0,
+          hint: t("admin.forms.optional")) %>
+  <% end %>
+
+  <%# ── Especificaciones ──────────────────────────────────────────────── %>
+  <%= render UI::FormSectionComponent.new(
+        title: t("admin.vehicles.sections.specs"),
+        description: t("admin.vehicles.sections.specs_hint"),
+        icon: :gauge, columns: 3) do %>
+    <%= render UI::FieldComponent.new(
+          form: f, attribute: :mileage, type: :number, required: true, suffix: "km", min: 0) %>
+
+    <%= render UI::FieldComponent.new(
+          form: f, attribute: :fuel_type, type: :select,
+          choices: Vehicle.fuel_types.keys.map { |v| [Vehicle.human_enum_name(:fuel_type, v), v] }) %>
+
+    <%= render UI::FieldComponent.new(
+          form: f, attribute: :transmission, type: :select,
+          choices: Vehicle.transmissions.keys.map { |v| [Vehicle.human_enum_name(:transmission, v), v] }) %>
+
+    <%= render UI::FieldComponent.new(form: f, attribute: :engine, placeholder: "2.8 TDI") %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :color, placeholder: "Blanco perlado") %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :published_at, type: :datetime) %>
+  <% end %>
+
+  <%# ── Descripción ───────────────────────────────────────────────────── %>
+  <%= render UI::FormSectionComponent.new(
+        title: t("admin.vehicles.sections.description"),
+        description: t("admin.vehicles.sections.description_hint"),
+        icon: :file_text, columns: 1) do %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :description, type: :textarea, rows: 5) %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :equipment, type: :textarea, rows: 4,
+          hint: t("admin.vehicles.equipment_hint", default: "Una característica por línea.")) %>
+  <% end %>
+
+  <%# ── Estado ────────────────────────────────────────────────────────── %>
+  <%= render UI::FormSectionComponent.new(
+        title: t("admin.vehicles.sections.status"),
+        description: t("admin.vehicles.sections.status_hint"),
+        icon: :check_circle) do %>
+    <%= render UI::FieldComponent.new(
+          form: f, attribute: :status, type: :select,
+          choices: Vehicle.statuses.keys.map { |v| [Vehicle.human_enum_name(:status, v), v] }) %>
+
+    <div class="grid gap-4 content-start">
+      <% if policy(vehicle).feature? %>
+        <%= render UI::SwitchComponent.new(form: f, attribute: :featured) %>
+      <% end %>
+    </div>
+
+    <%# La oferta no se marca acá: se administra en su propio módulo y este
+        panel refleja lo que hay cargado. %>
+    <div class="sm:col-span-2">
+      <%= render partial: "admin/vehicles/offer_panel", locals: { vehicle: vehicle } %>
+    </div>
+  <% end %>
+
+  <%# ── SEO ───────────────────────────────────────────────────────────── %>
+  <%= render UI::FormSectionComponent.new(
+        title: t("admin.vehicles.sections.seo"),
+        description: t("admin.vehicles.sections.seo_hint"),
+        icon: :search, columns: 1) do %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :meta_title) %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :meta_description, type: :textarea, rows: 2) %>
+  <% end %>
+
+  <%# ── Acciones ──────────────────────────────────────────────────────── %>
+  <div class="flex flex-wrap items-center justify-between gap-3 sticky bottom-0 py-3 bg-canvas/90 backdrop-blur-sm border-t border-line">
+    <p class="text-xs text-muted"><%= t("admin.forms.required_note") %></p>
+
+    <div class="flex items-center gap-2">
+      <%= render UI::ButtonComponent.new(
+            label: t("admin.actions.cancel"),
+            href: vehicle.persisted? ? admin_vehicle_path(vehicle) : admin_vehicles_path,
+            variant: :ghost) %>
+      <%= render UI::ButtonComponent.new(
+            label: vehicle.persisted? ? t("admin.actions.update") : t("admin.actions.create"),
+            type: "submit", variant: :primary, icon: :check) %>
+    </div>
+  </div>
+<% end %>
+
+<%# ── Fotografías ──────────────────────────────────────────────────────── %>
+<div class="mt-4">
+  <%= render UI::FormSectionComponent.new(
+        title: t("admin.vehicles.sections.images"),
+        description: t("admin.vehicles.sections.images_hint"),
+        icon: :image, columns: 1) do %>
+    <%= render Vehicles::ImageGalleryComponent.new(
+          vehicle: vehicle, editable: policy(vehicle).update?) %>
+  <% end %>
+</div>

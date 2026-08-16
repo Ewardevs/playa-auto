@@ -1,0 +1,83 @@
+<% content_for :title, t("admin.brands.title") %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.brands.title"),
+      description: t("admin.brands.description")) do |header| %>
+  <% if policy(Brand).create? %>
+    <% header.with_actions do %>
+      <%= render UI::ButtonComponent.new(
+            label: t("admin.brands.new"), href: new_admin_brand_path, variant: :primary, icon: :plus) %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= render Admin::DataTableComponent.new(rows: @brands) do |table| %>
+  <% table.with_toolbar do %>
+    <%= render Admin::FilterBarComponent.new(url: admin_brands_path, query: params[:q]) %>
+  <% end %>
+
+  <% table.column(label: Brand.human_attribute_name(:logo), width: "5rem") do |brand| %>
+    <span class="grid place-items-center w-14 h-10 rounded-md bg-surface-3 border border-line overflow-hidden">
+      <% if brand.logo.attached? %>
+        <%= image_tag brand.logo.variant(:thumb), class: "max-w-full max-h-full object-contain", alt: brand.name, loading: "lazy" %>
+      <% else %>
+        <%= render UI::IconComponent.new(:tag, class: "size-4 text-faint") %>
+      <% end %>
+    </span>
+  <% end %>
+
+  <% table.column(label: Brand.human_attribute_name(:name)) do |brand| %>
+    <% if policy(brand).update? %>
+      <%= link_to brand.name, edit_admin_brand_path(brand),
+            class: "font-medium text-ink hover:text-accent transition-colors" %>
+    <% else %>
+      <span class="font-medium text-ink"><%= brand.name %></span>
+    <% end %>
+    <p class="text-xs text-faint font-mono mt-0.5"><%= brand.slug %></p>
+  <% end %>
+
+  <% table.column(label: Brand.human_attribute_name(:vehicles_count), align: :right) do |brand| %>
+    <span class="text-muted num"><%= brand.vehicles_count %></span>
+  <% end %>
+
+  <% table.column(label: Brand.human_attribute_name(:active)) do |brand| %>
+    <%= render UI::StateBadgeComponent.new(brand.active?) %>
+  <% end %>
+
+  <% table.column(label: t("admin.vehicles.columns.actions"), align: :right, width: "4rem") do |brand| %>
+    <%= render UI::DropdownComponent.new do |menu| %>
+      <% if policy(brand).update? %>
+        <% menu.with_item(label: t("admin.actions.edit"), href: edit_admin_brand_path(brand), icon: :pencil) %>
+      <% end %>
+      <% if policy(brand).toggle? %>
+        <% menu.with_item(
+             label: brand.active? ? t("admin.actions.deactivate") : t("admin.actions.activate"),
+             href: toggle_admin_brand_path(brand), icon: :power, method: :patch) %>
+      <% end %>
+      <% if policy(brand).destroy? %>
+        <% menu.with_item(divider: true) %>
+        <% menu.with_item(label: t("admin.actions.delete"), href: admin_brand_path(brand),
+                          icon: :trash, method: :delete, tone: :danger,
+                          confirm: t("admin.brands.confirm_delete")) %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% table.with_empty_state do %>
+    <%= render UI::EmptyStateComponent.new(
+          title: t("admin.brands.empty_title"),
+          description: t("admin.brands.empty_description"),
+          icon: :tag) do |empty| %>
+      <% if policy(Brand).create? %>
+        <% empty.with_action do %>
+          <%= render UI::ButtonComponent.new(
+                label: t("admin.brands.new"), href: new_admin_brand_path, variant: :primary, icon: :plus) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% table.with_footer do %>
+    <%= render UI::PaginationComponent.new(@pagy) %>
+  <% end %>
+<% end %>

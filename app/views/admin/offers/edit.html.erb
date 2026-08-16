@@ -1,0 +1,5 @@
+<% content_for :title, t("admin.offers.edit") %>
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.offers.edit"), description: @offer.display_name,
+      back_to: admin_offers_path, back_label: t("admin.offers.title")) %>
+<%= render "form", offer: @offer %>

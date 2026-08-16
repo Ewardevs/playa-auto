@@ -1,0 +1,10 @@
+<% content_for :title, @user.display_name %>
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.users.edit"), description: @user.email,
+      back_to: admin_users_path, back_label: t("admin.users.title")) do |header| %>
+  <% header.with_meta do %>
+    <%= render UI::BadgeComponent.new(User.human_enum_name(:role, @user.role), tone: :neutral) %>
+    <%= render UI::StateBadgeComponent.new(@user.active?) %>
+  <% end %>
+<% end %>
+<%= render "form", user: @user %>

@@ -1,0 +1,4 @@
+<% content_for :title, t("admin.users.new") %>
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.users.new"), back_to: admin_users_path, back_label: t("admin.users.title")) %>
+<%= render "form", user: @user %>

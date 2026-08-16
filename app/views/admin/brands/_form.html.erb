@@ -1,0 +1,35 @@
+<%= form_with model: [:admin, brand], class: "space-y-4" do |f| %>
+  <%= render UI::FormErrorsComponent.new(brand) %>
+
+  <%= render UI::FormSectionComponent.new(title: t("admin.brands.title"), icon: :tag) do %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :name, required: true, placeholder: "Toyota") %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :position, type: :number,
+          hint: t("admin.brands.position_hint", default: "Menor número aparece primero.")) %>
+
+    <div class="sm:col-span-2">
+      <%= render UI::FieldComponent.new(form: f, attribute: :logo, type: :file,
+            hint: t("admin.settings.logo_hint")) %>
+
+      <% if brand.logo.attached? %>
+        <div class="flex items-center gap-3 mt-3">
+          <span class="grid place-items-center w-20 h-14 rounded-md bg-surface-3 border border-line overflow-hidden">
+            <%= image_tag brand.logo.variant(:thumb), class: "max-w-full max-h-full object-contain", alt: brand.name %>
+          </span>
+          <span class="text-xs text-muted"><%= t("admin.settings.current_logo") %></span>
+        </div>
+      <% end %>
+    </div>
+
+    <%= render UI::SwitchComponent.new(form: f, attribute: :active) %>
+  <% end %>
+
+  <%= render UI::FormSectionComponent.new(
+        title: t("admin.vehicles.sections.seo"),
+        description: t("admin.vehicles.sections.seo_hint"),
+        icon: :search, columns: 1) do %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :meta_title) %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :meta_description, type: :textarea, rows: 2) %>
+  <% end %>
+
+  <%= render "admin/shared/form_actions", cancel_path: admin_brands_path, persisted: brand.persisted? %>
+<% end %>

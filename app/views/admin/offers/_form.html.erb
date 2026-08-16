@@ -1,0 +1,64 @@
+<%= form_with model: [:admin, offer], class: "space-y-4" do |f| %>
+  <%= render UI::FormErrorsComponent.new(offer) %>
+
+  <%= render UI::FormSectionComponent.new(
+        title: t("admin.offers.title"),
+        description: t("admin.offers.form_hint"),
+        icon: :percent) do %>
+
+    <div class="sm:col-span-2">
+      <%# El precio de lista sale del vehículo, así que el vehículo se elige una
+          sola vez y después queda fijo: cambiarlo cambiaría el precio de
+          referencia de una promoción ya publicada. %>
+      <% if offer.persisted? %>
+        <div>
+          <span class="block text-[0.8125rem] font-medium text-ink mb-1.5">
+            <%= Offer.human_attribute_name(:vehicle) %>
+          </span>
+          <div class="flex items-center gap-3 rounded-md border border-line bg-surface-2 px-3 py-2">
+            <%= render Vehicles::ThumbnailComponent.new(offer.vehicle, size: :sm) %>
+            <div class="min-w-0">
+              <p class="text-sm font-medium text-ink truncate"><%= offer.vehicle.display_name %></p>
+              <p class="text-xs text-faint font-mono"><%= offer.vehicle.code %></p>
+            </div>
+          </div>
+        </div>
+      <% else %>
+        <%= render UI::FieldComponent.new(
+              form: f, attribute: :vehicle_id, type: :select, required: true,
+              choices: Vehicle.kept.with_associations.ordered.map { |v|
+                ["#{v.code} — #{v.display_name} · #{money(v.price)}", v.id]
+              },
+              include_blank: t("admin.offers.pick_vehicle")) %>
+      <% end %>
+    </div>
+
+    <%# Precio de lista: referencia, no un campo. Se toma del vehículo al guardar. %>
+    <div>
+      <span class="block text-[0.8125rem] font-medium text-ink mb-1.5">
+        <%= t("admin.offers.list_price") %>
+      </span>
+      <div class="flex items-center h-9.5 px-3 rounded-md border border-line bg-surface-2">
+        <span class="text-sm text-muted num">
+          <%= offer.vehicle ? money(offer.vehicle.price) : "—" %>
+        </span>
+      </div>
+      <p class="mt-1.5 text-xs text-muted"><%= t("admin.offers.list_price_hint") %></p>
+    </div>
+
+    <%= render UI::FieldComponent.new(
+          form: f, attribute: :promo_price, type: :number, required: true,
+          prefix: current_setting.currency_symbol, step: "0.01", min: 0,
+          hint: t("admin.offers.promo_price_hint")) %>
+
+    <%= render UI::FieldComponent.new(form: f, attribute: :starts_on, type: :date, required: true) %>
+    <%= render UI::FieldComponent.new(form: f, attribute: :ends_on, type: :date, required: true) %>
+
+    <div class="sm:col-span-2">
+      <%= render UI::SwitchComponent.new(form: f, attribute: :active,
+            hint: t("admin.offers.active_hint")) %>
+    </div>
+  <% end %>
+
+  <%= render "admin/shared/form_actions", cancel_path: admin_offers_path, persisted: offer.persisted? %>
+<% end %>

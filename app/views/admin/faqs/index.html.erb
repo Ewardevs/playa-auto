@@ -1,0 +1,69 @@
+<% content_for :title, t("admin.faqs.title") %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.faqs.title"),
+      description: t("admin.faqs.description")) do |header| %>
+  <% if policy(Faq).create? %>
+    <% header.with_actions do %>
+      <%= render UI::ButtonComponent.new(
+            label: t("admin.faqs.new"), href: new_admin_faq_path, variant: :primary, icon: :plus) %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= render Admin::DataTableComponent.new(rows: @faqs) do |table| %>
+  <% table.column(label: Faq.human_attribute_name(:position), align: :right, width: "4rem") do |faq| %>
+    <span class="text-faint num"><%= faq.position %></span>
+  <% end %>
+
+  <% table.column(label: Faq.human_attribute_name(:question)) do |faq| %>
+    <% if policy(faq).update? %>
+      <%= link_to faq.question, edit_admin_faq_path(faq),
+            class: "font-medium text-ink hover:text-accent transition-colors" %>
+    <% else %>
+      <span class="font-medium text-ink"><%= faq.question %></span>
+    <% end %>
+    <p class="text-xs text-muted mt-0.5 line-clamp-2 max-w-2xl"><%= faq.answer %></p>
+  <% end %>
+
+  <% table.column(label: Faq.human_attribute_name(:active)) do |faq| %>
+    <%= render UI::StateBadgeComponent.new(faq.active?) %>
+  <% end %>
+
+  <% table.column(label: t("admin.vehicles.columns.actions"), align: :right, width: "4rem") do |faq| %>
+    <%= render UI::DropdownComponent.new do |menu| %>
+      <% if policy(faq).update? %>
+        <% menu.with_item(label: t("admin.actions.edit"), href: edit_admin_faq_path(faq), icon: :pencil) %>
+      <% end %>
+      <% if policy(faq).toggle? %>
+        <% menu.with_item(
+             label: faq.active? ? t("admin.actions.deactivate") : t("admin.actions.activate"),
+             href: toggle_admin_faq_path(faq), icon: :power, method: :patch) %>
+      <% end %>
+      <% if policy(faq).destroy? %>
+        <% menu.with_item(divider: true) %>
+        <% menu.with_item(label: t("admin.actions.delete"), href: admin_faq_path(faq),
+                          icon: :trash, method: :delete, tone: :danger,
+                          confirm: t("admin.faqs.confirm_delete")) %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% table.with_empty_state do %>
+    <%= render UI::EmptyStateComponent.new(
+          title: t("admin.faqs.empty_title"),
+          description: t("admin.faqs.empty_description"),
+          icon: :info) do |empty| %>
+      <% if policy(Faq).create? %>
+        <% empty.with_action do %>
+          <%= render UI::ButtonComponent.new(
+                label: t("admin.faqs.new"), href: new_admin_faq_path, variant: :primary, icon: :plus) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% table.with_footer do %>
+    <%= render UI::PaginationComponent.new(@pagy) %>
+  <% end %>
+<% end %>

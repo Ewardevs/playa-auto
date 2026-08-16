@@ -1,0 +1,14 @@
+<% content_for :title, @vehicle.display_name %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.vehicles.edit"),
+      description: @vehicle.display_name,
+      back_to: admin_vehicle_path(@vehicle),
+      back_label: t("admin.actions.back")) do |header| %>
+  <% header.with_meta do %>
+    <span class="font-mono text-xs text-muted"><%= @vehicle.code %></span>
+    <%= render Vehicles::StatusBadgeComponent.new(@vehicle) %>
+  <% end %>
+<% end %>
+
+<%= render "form", vehicle: @vehicle %>

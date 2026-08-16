@@ -1,0 +1,18 @@
+<div class="<%= wrapper_classes %>" role="alert" <%= "data-controller=dismiss" if dismissible %>>
+  <%= render UI::IconComponent.new(icon, class: "size-4.5 mt-px") %>
+
+  <div class="min-w-0 flex-1">
+    <% if title.present? %>
+      <p class="font-semibold"><%= title %></p>
+    <% end %>
+    <div class="<%= "mt-0.5 opacity-90" if title.present? %>"><%= message.presence || content %></div>
+  </div>
+
+  <% if dismissible %>
+    <button type="button" data-action="dismiss#close"
+            class="shrink-0 opacity-60 hover:opacity-100 transition-opacity"
+            aria-label="<%= t("admin.actions.close") %>">
+      <%= render UI::IconComponent.new(:x, class: "size-4") %>
+    </button>
+  <% end %>
+</div>

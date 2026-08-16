@@ -1,0 +1,43 @@
+<header class="sticky top-0 z-30 flex items-center gap-3 h-14 px-4 sm:px-6
+               bg-canvas/85 backdrop-blur-md border-b border-line">
+  <%# Mobile: open drawer %>
+  <button type="button" data-action="sidebar#openMobile"
+          class="lg:hidden grid place-items-center size-9 -ml-1 rounded-md text-muted hover:bg-surface-3 hover:text-ink transition-colors"
+          aria-label="<%= t("admin.nav.open_menu") %>">
+    <%= render UI::IconComponent.new(:menu, class: "size-5") %>
+  </button>
+
+  <%# Desktop: collapse rail %>
+  <button type="button" data-action="sidebar#toggleCollapse"
+          class="hidden lg:grid place-items-center size-9 -ml-1 rounded-md text-muted hover:bg-surface-3 hover:text-ink transition-colors"
+          aria-label="<%= t("admin.nav.collapse_menu") %>">
+    <%= render UI::IconComponent.new(:chevrons_left, class: "size-4.5", data: { sidebar_target: "collapseIcon" }) %>
+  </button>
+
+  <div class="hidden sm:block min-w-0 flex-1">
+    <%= render Admin::BreadcrumbsComponent.new(crumbs: crumbs) %>
+  </div>
+
+  <div class="flex-1 sm:hidden"></div>
+
+  <% if searchable? %>
+    <%= form_with url: search_path, method: :get, data: { turbo_frame: "_top" },
+                  class: "hidden md:block w-64" do |f| %>
+      <div class="relative">
+        <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-faint pointer-events-none">
+          <%= render UI::IconComponent.new(:search, class: "size-4") %>
+        </span>
+        <%= f.search_field :q, value: search_query,
+              placeholder: t("admin.vehicles.search_placeholder"),
+              class: "w-full h-9 pl-8.5 pr-3 rounded-md border border-line bg-surface text-sm text-ink placeholder:text-faint focus:border-line-strong transition-colors" %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <button type="button" data-action="theme#toggle"
+          class="grid place-items-center size-9 rounded-md text-muted hover:bg-surface-3 hover:text-ink transition-colors"
+          aria-label="<%= t("admin.actions.toggle_theme") %>">
+    <span data-theme-target="lightIcon"><%= render UI::IconComponent.new(:sun, class: "size-4.5") %></span>
+    <span data-theme-target="darkIcon" hidden><%= render UI::IconComponent.new(:moon, class: "size-4.5") %></span>
+  </button>
+</header>

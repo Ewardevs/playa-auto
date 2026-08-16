@@ -1,0 +1,49 @@
+<div class="bg-surface border border-line rounded-panel overflow-hidden">
+  <% if toolbar? %>
+    <div class="px-4 py-3 border-b border-line"><%= toolbar %></div>
+  <% end %>
+
+  <% if any? %>
+    <%# Wide tables scroll inside their own container; the page never scrolls sideways. %>
+    <div class="overflow-x-auto scroll-slim">
+      <table class="w-full text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-line bg-surface-2">
+            <% columns.each do |column| %>
+              <th scope="col"
+                  class="<%= alignment(column) %> px-4 py-2.5 font-normal whitespace-nowrap"
+                  style="<%= "width: #{column.width}" if column.width %>">
+                <% if column.sort.present? %>
+                  <%= link_to sort_url(column),
+                        class: "eyebrow inline-flex items-center gap-1 hover:text-ink transition-colors #{'text-ink!' if sorted_by?(column)}" do %>
+                    <%= column.label %>
+                    <%= render UI::IconComponent.new(sort_icon(column),
+                          class: "size-3 #{sorted_by?(column) ? 'opacity-100' : 'opacity-35'}") %>
+                  <% end %>
+                <% else %>
+                  <span class="eyebrow"><%= column.label %></span>
+                <% end %>
+              </th>
+            <% end %>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% rows.each do |row| %>
+            <tr class="border-b border-line last:border-0 hover:bg-surface-2 transition-colors">
+              <% columns.each do |column| %>
+                <td class="<%= alignment(column) %> <%= column.cell_class %> px-4 py-2.5 align-middle">
+                  <%= capture(row, &column.cell) if column.cell %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if footer? %><%= footer %><% end %>
+  <% else %>
+    <%= empty_state %>
+  <% end %>
+</div>

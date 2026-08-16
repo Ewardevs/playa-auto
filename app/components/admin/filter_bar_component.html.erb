@@ -1,0 +1,38 @@
+<div class="space-y-3">
+  <% if chips? %>
+    <div class="flex flex-wrap items-center gap-1.5">
+      <% chips.each do |chip| %>
+        <%= link_to chip_url(chip), class: chip_classes(chip) do %>
+          <%= chip.label %>
+          <% if chip.count.present? %>
+            <span class="num text-xs opacity-65"><%= chip.count %></span>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= form_with url: url, method: :get, data: { controller: "filter-form" },
+                class: "flex flex-wrap items-center gap-2" do |f| %>
+    <div class="relative flex-1 min-w-56">
+      <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-faint pointer-events-none">
+        <%= render UI::IconComponent.new(:search, class: "size-4") %>
+      </span>
+      <%= f.search_field query_param, value: query,
+            placeholder: placeholder || t("admin.filters.search"),
+            class: "w-full h-9 pl-8.5 pr-3 rounded-md border border-line bg-surface text-sm text-ink placeholder:text-faint focus:border-line-strong transition-colors" %>
+    </div>
+
+    <% filters.each do |filter| %><%= filter %><% end %>
+
+    <%= render UI::ButtonComponent.new(label: t("admin.filters.apply"), type: "submit", variant: :secondary, size: :sm, icon: :filter) %>
+
+    <% if filtered? %>
+      <%= render UI::ButtonComponent.new(label: t("admin.filters.clear"), href: reset_url, variant: :ghost, size: :sm, icon: :x) %>
+    <% end %>
+
+    <% if extra? %>
+      <div class="ml-auto flex items-center gap-2"><%= extra %></div>
+    <% end %>
+  <% end %>
+</div>

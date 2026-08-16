@@ -1,0 +1,45 @@
+<%# Row menu. Every entry is gated by the same policy the endpoint enforces. %>
+<%= render UI::DropdownComponent.new do |menu| %>
+  <% menu.with_item(label: t("admin.actions.view"), href: admin_vehicle_path(vehicle), icon: :eye) %>
+
+  <% if policy(vehicle).update? %>
+    <% menu.with_item(label: t("admin.actions.edit"), href: edit_admin_vehicle_path(vehicle), icon: :pencil) %>
+  <% end %>
+
+  <% if policy(vehicle).duplicate? %>
+    <% menu.with_item(label: t("admin.actions.duplicate"),
+                      href: duplicate_admin_vehicle_path(vehicle),
+                      icon: :copy, method: :post) %>
+  <% end %>
+
+  <% if policy(vehicle).status? %>
+    <% menu.with_item(divider: true) %>
+    <% Vehicle.statuses.keys.reject { |s| s == vehicle.status }.each do |status| %>
+      <% menu.with_item(label: t("admin.vehicles.status_changed", status: Vehicle.human_enum_name(:status, status)),
+                        href: status_admin_vehicle_path(vehicle, status: status),
+                        icon: :check, method: :patch) %>
+    <% end %>
+  <% end %>
+
+  <% if vehicle.discarded? %>
+    <% if policy(vehicle).restore? %>
+      <% menu.with_item(divider: true) %>
+      <% menu.with_item(label: t("admin.actions.restore"),
+                        href: restore_admin_vehicle_path(vehicle),
+                        icon: :restore, method: :patch) %>
+    <% end %>
+  <% elsif policy(vehicle).archive? %>
+    <% menu.with_item(divider: true) %>
+    <% menu.with_item(label: t("admin.actions.archive"),
+                      href: archive_admin_vehicle_path(vehicle),
+                      icon: :archive, method: :patch,
+                      confirm: t("admin.vehicles.confirm_archive")) %>
+  <% end %>
+
+  <% if policy(vehicle).destroy? %>
+    <% menu.with_item(label: t("admin.actions.delete"),
+                      href: admin_vehicle_path(vehicle),
+                      icon: :trash, method: :delete, tone: :danger,
+                      confirm: t("admin.vehicles.confirm_delete")) %>
+  <% end %>
+<% end %>

@@ -1,0 +1,79 @@
+<% content_for :title, t("admin.categories.title") %>
+
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.categories.title"),
+      description: t("admin.categories.description")) do |header| %>
+  <% if policy(Category).create? %>
+    <% header.with_actions do %>
+      <%= render UI::ButtonComponent.new(
+            label: t("admin.categories.new"), href: new_admin_category_path, variant: :primary, icon: :plus) %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= render Admin::DataTableComponent.new(rows: @categories) do |table| %>
+  <% table.with_toolbar do %>
+    <%= render Admin::FilterBarComponent.new(url: admin_categories_path, query: params[:q]) %>
+  <% end %>
+
+  <% table.column(label: Category.human_attribute_name(:name)) do |category| %>
+    <% if policy(category).update? %>
+      <%= link_to category.name, edit_admin_category_path(category),
+            class: "font-medium text-ink hover:text-accent transition-colors" %>
+    <% else %>
+      <span class="font-medium text-ink"><%= category.name %></span>
+    <% end %>
+    <% if category.description.present? %>
+      <p class="text-xs text-muted mt-0.5 truncate max-w-md"><%= category.description %></p>
+    <% end %>
+  <% end %>
+
+  <% table.column(label: Category.human_attribute_name(:position), align: :right) do |category| %>
+    <span class="text-muted num"><%= category.position %></span>
+  <% end %>
+
+  <% table.column(label: Category.human_attribute_name(:vehicles_count), align: :right) do |category| %>
+    <span class="text-muted num"><%= category.vehicles_count %></span>
+  <% end %>
+
+  <% table.column(label: Category.human_attribute_name(:active)) do |category| %>
+    <%= render UI::StateBadgeComponent.new(category.active?) %>
+  <% end %>
+
+  <% table.column(label: t("admin.vehicles.columns.actions"), align: :right, width: "4rem") do |category| %>
+    <%= render UI::DropdownComponent.new do |menu| %>
+      <% if policy(category).update? %>
+        <% menu.with_item(label: t("admin.actions.edit"), href: edit_admin_category_path(category), icon: :pencil) %>
+      <% end %>
+      <% if policy(category).toggle? %>
+        <% menu.with_item(
+             label: category.active? ? t("admin.actions.deactivate") : t("admin.actions.activate"),
+             href: toggle_admin_category_path(category), icon: :power, method: :patch) %>
+      <% end %>
+      <% if policy(category).destroy? %>
+        <% menu.with_item(divider: true) %>
+        <% menu.with_item(label: t("admin.actions.delete"), href: admin_category_path(category),
+                          icon: :trash, method: :delete, tone: :danger,
+                          confirm: t("admin.categories.confirm_delete")) %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% table.with_empty_state do %>
+    <%= render UI::EmptyStateComponent.new(
+          title: t("admin.categories.empty_title"),
+          description: t("admin.categories.empty_description"),
+          icon: :grid) do |empty| %>
+      <% if policy(Category).create? %>
+        <% empty.with_action do %>
+          <%= render UI::ButtonComponent.new(
+                label: t("admin.categories.new"), href: new_admin_category_path, variant: :primary, icon: :plus) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% table.with_footer do %>
+    <%= render UI::PaginationComponent.new(@pagy) %>
+  <% end %>
+<% end %>

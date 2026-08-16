@@ -1,0 +1,4 @@
+<% content_for :title, t("admin.categories.new") %>
+<%= render Admin::PageHeaderComponent.new(
+      title: t("admin.categories.new"), back_to: admin_categories_path, back_label: t("admin.categories.title")) %>
+<%= render "form", category: @category %>

@@ -1,0 +1,37 @@
+<% content_for :title, t("auth.sign_in.title") %>
+
+<h1 class="font-display text-2xl font-semibold text-ink tracking-tight"><%= t("auth.sign_in.title") %></h1>
+<p class="text-sm text-muted mt-1.5"><%= t("auth.sign_in.subtitle") %></p>
+
+<%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "mt-7 space-y-4" }) do |f| %>
+  <div>
+    <%= f.label :email, User.human_attribute_name(:email),
+          class: "block text-[0.8125rem] font-medium text-ink mb-1.5" %>
+    <%= f.email_field :email, autofocus: true, autocomplete: "email", required: true,
+          placeholder: "vos@empresa.com",
+          class: "w-full h-10 px-3 rounded-md border border-line bg-surface text-ink text-sm placeholder:text-faint focus:border-line-strong transition-colors" %>
+  </div>
+
+  <div>
+    <div class="flex items-baseline justify-between mb-1.5">
+      <%= f.label :password, User.human_attribute_name(:password),
+            class: "block text-[0.8125rem] font-medium text-ink" %>
+      <%= link_to t("auth.sign_in.forgot"), new_password_path(resource_name),
+            class: "text-xs text-muted hover:text-accent transition-colors" %>
+    </div>
+    <%= f.password_field :password, autocomplete: "current-password", required: true,
+          class: "w-full h-10 px-3 rounded-md border border-line bg-surface text-ink text-sm placeholder:text-faint focus:border-line-strong transition-colors" %>
+  </div>
+
+  <% if devise_mapping.rememberable? %>
+    <label class="flex items-center gap-2.5 cursor-pointer select-none">
+      <%= f.check_box :remember_me, class: "size-4 rounded border-line-strong text-ink focus-visible:outline-accent" %>
+      <span class="text-sm text-muted"><%= t("auth.sign_in.remember") %></span>
+    </label>
+  <% end %>
+
+  <%= f.submit t("auth.sign_in.submit"),
+        class: "w-full h-10 rounded-md bg-ink text-canvas text-sm font-medium hover:bg-ink/90 transition-colors cursor-pointer" %>
+<% end %>
+
+<p class="text-xs text-muted mt-8 text-center"><%= t("auth.sign_in.no_account") %></p>
